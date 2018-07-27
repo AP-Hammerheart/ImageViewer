@@ -1,0 +1,291 @@
+﻿using ImageViewer.Common;
+using SharpDX.Direct3D11;
+using System;
+using System.Numerics;
+using System.Threading.Tasks;
+
+namespace ImageViewer.Content
+{
+    /// <summary>
+    /// This sample renderer instantiates a basic rendering pipeline.
+    /// </summary>
+    internal abstract class BaseRenderer : Disposer
+    {
+        private readonly string VERTEX_SHADER;
+        private readonly string VPRT_VERTEX_SHADER;
+        private readonly string GEOMETRY_SHADER;
+        private readonly string PIXEL_SHADER;
+
+        private Vector3 position = Vector3.Zero;
+        private Matrix4x4 transformer = Matrix4x4.Identity;
+
+        private float rotationX = 0.0f;
+        private float rotationY = 0.0f;
+        private float rotationZ = 0.0f;
+
+        // Cached reference to device resources.
+        protected DeviceResources deviceResources;
+
+        // Direct3D resources.
+        protected SharpDX.Direct3D11.Buffer vertexBuffer;
+        protected SharpDX.Direct3D11.Buffer indexBuffer;
+        protected SharpDX.Direct3D11.Buffer modelConstantBuffer;
+
+        private InputLayout inputLayout;
+        private VertexShader vertexShader;
+        private GeometryShader geometryShader;
+        private PixelShader pixelShader; 
+        private SamplerState samplerState;
+
+        // System resources.
+        protected ModelConstantBuffer modelConstantBufferData;
+        protected int indexCount = 0;
+
+        // Variables used with the rendering loop.
+        private bool loadingComplete = false;
+
+        // If the current D3D Device supports VPRT, we can avoid using a geometry
+        // shader just to set the render target array index.
+        private bool usingVprtShaders = false;
+
+        /// <summary>
+        /// Loads vertex and pixel shaders from files.
+        /// </summary>
+        public BaseRenderer(
+            DeviceResources deviceResources,
+            string vertexShader,
+            string VPRTvertexShader,
+            string geometryShader,
+            string pixelShader
+            )
+        {
+            VERTEX_SHADER = vertexShader;
+            VPRT_VERTEX_SHADER = VPRTvertexShader;
+            GEOMETRY_SHADER = geometryShader;
+            PIXEL_SHADER = pixelShader;
+
+            this.deviceResources = deviceResources;
+
+            CreateDeviceDependentResourcesAsync();
+        }
+
+        private void UpdateTransform()
+        {
+            var modelRotationX = Matrix4x4.CreateRotationX(rotationX);
+            var modelRotationY = Matrix4x4.CreateRotationY(rotationY);
+            var modelRotationZ = Matrix4x4.CreateRotationZ(rotationZ);
+
+            var modelTranslation = Matrix4x4.CreateTranslation(Position);
+            var modelTransform = modelRotationX * modelRotationY * modelRotationZ * modelTranslation * transformer;
+
+            modelConstantBufferData.model = Matrix4x4.Transpose(modelTransform);
+
+            // Use the D3D device context to update Direct3D device-based resources.
+            var context = deviceResources.D3DDeviceContext;
+
+            // Update the model transform buffer for the hologram.
+            context.UpdateSubresource(ref modelConstantBufferData, modelConstantBuffer);
+        }
+
+        /// <summary>
+        /// Called once per frame.
+        /// </summary>
+        public void Update(StepTimer timer)
+        {          
+        }
+
+        /// <summary>
+        /// Renders one frame using the vertex and pixel shaders.
+        /// On devices that do not support the D3D11_FEATURE_D3D11_OPTIONS3::
+        /// VPAndRTArrayIndexFromAnyShaderFeedingRasterizer optional feature,
+        /// a pass-through geometry shader is also used to set the render 
+        /// target array index.
+        /// </summary>
+        public void Render()
+        {
+            // Loading is asynchronous. Resources must be created before drawing can occur.
+            if (!loadingComplete || !TextureReady)
+            {
+                return;
+            }
+
+            var context = deviceResources.D3DDeviceContext;
+            var bufferBinding = new VertexBufferBinding(vertexBuffer, VertexSize, 0);
+
+            context.InputAssembler.SetVertexBuffers(0, bufferBinding);
+            context.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
+
+            context.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            context.InputAssembler.InputLayout = inputLayout;
+
+            context.VertexShader.SetShader(vertexShader, null, 0);
+            context.VertexShader.SetConstantBuffers(0, modelConstantBuffer);
+
+            if (!usingVprtShaders)
+            {
+                context.GeometryShader.SetShader(geometryShader, null, 0);
+            }
+
+            context.PixelShader.SetSampler(0, samplerState);
+            SetTextureResource(context.PixelShader);
+
+            context.PixelShader.SetShader(pixelShader, null, 0);
+
+            context.DrawIndexedInstanced(indexCount, 2, 0, 0, 0);
+        }
+
+        /// <summary>
+        /// Creates device-based resources to store a constant buffer, object
+        /// geometry, and vertex and pixel shaders. In some cases this will also 
+        /// store a geometry shader.
+        /// </summary>
+        public async void CreateDeviceDependentResourcesAsync()
+        {
+            ReleaseDeviceDependentResources();
+
+            usingVprtShaders = deviceResources.D3DDeviceSupportsVprt;
+
+            var folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+
+            var vertexShaderFileName = usingVprtShaders ? VPRT_VERTEX_SHADER : VERTEX_SHADER;
+            var vertexShaderByteCode = await DirectXHelper.ReadDataAsync(await folder.GetFileAsync(vertexShaderFileName));
+
+            vertexShader = ToDispose(new VertexShader(deviceResources.D3DDevice, vertexShaderByteCode));
+
+            var vertexDesc = InputElement;
+
+            inputLayout = ToDispose(new InputLayout(deviceResources.D3DDevice, vertexShaderByteCode, vertexDesc));
+
+            if (!usingVprtShaders)
+            {
+                var geometryShaderByteCode = await DirectXHelper.ReadDataAsync(await folder.GetFileAsync(GEOMETRY_SHADER));
+                geometryShader = ToDispose(new GeometryShader(deviceResources.D3DDevice, geometryShaderByteCode));
+            }
+
+            var pixelShaderByteCode = await DirectXHelper.ReadDataAsync(await folder.GetFileAsync(PIXEL_SHADER));
+            pixelShader = ToDispose(new PixelShader(deviceResources.D3DDevice, pixelShaderByteCode));
+
+            samplerState = new SamplerState(deviceResources.D3DDevice, TextureLoader.SamplerStateDescription());
+
+            await LoadTextureAsync();
+            LoadGeometry();
+
+            loadingComplete = true;
+            UpdateTransform();       
+        }
+
+        internal abstract InputElement[] InputElement { get; }   
+
+        internal abstract void SetTextureResource(PixelShaderStage pixelShader);
+
+        internal abstract bool TextureReady { get; }
+
+        internal abstract int VertexSize { get; }
+
+        internal abstract void LoadGeometry();
+
+        internal virtual async Task LoadTextureAsync()
+        {
+            await Task.FromResult<object>(null);
+            return;
+        }
+
+        public virtual void ReleaseDeviceDependentResources()
+        {
+            loadingComplete = false;
+            usingVprtShaders = false;
+
+            RemoveAndDispose(ref vertexShader);
+            RemoveAndDispose(ref inputLayout);
+            RemoveAndDispose(ref pixelShader);
+            RemoveAndDispose(ref geometryShader);
+            RemoveAndDispose(ref modelConstantBuffer);
+            RemoveAndDispose(ref vertexBuffer);
+            RemoveAndDispose(ref indexBuffer);
+            RemoveAndDispose(ref samplerState);
+        }
+
+        public Vector3 Position
+        {
+            get
+            {
+                return position;
+            }
+
+            set
+            {
+                position = value;
+                if (loadingComplete)
+                {
+                    UpdateTransform();
+                }                
+            }
+        } 
+
+        public float RotationX
+        {
+            get
+            {
+                return rotationX * (180.0f / (float)Math.PI);
+            }
+            set
+            {
+                rotationX = (float)Math.IEEERemainder(value * ((float)Math.PI / 180.0f), 2 * Math.PI);
+                if (loadingComplete)
+                {
+                    UpdateTransform();
+                }
+            }
+        }
+
+        public float RotationY
+        {
+            get
+            {
+                return rotationY * (180.0f / (float)Math.PI);
+            }
+            set
+            {
+                rotationY = (float)Math.IEEERemainder(value * ((float)Math.PI / 180.0f), 2 * Math.PI);
+                if (loadingComplete)
+                {
+                    UpdateTransform();
+                }
+            }
+        }
+
+        public float RotationZ
+        {
+            get
+            {
+                return rotationZ * (180.0f / (float)Math.PI);
+            }
+            set
+            {
+                rotationZ = (float)Math.IEEERemainder(value * ((float)Math.PI / 180.0f), 2 * Math.PI);
+                if (loadingComplete)
+                {
+                    UpdateTransform();
+                }
+            }
+        }
+
+        public Matrix4x4 Transformer
+        {
+            get
+            {
+                return transformer;
+            }
+
+            set
+            {
+                transformer = value;
+                if (loadingComplete)
+                {
+                    UpdateTransform();
+                }
+            }
+        }
+    }
+}
+
