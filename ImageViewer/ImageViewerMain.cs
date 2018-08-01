@@ -9,6 +9,7 @@ using Windows.Foundation;
 using Windows.Gaming.Input;
 using Windows.Graphics.Holographic;
 using Windows.Perception.Spatial;
+using Windows.UI;
 using Windows.UI.Input.Spatial;
 
 namespace ImageViewer
@@ -60,14 +61,11 @@ namespace ImageViewer
         private static readonly string image1 = "image1.ndpi";
         private static readonly string image2 = "image2.ndpi";
 
+        private static readonly int image2offsetX = -5500;
+        private static readonly int image2offsetY = -2000;
+
         #endregion
-
         #region State variables
-
-        private int imageX = 0;
-        private int imageY = 0;
-        private int level = 7;
-
         private bool cancel = false;
         private bool loading = false;
 
@@ -76,7 +74,8 @@ namespace ImageViewer
         #region Content variables
 
         private TextureLoader               loader;
-        private TileRenderer[]              renderers;
+        private TileRenderer[]              tiles;
+        private StatusBarRenderer[]         statusItems;
 
         #endregion
 
@@ -131,6 +130,9 @@ namespace ImageViewer
             {
                 OnGamepadAdded(null, gamepad);
             }
+
+            timer.IsFixedTimeStep = true;
+            timer.TargetElapsedSeconds = 1;
         }
 
         public void SetHolographicSpace(HolographicSpace holographicSpace)
@@ -139,7 +141,73 @@ namespace ImageViewer
 
             loader = new TextureLoader(deviceResources, baseUrl);
 
-            renderers = new TileRenderer[2 * maxX * maxY];
+            statusItems = new StatusBarRenderer[5];
+
+            statusItems[0] = new StatusBarRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(-0.5f, 0.25f, 0.0f),
+                topLeft: new Vector3(-0.5f, 0.30f, 0.0f),
+                bottomRight: new Vector3(-0.2f, 0.25f, 0.0f),
+                topRight: new Vector3(-0.2f, 0.30f, 0.0f))
+            {
+                Position = new Vector3(0.0f, 0.0f, -1 * distanceFromUser),
+                TextPosition = new Vector2(20, 10),
+                Text = "ImageViewer",               
+                FontSize = 40,
+                ImageWidth = 480,
+            };
+
+            statusItems[1] = new ZoomRenderer(
+                main: this,
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(-0.2f, 0.25f, 0.0f),
+                topLeft: new Vector3(-0.2f, 0.30f, 0.0f),
+                bottomRight: new Vector3(0.2f, 0.25f, 0.0f),
+                topRight: new Vector3(0.2f, 0.30f, 0.0f))
+            {
+                Position = new Vector3(0.0f, 0.0f, -1 * distanceFromUser),        
+                ImageWidth = 640
+            };
+
+            statusItems[2] = new TileCounterRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(0.2f, 0.25f, 0.0f),
+                topLeft: new Vector3(0.2f, 0.30f, 0.0f),
+                bottomRight: new Vector3(0.3f, 0.25f, 0.0f),
+                topRight: new Vector3(0.3f, 0.30f, 0.0f))
+            {
+                Position = new Vector3(0.0f, 0.0f, -1 * distanceFromUser),
+                ImageWidth = 160
+            };
+
+            statusItems[3] = new MemoryUseRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(0.3f, 0.25f, 0.0f),
+                topLeft: new Vector3(0.3f, 0.30f, 0.0f),
+                bottomRight: new Vector3(0.4f, 0.25f, 0.0f),
+                topRight: new Vector3(0.4f, 0.30f, 0.0f))
+            {
+                Position = new Vector3(0.0f, 0.0f, -1 * distanceFromUser),
+                ImageWidth = 160
+            };
+
+            statusItems[4] = new ClockRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(0.4f, 0.25f, 0.0f),
+                topLeft: new Vector3(0.4f, 0.30f, 0.0f),
+                bottomRight: new Vector3(0.5f, 0.25f, 0.0f),
+                topRight: new Vector3(0.5f, 0.30f, 0.0f))
+            {
+                Position = new Vector3(0.0f, 0.0f, -1 * distanceFromUser),
+                ImageWidth = 160
+            };
+
+            tiles = new TileRenderer[2 * maxX * maxY];
 
             var step = Step;
             
@@ -147,29 +215,29 @@ namespace ImageViewer
             {
                 for (var y = 0; y < maxY; y++)
                 {
-                    renderers[maxY * x + y] = new TileRenderer(deviceResources, loader, image1 
-                        + "&x=" + (x * step + imageX).ToString() 
-                        + "&y=" + (y * step + imageY).ToString() 
+                    tiles[maxY * x + y] = new TileRenderer(deviceResources, loader, image1 
+                        + "&x=" + (x * step + ImageX).ToString() 
+                        + "&y=" + (y * step + ImageY).ToString() 
                         + "&w=" + tileResolution.ToString() 
                         + "&h=" + tileResolution.ToString() 
-                        + "&level=" + level.ToString())
+                        + "&level=" + Level.ToString())
                     {
                         Position = new Vector3(
-                            -1.0f * maxX * TileRenderer.TileSize + x * TileRenderer.TileSize, 
-                            -0.5f * maxY * TileRenderer.TileSize + y * TileRenderer.TileSize, 
+                            -1.0f * maxX * TileRenderer.TileSize + (0.5f * TileRenderer.TileSize) + x * TileRenderer.TileSize, 
+                            0.5f * maxY * TileRenderer.TileSize - (0.5f * TileRenderer.TileSize) - y * TileRenderer.TileSize, 
                             -1 * distanceFromUser)
                     };
 
-                    renderers[(maxX * maxY)+ (maxY * x + y)] = new TileRenderer(deviceResources, loader, image2 
-                        + "&x=" + (x * step + imageX).ToString() 
-                        + "&y=" + (y * step + imageY).ToString()
+                    tiles[(maxX * maxY)+ (maxY * x + y)] = new TileRenderer(deviceResources, loader, image2 
+                        + "&x=" + (x * step + ImageX + image2offsetX).ToString() 
+                        + "&y=" + (y * step + ImageY + image2offsetY).ToString()
                         + "&w=" + tileResolution.ToString() 
                         + "&h=" + tileResolution.ToString() 
-                        + "&level=" + level.ToString())
+                        + "&level=" + Level.ToString())
                     {
                         Position = new Vector3(
-                            x * TileRenderer.TileSize,
-                            -0.5f * maxY * TileRenderer.TileSize + y * TileRenderer.TileSize,
+                            (0.5f * TileRenderer.TileSize) + x * TileRenderer.TileSize,
+                            0.5f * maxY * TileRenderer.TileSize - (0.5f * TileRenderer.TileSize) - y * TileRenderer.TileSize,
                             -1 * distanceFromUser)
                     };
                 }         
@@ -275,7 +343,12 @@ namespace ImageViewer
                 var mover = Matrix4x4.CreateTranslation(pose.Head.Position);
                 var transformer = rotator * mover; 
 
-                foreach (var renderer in renderers)
+                foreach (var renderer in tiles)
+                {
+                    renderer.Transformer = transformer;
+                }
+
+                foreach (var renderer in statusItems)
                 {
                     renderer.Transformer = transformer;
                 }
@@ -283,7 +356,11 @@ namespace ImageViewer
 
             timer.Tick(() => 
             {
-                foreach (var renderer in renderers)
+                foreach (var renderer in tiles)
+                {
+                    renderer?.Update(timer);
+                }
+                foreach (var renderer in statusItems)
                 {
                     renderer?.Update(timer);
                 }
@@ -306,9 +383,9 @@ namespace ImageViewer
                 // You can also set the relative velocity and facing of that content; the sample
                 // hologram is at a fixed point so we only need to indicate its position.
 
-                if (renderers[focusReferenceTile] != null)
+                if (tiles[focusReferenceTile] != null)
                 {
-                    renderingParameters.SetFocusPoint(currentCoordinateSystem,renderers[focusReferenceTile].Position);
+                    renderingParameters.SetFocusPoint(currentCoordinateSystem,tiles[focusReferenceTile].Position);
                 }              
             }
 
@@ -402,8 +479,12 @@ namespace ImageViewer
                     // Only render world-locked content when positional tracking is active.
                     if (cameraActive)
                     {
-                        // Draw the sample hologram.
-                        foreach (var renderer in renderers)
+                        foreach (var renderer in statusItems)
+                        {
+                            renderer?.Render();
+                        }
+
+                        foreach (var renderer in tiles)
                         {
                             renderer?.Render();
                         }                
@@ -428,13 +509,22 @@ namespace ImageViewer
             loader?.ReleaseDeviceDependentResources();
             loader = null;
 
-            if (renderers != null)
+            if (statusItems != null)
             {
-                foreach (var renderer in renderers)
+                foreach (var renderer in statusItems)
                 {
                     renderer?.Dispose();
                 }
-                renderers = null;
+                statusItems = null;
+            }
+
+            if (tiles != null)
+            {
+                foreach (var renderer in tiles)
+                {
+                    renderer?.Dispose();
+                }
+                tiles = null;
             }
         }
 
@@ -472,12 +562,17 @@ namespace ImageViewer
         /// </summary>
         public void OnDeviceLost(Object sender, EventArgs e)
         {
-            loader.ReleaseDeviceDependentResources();
-
-            foreach (var renderer in renderers)
+            foreach (var renderer in tiles)
             {
                 renderer?.ReleaseDeviceDependentResources();
             }
+
+            foreach (var renderer in statusItems)
+            {
+                renderer?.ReleaseDeviceDependentResources();
+            }
+
+            loader?.ReleaseDeviceDependentResources();
         }
 
         /// <summary>
@@ -485,10 +580,15 @@ namespace ImageViewer
         /// </summary>
         public void OnDeviceRestored(Object sender, EventArgs e)
         {
-            foreach (var renderer in renderers)
+            foreach (var renderer in tiles)
             {
                 renderer?.CreateDeviceDependentResourcesAsync();
-            }            
+            }
+
+            foreach (var renderer in statusItems)
+            {
+                renderer?.CreateDeviceDependentResourcesAsync();
+            }
         }
 
         void OnLocatabilityChanged(SpatialLocator sender, Object args)
@@ -637,19 +737,19 @@ namespace ImageViewer
             switch (direction)
             {
                 case Direction.UP:
-                    level -= number;
-                    if (level < 0) level = 0;
+                    Level -= number;
+                    if (Level < 0) Level = 0;
                     break;
                 case Direction.DOWN:
-                    level += number;
-                    if (level > minScale) level = minScale;
+                    Level += number;
+                    if (Level > minScale) Level = minScale;
                     break;
             }
 
             var step = Step;
 
-            imageX = imageX - (imageX % step);
-            imageY = imageY - (imageY % step);
+            ImageX = ImageX - (ImageX % step);
+            ImageY = ImageY - (ImageY % step);
 
             UpdateImages(step);
         }
@@ -661,18 +761,18 @@ namespace ImageViewer
             switch (direction)
             {
                 case Direction.LEFT:
-                    imageX += number * step;
+                    ImageX += number * step;
                     break;
                 case Direction.RIGHT:
-                    imageX -= number * step;
-                    if (imageX < 0) imageX = 0;
-                    break;
-                case Direction.UP:
-                    imageY -= number * step;
-                    if (imageY < 0) imageY = 0;
+                    ImageX -= number * step;
+                    if (ImageX < 0) ImageX = 0;
                     break;
                 case Direction.DOWN:
-                    imageY += number * step;
+                    ImageY -= number * step;
+                    if (ImageY < 0) ImageY = 0;
+                    break;
+                case Direction.UP:
+                    ImageY += number * step;
                     break;
             }
 
@@ -699,8 +799,8 @@ namespace ImageViewer
                         }
 
                         var id1 = image1
-                            + "&x=" + x.ToString()
-                            + "&y=" + y.ToString()
+                            + "&x=" + (x + image2offsetX).ToString()
+                            + "&y=" + (y + image2offsetY).ToString()
                             + "&w=" + tileResolution.ToString()
                             + "&h=" + tileResolution.ToString()
                             + "&level=" + _level.ToString();
@@ -759,7 +859,11 @@ namespace ImageViewer
 
         #region Helpers
 
-        private int Step => _Step(level);
+        private int Step => _Step(Level);
+
+        public int Level { get; set; } = 7;
+        public int ImageY { get; set; } = 0;
+        public int ImageX { get; set; } = 0;
 
         private int _Step(int _level)
         {
@@ -788,13 +892,13 @@ namespace ImageViewer
                 for (var y = 0; y < maxY; y++)
                 {
                     var url1 = image1
-                        + "&x=" + (x * step + imageX).ToString()
-                        + "&y=" + (y * step + imageY).ToString()
+                        + "&x=" + (x * step + ImageX).ToString()
+                        + "&y=" + (y * step + ImageY).ToString()
                         + "&w=" + tileResolution.ToString()
                         + "&h=" + tileResolution.ToString()
-                        + "&level=" + level.ToString();
+                        + "&level=" + Level.ToString();
 
-                    renderers[maxY * x + y].TextureID = url1;
+                    tiles[maxY * x + y].TextureID = url1;
 
                     Task task1 = new Task(async () =>
                     {
@@ -804,13 +908,13 @@ namespace ImageViewer
                     task1.Wait();
 
                     var url2 = image2
-                        + "&x=" + (x * step + imageX).ToString()
-                        + "&y=" + (y * step + imageY).ToString()
+                        + "&x=" + (x * step + ImageX + image2offsetX).ToString()
+                        + "&y=" + (y * step + ImageY + image2offsetY).ToString()
                         + "&w=" + tileResolution.ToString()
                         + "&h=" + tileResolution.ToString()
-                        + "&level=" + level.ToString();
+                        + "&level=" + Level.ToString();
 
-                    renderers[(maxX * maxY) + (maxY * x + y)].TextureID = url2;
+                    tiles[(maxX * maxY) + (maxY * x + y)].TextureID = url2;
 
                     Task task2 = new Task(async () =>
                     {

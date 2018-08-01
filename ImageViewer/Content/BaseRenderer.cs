@@ -90,7 +90,7 @@ namespace ImageViewer.Content
         /// <summary>
         /// Called once per frame.
         /// </summary>
-        public void Update(StepTimer timer)
+        public virtual void Update(StepTimer timer)
         {          
         }
 

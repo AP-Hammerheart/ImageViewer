@@ -17,10 +17,10 @@ namespace ImageViewer.Content
         {
             VertexPlane[] planeVertices =
             {
-                new VertexPlane(new Vector3(-0.5f * TileSize, -0.5f * TileSize, 0.0f), new Vector2(0.0f, 0.0f)),
-                new VertexPlane(new Vector3(-0.5f * TileSize,  0.5f * TileSize, 0.0f), new Vector2(0.0f, 1.0f)),
-                new VertexPlane(new Vector3( 0.5f * TileSize, -0.5f * TileSize, 0.0f), new Vector2(1.0f, 0.0f)),
-                new VertexPlane(new Vector3( 0.5f * TileSize,  0.5f * TileSize, 0.0f), new Vector2(1.0f, 1.0f))
+                new VertexPlane(new Vector3(-0.5f * TileSize, -0.5f * TileSize, 0.0f), new Vector2(0.0f, 1.0f)),
+                new VertexPlane(new Vector3(-0.5f * TileSize,  0.5f * TileSize, 0.0f), new Vector2(0.0f, 0.0f)),
+                new VertexPlane(new Vector3( 0.5f * TileSize, -0.5f * TileSize, 0.0f), new Vector2(1.0f, 1.0f)),
+                new VertexPlane(new Vector3( 0.5f * TileSize,  0.5f * TileSize, 0.0f), new Vector2(1.0f, 0.0f))
             };
 
             vertexBuffer = ToDispose(Buffer.Create(deviceResources.D3DDevice, BindFlags.VertexBuffer, planeVertices));

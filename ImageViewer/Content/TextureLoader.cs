@@ -15,6 +15,7 @@ namespace ImageViewer.Content
     internal class TextureLoader
     {
         private readonly ulong MAX_MEMORY_USE = 700000000; // 700 MB
+        private ulong memoryUse = 0;
 
         private Dictionary<string, Tuple<ShaderResourceView, Texture2D>> textures; 
         private Queue<string> loadQueue = new Queue<string>();
@@ -30,6 +31,13 @@ namespace ImageViewer.Content
         private readonly DeviceResources deviceResources;
         private readonly string baseUrl;
 
+        public int MemoryUseInMB()
+        {
+            return (int)(memoryUse / 1000000);
+        }
+
+        public int TilesInMemory() => textures.Count;
+
         internal TextureLoader(DeviceResources deviceResources, string baseUrl)
         {
             this.deviceResources = deviceResources;
@@ -37,6 +45,9 @@ namespace ImageViewer.Content
             factory = new ImagingFactory2();
             localCacheFolder = ApplicationData.Current.LocalCacheFolder;
             textures = new Dictionary<string, Tuple<ShaderResourceView, Texture2D>>();
+
+            var report = Windows.System.MemoryManager.GetAppMemoryReport();
+            memoryUse = report.PrivateCommitUsage;
         }
 
         internal void ReleaseDeviceDependentResources()
@@ -86,16 +97,16 @@ namespace ImageViewer.Content
 
             while (loadQueue.Count > 0)
             {
-                var id = loadQueue.Dequeue();
+                var id = loadQueue.Peek();
 
                 using (var dataStream = await GetImageAsync(id))
                 {
                     if (dataStream != null)
                     {
                         var report = Windows.System.MemoryManager.GetAppMemoryReport();
-                        var mem = report.PrivateCommitUsage;
+                        memoryUse = report.PrivateCommitUsage;
 
-                        if (mem > MAX_MEMORY_USE && lastUse.Count > 200) // Release old texture if memory runs low
+                        if (memoryUse > MAX_MEMORY_USE && lastUse.Count > 200) // Release old texture if memory runs low
                         {
                             var clean = 100;
                             for (var i=0; i < clean; i++)
@@ -116,9 +127,10 @@ namespace ImageViewer.Content
                         var shaderResourceDesc = ShaderDescription();
                         var resourceView = new ShaderResourceView(deviceResources.D3DDevice, texture2D, shaderResourceDesc);
 
-                        textures.Add(id, new Tuple<ShaderResourceView, Texture2D>(resourceView, texture2D));
+                        textures.Add(id, new Tuple<ShaderResourceView, Texture2D>(resourceView, texture2D));     
                     }
                 }
+                loadQueue.Dequeue();
             }
 
             loading = false;
@@ -225,7 +237,6 @@ namespace ImageViewer.Content
                                         await fileStream.FlushAsync();
                                     }
                                 }
-
                                 return memoryStream;
                             }
                         }
@@ -258,16 +269,16 @@ namespace ImageViewer.Content
             BorderColor = new SharpDX.Mathematics.Interop.RawColor4(0f, 0f, 0f, 1f)
         };
 
-        private Texture2D Texture2D(DeviceResources deviceResources, MemoryStream imageData)
+        internal Texture2D Texture2D(DeviceResources deviceResources, MemoryStream imageData)
         {
             using (var bitmap = CreateBitmap(imageData, out SharpDX.Size2 size))
             {
                 var texture2D = Texture2D(deviceResources, bitmap, size);
-                return texture2D;
-            }          
+                return texture2D;         
+            }      
         }
 
-        private Texture2D Texture2D(DeviceResources deviceResources, string fileName)
+        internal Texture2D Texture2D(DeviceResources deviceResources, string fileName)
         {
             using (var bitmap = CreateBitmap(fileName, out SharpDX.Size2 size))
             {
@@ -325,7 +336,7 @@ namespace ImageViewer.Content
             }           
         }
 
-        private static ShaderResourceViewDescription ShaderDescription() =>
+        internal static ShaderResourceViewDescription ShaderDescription() =>
             new ShaderResourceViewDescription()
             {
                 Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
