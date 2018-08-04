@@ -141,24 +141,37 @@ namespace ImageViewer
 
             loader = new TextureLoader(deviceResources, baseUrl);
 
-            statusItems = new StatusBarRenderer[5];
+            statusItems = new StatusBarRenderer[6];
 
             statusItems[0] = new StatusBarRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(-0.5f, 0.25f, 0.0f),
                 topLeft: new Vector3(-0.5f, 0.30f, 0.0f),
-                bottomRight: new Vector3(-0.2f, 0.25f, 0.0f),
-                topRight: new Vector3(-0.2f, 0.30f, 0.0f))
+                bottomRight: new Vector3(-0.3f, 0.25f, 0.0f),
+                topRight: new Vector3(-0.3f, 0.30f, 0.0f))
             {
                 Position = new Vector3(0.0f, 0.0f, -1 * distanceFromUser),
                 TextPosition = new Vector2(20, 10),
                 Text = "ImageViewer",               
                 FontSize = 40,
-                ImageWidth = 480,
+                ImageWidth = 320,
             };
 
-            statusItems[1] = new ZoomRenderer(
+            statusItems[1] = new KeyRenderer(
+                main: this,
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(-0.3f, 0.25f, 0.0f),
+                topLeft: new Vector3(-0.3f, 0.30f, 0.0f),
+                bottomRight: new Vector3(-0.2f, 0.25f, 0.0f),
+                topRight: new Vector3(-0.2f, 0.30f, 0.0f))
+            {
+                Position = new Vector3(0.0f, 0.0f, -1 * distanceFromUser),
+                ImageWidth = 160
+            };
+
+            statusItems[2] = new ZoomRenderer(
                 main: this,
                 deviceResources: deviceResources,
                 loader: loader,
@@ -171,7 +184,7 @@ namespace ImageViewer
                 ImageWidth = 640
             };
 
-            statusItems[2] = new TileCounterRenderer(
+            statusItems[3] = new TileCounterRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(0.2f, 0.25f, 0.0f),
@@ -183,7 +196,7 @@ namespace ImageViewer
                 ImageWidth = 160
             };
 
-            statusItems[3] = new MemoryUseRenderer(
+            statusItems[4] = new MemoryUseRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(0.3f, 0.25f, 0.0f),
@@ -195,7 +208,7 @@ namespace ImageViewer
                 ImageWidth = 160
             };
 
-            statusItems[4] = new ClockRenderer(
+            statusItems[5] = new ClockRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(0.4f, 0.25f, 0.0f),
@@ -552,6 +565,20 @@ namespace ImageViewer
 
         #region Handlers
 
+        public void OnKeyPressed(Windows.System.VirtualKey key)
+        {
+            VirtualKey = key;
+            switch (key)
+            {
+                case Windows.System.VirtualKey.Left: Move(Direction.LEFT, 1); break;
+                case Windows.System.VirtualKey.Right: Move(Direction.RIGHT, 1); break;
+                case Windows.System.VirtualKey.Up: Move(Direction.UP, 1); break;
+                case Windows.System.VirtualKey.Down: Move(Direction.DOWN, 1); break;
+                case Windows.System.VirtualKey.Q: Scale(Direction.UP, 1); break;
+                case Windows.System.VirtualKey.A: Scale(Direction.DOWN, 1); break;
+             }
+        }
+
         public void OnPointerPressed()
         {
             this.pointerPressed = true;
@@ -864,6 +891,7 @@ namespace ImageViewer
         public int Level { get; set; } = 7;
         public int ImageY { get; set; } = 0;
         public int ImageX { get; set; } = 0;
+        public Windows.System.VirtualKey VirtualKey { get; set; } = Windows.System.VirtualKey.None;
 
         private int _Step(int _level)
         {

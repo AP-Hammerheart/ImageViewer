@@ -14,7 +14,7 @@ namespace ImageViewer.Content
 {
     internal class TextureLoader
     {
-        private readonly ulong MAX_MEMORY_USE = 700000000; // 700 MB
+        private readonly ulong MAX_MEMORY_USE = 900000000; // 900 MB
         private ulong memoryUse = 0;
 
         private Dictionary<string, Tuple<ShaderResourceView, Texture2D>> textures; 

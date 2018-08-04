@@ -249,6 +249,11 @@ namespace ImageViewer
             //       keyboard input if you want to support it as an optional input method for
             //       your holographic app.
             //
+            // Allow the user to interact with the holographic world using the mouse.
+            if (null != main)
+            {
+                main.OnKeyPressed(args.VirtualKey);
+            }
         }
 
         private void OnPointerPressed(CoreWindow sender, PointerEventArgs args)

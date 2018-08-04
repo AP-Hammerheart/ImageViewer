@@ -64,6 +64,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Content\ClockRenderer.cs" />
+    <Compile Include="Content\KeyRenderer.cs" />
     <Compile Include="Content\MemoryUseRenderer.cs" />
     <Compile Include="Content\PlaneRenderer.cs" />
     <Compile Include="Content\BaseRenderer.cs" />
