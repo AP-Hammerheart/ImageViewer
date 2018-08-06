@@ -170,7 +170,7 @@ namespace ImageViewer.Content
 
         private async Task<MemoryStream> DrawText()
         {
-            using (var device = CanvasDevice.GetSharedDevice())
+            using (var device = new CanvasDevice())
             {
                 using (var renderTarget = new CanvasRenderTarget(device, ImageWidth, ImageHeight, ImageDPI))
                 {
@@ -184,22 +184,15 @@ namespace ImageViewer.Content
                         }
                     }
 
-                    try
+                    using (var stream = new InMemoryRandomAccessStream())
                     {
-                        using (var stream = new InMemoryRandomAccessStream())
-                        {
-                            await renderTarget.SaveAsync(stream, CanvasBitmapFileFormat.Png, 1f);
+                        await renderTarget.SaveAsync(stream, CanvasBitmapFileFormat.Png, 1f);
 
-                            var memoryStream = new MemoryStream();
-                            await stream.AsStream().CopyToAsync(memoryStream);
+                        var memoryStream = new MemoryStream();
+                        await stream.AsStream().CopyToAsync(memoryStream);
 
-                            return memoryStream;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        return null;
-                    }         
+                        return memoryStream;
+                    }        
                 }
             }
         }          
