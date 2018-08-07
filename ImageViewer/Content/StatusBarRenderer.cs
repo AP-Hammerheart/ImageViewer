@@ -66,14 +66,14 @@ namespace ImageViewer.Content
 
         internal override bool TextureReady => Active != -1;
 
-        public string Text { get; set; } = "";
-        public Vector2 TextPosition { get; set; } = new Vector2(10, 15);
-        public Color TextColor { get; set; } = Colors.Black;
-        public Color BackgroundColor { get; set; } = Colors.Gray;
-        public float FontSize { get; set; } = 36.0f;
-        public int ImageHeight { get; set; } = 80;
-        public int ImageWidth { get; set; } = 1600;
-        public int ImageDPI { get; set; } = 96;
+        internal string Text { get; set; } = "";
+        internal Vector2 TextPosition { get; set; } = new Vector2(10, 15);
+        internal Color TextColor { get; set; } = Colors.Black;
+        internal Color BackgroundColor { get; set; } = Colors.Gray;
+        internal float FontSize { get; set; } = 36.0f;
+        internal int ImageHeight { get; set; } = 80;
+        internal int ImageWidth { get; set; } = 1600;
+        internal int ImageDPI { get; set; } = 96;
         protected int Active { get; set; } = -1;
 
         internal override void LoadGeometry()
@@ -149,7 +149,7 @@ namespace ImageViewer.Content
             pixelShader.SetShaderResource(0, resourceView[Active]);
         }
 
-        public override void ReleaseDeviceDependentResources()
+        internal override void ReleaseDeviceDependentResources()
         {
             base.ReleaseDeviceDependentResources();
 

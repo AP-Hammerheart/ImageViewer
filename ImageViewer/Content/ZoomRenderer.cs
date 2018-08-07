@@ -6,19 +6,19 @@ namespace ImageViewer.Content
 {
     internal class ZoomRenderer : StatusBarRenderer
     {
-        private readonly ImageViewerMain main;
+        private readonly TileView view;
 
         internal ZoomRenderer(
-            ImageViewerMain main, 
+            TileView view, 
             DeviceResources deviceResources, 
             TextureLoader loader)
             : base(deviceResources, loader)
         {
-            this.main = main;
+            this.view = view;
         }
 
         internal ZoomRenderer(
-            ImageViewerMain main, 
+            TileView view, 
             DeviceResources deviceResources, 
             TextureLoader loader,
             Vector3 bottomLeft,
@@ -27,7 +27,7 @@ namespace ImageViewer.Content
             Vector3 topRight)
             : base(deviceResources, loader, bottomLeft, topLeft, bottomRight, topRight)
         {
-            this.main = main;
+            this.view = view;
         }
 
         private string Zoom(int level)
@@ -46,9 +46,9 @@ namespace ImageViewer.Content
             }
         }
 
-        public override void Update(StepTimer timer)
+        internal override void Update(StepTimer timer)
         {
-            var zoom = "X: " + main.ImageX.ToString() + "  Y: " + main.ImageY.ToString() + "  Zoom: " + Zoom(main.Level);
+            var zoom = "X: " + view.ImageX.ToString() + "  Y: " + view.ImageY.ToString() + "  Zoom: " + Zoom(view.Level);
             if (!zoom.Equals(Text))
             {
                 updating = true;

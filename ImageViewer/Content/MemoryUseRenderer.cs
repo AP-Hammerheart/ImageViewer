@@ -22,7 +22,7 @@ namespace ImageViewer.Content
         {
         }
 
-        public override void Update(StepTimer timer)
+        internal override void Update(StepTimer timer)
         {
             var mem = loader.MemoryUseInMB().ToString() + " MB";
             if (!mem.Equals(Text))

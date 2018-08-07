@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using ImageViewer.Common;
 using System.Numerics;
-using System.Text;
 using System.Threading.Tasks;
-using ImageViewer.Common;
 
 namespace ImageViewer.Content
 {
     internal class KeyRenderer : StatusBarRenderer
     {
-        private readonly ImageViewerMain main;
+        private readonly TileView view;
 
         internal KeyRenderer(
-            ImageViewerMain main,
+            TileView view,
             DeviceResources deviceResources, 
             TextureLoader loader)
             : base(deviceResources, loader)
         {
-            this.main = main;
+            this.view = view;
         }
 
         internal KeyRenderer(
-            ImageViewerMain main,
+            TileView view,
             DeviceResources deviceResources, 
             TextureLoader loader,
             Vector3 bottomLeft,
@@ -31,12 +27,12 @@ namespace ImageViewer.Content
             Vector3 topRight)
             : base(deviceResources, loader, bottomLeft, topLeft, bottomRight, topRight)
         {
-            this.main = main;
+            this.view = view;
         }
 
-        public override void Update(StepTimer timer)
+        internal override void Update(StepTimer timer)
         {
-            var chr = main.VirtualKey.ToString();
+            var chr = view.VirtualKey.ToString();
             if (!chr.Equals(Text))
             {
                 updating = true;

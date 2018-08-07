@@ -22,7 +22,7 @@ namespace ImageViewer.Content
         {
         }
 
-        public override void Update(StepTimer timer)
+        internal override void Update(StepTimer timer)
         {
             var time = System.DateTime.Now.ToString("h:mm:s");
             if (!time.Equals(Text))

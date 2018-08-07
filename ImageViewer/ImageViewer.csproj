@@ -72,6 +72,7 @@
     <Compile Include="Content\TileCounterRenderer.cs" />
     <Compile Include="Content\TileRenderer.cs" />
     <Compile Include="Content\TextureLoader.cs" />
+    <Compile Include="Content\TileView.cs" />
     <Compile Include="Content\ZoomRenderer.cs" />
     <Compile Include="ImageViewerMain.cs" />
     <Compile Include="AppView.cs" />

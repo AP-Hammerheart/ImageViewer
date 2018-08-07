@@ -51,7 +51,7 @@ namespace ImageViewer.Content
         /// <summary>
         /// Loads vertex and pixel shaders from files.
         /// </summary>
-        public BaseRenderer(
+        internal BaseRenderer(
             DeviceResources deviceResources,
             string vertexShader,
             string VPRTvertexShader,
@@ -90,7 +90,7 @@ namespace ImageViewer.Content
         /// <summary>
         /// Called once per frame.
         /// </summary>
-        public virtual void Update(StepTimer timer)
+        internal virtual void Update(StepTimer timer)
         {          
         }
 
@@ -101,7 +101,7 @@ namespace ImageViewer.Content
         /// a pass-through geometry shader is also used to set the render 
         /// target array index.
         /// </summary>
-        public void Render()
+        internal void Render()
         {
             // Loading is asynchronous. Resources must be created before drawing can occur.
             if (!loadingComplete || !TextureReady)
@@ -139,7 +139,7 @@ namespace ImageViewer.Content
         /// geometry, and vertex and pixel shaders. In some cases this will also 
         /// store a geometry shader.
         /// </summary>
-        public async void CreateDeviceDependentResourcesAsync()
+        internal async void CreateDeviceDependentResourcesAsync()
         {
             ReleaseDeviceDependentResources();
 
@@ -190,7 +190,7 @@ namespace ImageViewer.Content
             return;
         }
 
-        public virtual void ReleaseDeviceDependentResources()
+        internal virtual void ReleaseDeviceDependentResources()
         {
             loadingComplete = false;
             usingVprtShaders = false;
@@ -205,7 +205,7 @@ namespace ImageViewer.Content
             RemoveAndDispose(ref samplerState);
         }
 
-        public Vector3 Position
+        internal Vector3 Position
         {
             get
             {
@@ -222,7 +222,7 @@ namespace ImageViewer.Content
             }
         } 
 
-        public float RotationX
+        internal float RotationX
         {
             get
             {
@@ -238,7 +238,7 @@ namespace ImageViewer.Content
             }
         }
 
-        public float RotationY
+        internal float RotationY
         {
             get
             {
@@ -254,7 +254,7 @@ namespace ImageViewer.Content
             }
         }
 
-        public float RotationZ
+        internal float RotationZ
         {
             get
             {
@@ -270,7 +270,7 @@ namespace ImageViewer.Content
             }
         }
 
-        public Matrix4x4 Transformer
+        internal Matrix4x4 Transformer
         {
             get
             {

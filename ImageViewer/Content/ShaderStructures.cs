@@ -7,18 +7,18 @@ namespace ImageViewer.Content
     /// </summary>
     internal struct ModelConstantBuffer
     {
-        public Matrix4x4 model;
+        internal Matrix4x4 model;
     }
 
     internal struct VertexPlane
     {
-        public VertexPlane(Vector3 pos, Vector2 uv)
+        internal VertexPlane(Vector3 pos, Vector2 uv)
         {
             this.pos = pos;
             this.uv = uv;
         }
 
-        public Vector3 pos;
-        public Vector2 uv;
+        internal Vector3 pos;
+        internal Vector2 uv;
     };
 }

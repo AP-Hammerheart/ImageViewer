@@ -8,7 +8,7 @@ namespace ImageViewer.Content
     {
         private TextureLoader loader;
 
-        public PlaneRenderer(DeviceResources deviceResources, TextureLoader loader, string id) : base(
+        internal PlaneRenderer(DeviceResources deviceResources, TextureLoader loader, string id) : base(
             deviceResources: deviceResources,
             vertexShader: "Content\\Shaders\\VertexShaderPlane.cso",
             VPRTvertexShader: "Content\\Shaders\\VPRTVertexShaderPlane.cso",
