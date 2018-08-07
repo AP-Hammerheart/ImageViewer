@@ -126,6 +126,7 @@ namespace ImageViewer.Content
             Tiles = new TileRenderer[2 * maxX * maxY];
 
             var step = Step;
+            var tileSize = 0.1f;
 
             for (var x = 0; x < maxX; x++)
             {
@@ -136,11 +137,12 @@ namespace ImageViewer.Content
                         + "&y=" + (y * step + ImageY).ToString()
                         + "&w=" + tileResolution.ToString()
                         + "&h=" + tileResolution.ToString()
-                        + "&level=" + Level.ToString())
+                        + "&level=" + Level.ToString(),
+                        tileSize)
                     {
                         Position = new Vector3(
-                            -1.0f * maxX * TileRenderer.TileSize + (0.5f * TileRenderer.TileSize) + x * TileRenderer.TileSize,
-                            0.5f * maxY * TileRenderer.TileSize - (0.5f * TileRenderer.TileSize) - y * TileRenderer.TileSize,
+                            -1.0f * maxX * tileSize + (0.5f * tileSize) + x * tileSize,
+                            0.5f * maxY * tileSize - (0.5f * tileSize) - y * tileSize,
                             -1 * distanceFromUser)
                     };
 
@@ -149,11 +151,12 @@ namespace ImageViewer.Content
                         + "&y=" + (y * step + ImageY + image2offsetY).ToString()
                         + "&w=" + tileResolution.ToString()
                         + "&h=" + tileResolution.ToString()
-                        + "&level=" + Level.ToString())
+                        + "&level=" + Level.ToString(),
+                        tileSize)
                     {
                         Position = new Vector3(
-                            (0.5f * TileRenderer.TileSize) + x * TileRenderer.TileSize,
-                            0.5f * maxY * TileRenderer.TileSize - (0.5f * TileRenderer.TileSize) - y * TileRenderer.TileSize,
+                            (0.5f * tileSize) + x * tileSize,
+                            0.5f * maxY * tileSize - (0.5f * tileSize) - y * tileSize,
                             -1 * distanceFromUser)
                     };
                 }

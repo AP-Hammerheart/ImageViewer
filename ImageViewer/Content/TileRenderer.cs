@@ -6,12 +6,10 @@ namespace ImageViewer.Content
 {
     internal class TileRenderer : PlaneRenderer
     {
-        internal static float TileSize { get; } = 0.1f;
+        internal float TileSize { get; }
 
-        public TileRenderer(DeviceResources deviceResources, TextureLoader loader, string url)
-            : base(deviceResources, loader, url)
-        {
-        }
+        public TileRenderer(DeviceResources deviceResources, TextureLoader loader, string url, float tileSize = 0.1f)
+            : base(deviceResources, loader, url) => TileSize = tileSize;
 
         internal override void LoadGeometry()
         {
