@@ -36,7 +36,15 @@ namespace ImageViewer.Content
 
         internal override async Task LoadTextureAsync()
         {
-            await loader.LoadTextureAsync(TextureID);
+            try
+            {
+                await loader.LoadTextureAsync(TextureID);
+            }
+            catch (System.Exception)
+            {
+                // Delete corrupted cache file
+                await loader.DeleteCacheFile(TextureID);
+            }           
         }
 
         internal string TextureID { get; set; }

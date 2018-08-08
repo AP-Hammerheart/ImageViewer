@@ -19,6 +19,7 @@ namespace ImageViewer.Content
 
         private static readonly int image2offsetX = -5500;
         private static readonly int image2offsetY = -2000;
+        private static readonly int maxResolution = 110000;
 
         private bool cancel = false;
         private bool loading = false;
@@ -304,18 +305,30 @@ namespace ImageViewer.Content
             switch (direction)
             {
                 case Direction.LEFT:
-                    ImageX += number * step;
+                    if (ImageX < maxResolution - ((maxX - 1) * step))
+                    {
+                        ImageX += number * step;
+                    }
                     break;
                 case Direction.RIGHT:
                     ImageX -= number * step;
-                    if (ImageX < 0) ImageX = 0;
+                    if (ImageX < 0)
+                    {
+                        ImageX = 0;
+                    }
                     break;
                 case Direction.DOWN:
                     ImageY -= number * step;
-                    if (ImageY < 0) ImageY = 0;
+                    if (ImageY < 0)
+                    {
+                        ImageY = 0;
+                    }
                     break;
                 case Direction.UP:
-                    ImageY += number * step;
+                    if (ImageY < maxResolution - ((maxY - 1) * step))
+                    {
+                        ImageY += number * step;
+                    }
                     break;
             }
 
@@ -330,9 +343,9 @@ namespace ImageViewer.Content
             {
                 var step = _Step(_level);
 
-                for (var x = 0; x < 110000; x += step)
+                for (var x = 0; x < maxResolution; x += step)
                 {
-                    for (var y = 0; y < 110000; y += step)
+                    for (var y = 0; y < maxResolution; y += step)
                     {
                         if (cancel)
                         {

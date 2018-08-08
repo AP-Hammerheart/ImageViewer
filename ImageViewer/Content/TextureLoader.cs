@@ -205,6 +205,17 @@ namespace ImageViewer.Content
             }
         }
 
+        internal async Task DeleteCacheFile(string id)
+        {
+            var fileName = id + ".PNG";
+            var file = await localCacheFolder.TryGetItemAsync(fileName);
+
+            if (file != null)
+            {
+                await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
+            }
+        }
+
         private async Task<MemoryStream> GetImageAsync(string id)
         {
             var fileName = id + ".PNG";
