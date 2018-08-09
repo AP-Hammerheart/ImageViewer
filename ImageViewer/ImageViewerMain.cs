@@ -49,7 +49,8 @@ namespace ImageViewer
 
         #region Static setting variables
 
-        private static readonly int focusReferenceTile = 22;
+        //private static readonly int focusReferenceTile = 22;
+        private static readonly int focusReferenceTile = 0;
         private static readonly string baseUrl = "http://10.10.10.4:8081/?command=image&name=";
 
         #endregion
@@ -57,7 +58,8 @@ namespace ImageViewer
         #region Content variables
 
         private TextureLoader               loader;
-        private TileView                    tileView;
+        //private TileView                    tileView;
+        private PanView tileView;
 
         #endregion
 
@@ -122,7 +124,8 @@ namespace ImageViewer
             this.holographicSpace = holographicSpace;
 
             loader = new TextureLoader(deviceResources, baseUrl);
-            tileView = new TileView(this, deviceResources, loader);
+            //tileView = new TileView(this, deviceResources, loader);
+            tileView = new PanView(this, deviceResources, loader);
 
             spatialInputHandler = new SpatialInputHandler();
 

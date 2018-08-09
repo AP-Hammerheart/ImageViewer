@@ -31,11 +31,6 @@ namespace ImageViewer.Content
         private readonly DeviceResources deviceResources;
         private readonly string baseUrl;
 
-        public int MemoryUseInMB()
-        {
-            return (int)(memoryUse / 1000000);
-        }
-
         public int TilesInMemory() => textures.Count;
 
         internal TextureLoader(DeviceResources deviceResources, string baseUrl)
@@ -205,9 +200,9 @@ namespace ImageViewer.Content
             }
         }
 
-        internal async Task DeleteCacheFile(string id)
+        internal async Task DeleteCacheFile(string id, string fileExtension)
         {
-            var fileName = id + ".PNG";
+            var fileName = id + fileExtension;
             var file = await localCacheFolder.TryGetItemAsync(fileName);
 
             if (file != null)
@@ -216,7 +211,46 @@ namespace ImageViewer.Content
             }
         }
 
-        private async Task<MemoryStream> GetImageAsync(string id)
+        internal async Task<SharpDX.DataStream> LoadPixelDataAsync(string id)
+        {
+            var fileName = id + ".RAW";
+            var file = await localCacheFolder.TryGetItemAsync(fileName);
+
+            if (file == null)
+            {
+                return null;
+            }
+            else
+            {
+
+                var bytes = await DirectXHelper.ReadDataAsync((StorageFile)file);
+                var dataStream = new SharpDX.DataStream(bytes.Length, true, true);
+                await dataStream.WriteAsync(bytes, 0, bytes.Length);
+                return dataStream;
+            }
+        }
+
+        internal async Task SavePixelDataAsync(string id, SharpDX.DataStream stream)
+        {
+            var fileName = id + ".RAW";
+            var bytes = new byte[stream.Length];
+
+            await stream.ReadAsync(bytes, 0, (int)stream.Length);
+
+            var newFile = await localCacheFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+            using (var fileStream = await newFile.OpenAsync(FileAccessMode.ReadWrite))
+            {
+                using (var dataWriter = new DataWriter(fileStream))
+                {
+                    dataWriter.WriteBytes(bytes);
+
+                    await dataWriter.StoreAsync();
+                    await fileStream.FlushAsync();
+                }
+            }
+        }
+
+        internal async Task<MemoryStream> GetImageAsync(string id)
         {
             var fileName = id + ".PNG";
             var file = await localCacheFolder.TryGetItemAsync(fileName);
@@ -298,7 +332,7 @@ namespace ImageViewer.Content
             }
         }
 
-        private Texture2D Texture2D(DeviceResources deviceResources, SharpDX.DataStream stream, SharpDX.Size2 size)
+        internal Texture2D Texture2D(DeviceResources deviceResources, SharpDX.DataStream stream, SharpDX.Size2 size)
         {
             var textDesc = TextureDescription(1, size.Width, size.Height, ResourceOptionFlags.None);
 
@@ -328,7 +362,7 @@ namespace ImageViewer.Content
             }             
         }
 
-        private SharpDX.DataStream CreateBitmap(MemoryStream stream, out SharpDX.Size2 size)
+        internal SharpDX.DataStream CreateBitmap(MemoryStream stream, out SharpDX.Size2 size)
         {
             using (var decoder = new BitmapDecoder(factory, stream, DecodeOptions.CacheOnDemand))
             {

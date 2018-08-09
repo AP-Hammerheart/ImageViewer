@@ -6,10 +6,10 @@ namespace ImageViewer.Content
 {
     internal class KeyRenderer : StatusBarRenderer
     {
-        private readonly TileView view;
+        private readonly BaseView view;
 
         internal KeyRenderer(
-            TileView view,
+            BaseView view,
             DeviceResources deviceResources, 
             TextureLoader loader)
             : base(deviceResources, loader)
@@ -18,7 +18,7 @@ namespace ImageViewer.Content
         }
 
         internal KeyRenderer(
-            TileView view,
+            BaseView view,
             DeviceResources deviceResources, 
             TextureLoader loader,
             Vector3 bottomLeft,

@@ -24,7 +24,7 @@ namespace ImageViewer.Content
 
         internal override void Update(StepTimer timer)
         {
-            var mem = loader.MemoryUseInMB().ToString() + " MB";
+            var mem = MemoryUseInMB().ToString() + " MB";
             if (!mem.Equals(Text))
             {
                 updating = true;
@@ -36,6 +36,14 @@ namespace ImageViewer.Content
                 });
                 task.Start();
             }
+        }
+
+        private int MemoryUseInMB()
+        {
+            var report = Windows.System.MemoryManager.GetAppMemoryReport();
+            var memoryUse = report.PrivateCommitUsage;
+
+            return (int)(memoryUse / 1000000);
         }
     }
 }

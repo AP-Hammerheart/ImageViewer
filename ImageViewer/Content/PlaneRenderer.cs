@@ -1,12 +1,11 @@
 ﻿using ImageViewer.Common;
 using SharpDX.Direct3D11;
-using System.Threading.Tasks;
 
 namespace ImageViewer.Content
 {
     internal abstract class PlaneRenderer : BaseRenderer
     {
-        private TextureLoader loader;
+        protected TextureLoader loader;
 
         internal PlaneRenderer(DeviceResources deviceResources, TextureLoader loader, string id) : base(
             deviceResources: deviceResources,
@@ -26,26 +25,6 @@ namespace ImageViewer.Content
             };
 
         internal override int VertexSize => SharpDX.Utilities.SizeOf<VertexPlane>();
-
-        internal override bool TextureReady => loader.TextureReady(TextureID);
-
-        internal override void SetTextureResource(PixelShaderStage pixelShader)
-        {
-            loader.SetTextureResource(pixelShader, TextureID);
-        }
-
-        internal override async Task LoadTextureAsync()
-        {
-            try
-            {
-                await loader.LoadTextureAsync(TextureID);
-            }
-            catch (System.Exception)
-            {
-                // Delete corrupted cache file
-                await loader.DeleteCacheFile(TextureID);
-            }           
-        }
 
         internal string TextureID { get; set; }
     }

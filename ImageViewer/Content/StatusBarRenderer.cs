@@ -107,11 +107,11 @@ namespace ImageViewer.Content
         {
             using (var stream = await DrawText())
             {
-                texture2D[0] = ToDispose(loader.Texture2D(deviceResources, stream));
+                texture2D[0] = loader.Texture2D(deviceResources, stream);
             }
 
             var shaderResourceDesc = TextureLoader.ShaderDescription();
-            resourceView[0] = ToDispose(new ShaderResourceView(deviceResources.D3DDevice, texture2D[0], shaderResourceDesc));
+            resourceView[0] = new ShaderResourceView(deviceResources.D3DDevice, texture2D[0], shaderResourceDesc);
 
             Active = 0;
         }

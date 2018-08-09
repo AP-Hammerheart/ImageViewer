@@ -1,6 +1,7 @@
 ﻿using ImageViewer.Common;
 using SharpDX.Direct3D11;
 using System.Numerics;
+using System.Threading.Tasks;
 
 namespace ImageViewer.Content
 {
@@ -36,6 +37,26 @@ namespace ImageViewer.Content
                 deviceResources.D3DDevice,
                 BindFlags.ConstantBuffer,
                 ref modelConstantBufferData));
+        }
+
+        internal override bool TextureReady => loader.TextureReady(TextureID);
+
+        internal override void SetTextureResource(PixelShaderStage pixelShader)
+        {
+            loader.SetTextureResource(pixelShader, TextureID);
+        }
+
+        internal override async Task LoadTextureAsync()
+        {
+            try
+            {
+                await loader.LoadTextureAsync(TextureID);
+            }
+            catch (System.Exception)
+            {
+                // Delete corrupted cache file
+                await loader.DeleteCacheFile(TextureID, ".PNG");
+            }
         }
     }
 }

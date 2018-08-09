@@ -63,12 +63,15 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Content\BaseView.cs" />
     <Compile Include="Content\ClockRenderer.cs" />
     <Compile Include="Content\KeyRenderer.cs" />
     <Compile Include="Content\MemoryUseRenderer.cs" />
+    <Compile Include="Content\PanRenderer.cs" />
     <Compile Include="Content\PlaneRenderer.cs" />
     <Compile Include="Content\BaseRenderer.cs" />
     <Compile Include="Content\StatusBarRenderer.cs" />
+    <Compile Include="Content\PanView.cs" />
     <Compile Include="Content\TileCounterRenderer.cs" />
     <Compile Include="Content\TileRenderer.cs" />
     <Compile Include="Content\TextureLoader.cs" />
