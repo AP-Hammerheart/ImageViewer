@@ -21,4 +21,14 @@ namespace ImageViewer.Content
         internal Vector3 pos;
         internal Vector2 uv;
     };
+
+    internal struct VertexCube
+    {
+        public VertexCube(Vector3 pos)
+        {
+            this.pos = pos;
+        }
+
+        public Vector3 pos;
+    };
 }

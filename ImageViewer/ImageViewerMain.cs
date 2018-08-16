@@ -70,8 +70,9 @@ namespace ImageViewer
         // Cached reference to device resources.
         private DeviceResources             deviceResources;
 
-        // Render loop timer.
-        private StepTimer                   timer = new StepTimer();
+        // Render loop timers.
+        private StepTimer                   timer1 = new StepTimer();
+        private StepTimer                   timer2 = new StepTimer();
 
         // Represents the holographic space around the user.
         HolographicSpace                    holographicSpace;
@@ -115,8 +116,11 @@ namespace ImageViewer
                 OnGamepadAdded(null, gamepad);
             }
 
-            timer.IsFixedTimeStep = true;
-            timer.TargetElapsedSeconds = 1;
+            timer1.IsFixedTimeStep = true;
+            timer1.TargetElapsedSeconds = 0.2;
+
+            timer2.IsFixedTimeStep = true;
+            timer2.TargetElapsedSeconds = 0.02;
         }
 
         public void SetHolographicSpace(HolographicSpace holographicSpace)
@@ -230,9 +234,14 @@ namespace ImageViewer
                 tileView.SetTransformer(transformer);
             }
 
-            timer.Tick(() => 
+            timer1.Tick(() => 
             {
-                tileView.Update(timer);
+                tileView.Update(timer1);
+            });
+
+            timer2.Tick(() =>
+            {
+                tileView.Update(SpatialPointerPose.TryGetAtTimestamp(currentCoordinateSystem, prediction.Timestamp));
             });
 
             // We complete the frame update by using information about our content positioning
@@ -275,7 +284,7 @@ namespace ImageViewer
         public bool Render(ref HolographicFrame holographicFrame)
         {
             // Don't try to render anything before the first Update.
-            if (timer.FrameCount == 0)
+            if (timer1.FrameCount == 0)
             {
                 return false;
             }

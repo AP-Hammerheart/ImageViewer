@@ -146,7 +146,10 @@ namespace ImageViewer.Content
 
         internal override void SetTextureResource(PixelShaderStage pixelShader)
         {
-            pixelShader.SetShaderResource(0, resourceView[Active]);
+            if (Active != -1)
+            {
+                pixelShader.SetShaderResource(0, resourceView[Active]);
+            }      
         }
 
         internal override void ReleaseDeviceDependentResources()

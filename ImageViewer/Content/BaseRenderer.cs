@@ -101,7 +101,7 @@ namespace ImageViewer.Content
         /// a pass-through geometry shader is also used to set the render 
         /// target array index.
         /// </summary>
-        internal void Render()
+        internal virtual void Render()
         {
             // Loading is asynchronous. Resources must be created before drawing can occur.
             if (!loadingComplete || !TextureReady)

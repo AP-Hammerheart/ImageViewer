@@ -343,6 +343,32 @@ namespace ImageViewer.Content
             return texture2D;
         }
 
+        internal Texture2D TextureCube(DeviceResources deviceResources, string fileName)
+        {
+            using (var bitmap = CreateBitmap(fileName, out SharpDX.Size2 size))
+            {
+                var textureCube = TextureCube(deviceResources, bitmap, size);
+                return textureCube;
+            }
+        }
+
+        internal Texture2D TextureCube(DeviceResources deviceResources, SharpDX.DataStream stream, SharpDX.Size2 size)
+        {
+            var arraySize = 6;
+            var textDesc = TextureDescription(arraySize, size.Width, size.Height, ResourceOptionFlags.TextureCube);
+
+            var stride = size.Width * 4;
+            var dataRects = new SharpDX.DataBox[arraySize];
+
+            for (var i = 0; i < arraySize; i++)
+            {
+                dataRects[i] = new SharpDX.DataBox(stream.DataPointer, stride, 0);
+            }
+
+            var texture2D = new Texture2D(deviceResources.D3DDevice, textDesc, dataRects);
+            return texture2D;
+        }
+
         private SharpDX.DataStream CreateBitmap(string fileName, out SharpDX.Size2 size)
         {
             using (var decoder = new BitmapDecoder(factory, fileName, DecodeOptions.CacheOnDemand))
@@ -387,6 +413,14 @@ namespace ImageViewer.Content
                 Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
                 Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture2D,
                 Texture2D = new ShaderResourceViewDescription.Texture2DResource() { MipLevels = 1, MostDetailedMip = 0 }
+            };
+
+        internal static ShaderResourceViewDescription ShaderDescriptionCube() =>
+            new ShaderResourceViewDescription()
+            {
+                Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
+                Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCube,
+                TextureCube = new ShaderResourceViewDescription.TextureCubeResource() { MipLevels = 1, MostDetailedMip = 0 }
             };
 
         private static Texture2DDescription TextureDescription(int size, int w, int h, ResourceOptionFlags flags)

@@ -63,13 +63,16 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Content\BaseCubeRenderer.cs" />
     <Compile Include="Content\BaseView.cs" />
     <Compile Include="Content\ClockRenderer.cs" />
+    <Compile Include="Content\DebugRenderer.cs" />
     <Compile Include="Content\KeyRenderer.cs" />
     <Compile Include="Content\MemoryUseRenderer.cs" />
     <Compile Include="Content\PanRenderer.cs" />
     <Compile Include="Content\PlaneRenderer.cs" />
     <Compile Include="Content\BaseRenderer.cs" />
+    <Compile Include="Content\PyramidRenderer.cs" />
     <Compile Include="Content\StatusBarRenderer.cs" />
     <Compile Include="Content\PanView.cs" />
     <Compile Include="Content\TileCounterRenderer.cs" />
@@ -102,11 +105,16 @@
     <PixelShader Include="Content\Shaders\PixelShaderPlane.hlsl" />
     <VertexShader Include="Content\Shaders\VertexShaderPlane.hlsl" />
     <VertexShader Include="Content\Shaders\VPRTVertexShaderPlane.hlsl" />
+    <GeometryShader Include="Content\Shaders\GeometryShaderCube.hlsl" />
+    <PixelShader Include="Content\Shaders\PixelShaderCube.hlsl" />
+    <VertexShader Include="Content\Shaders\VertexShaderCube.hlsl" />
+    <VertexShader Include="Content\Shaders\VPRTVertexShaderCube.hlsl" />
     <Content Include="Content\SRGS\en-US\SRGS.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Textures\statusbar.png" />
     <Content Include="Content\Textures\test.dds" />
+    <Content Include="Content\Textures\test.png" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>

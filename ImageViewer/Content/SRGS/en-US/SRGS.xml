@@ -76,6 +76,10 @@ xmlns="http://www.w3.org/2001/06/grammar">
                             image
                             <tag>out.TYPE=3</tag>
                         </item>
+                        <item>
+                            pointer
+                            <tag>out.TYPE=4</tag>
+                        </item>
                     </one-of>                    
                     <ruleref uri="#number"/>           
                     <tag>out.NUMBER=rules.latest();</tag>
