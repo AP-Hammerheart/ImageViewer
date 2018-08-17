@@ -49,8 +49,6 @@ namespace ImageViewer
 
         #region Static setting variables
 
-        //private static readonly int focusReferenceTile = 22;
-        private static readonly int focusReferenceTile = 0;
         private static readonly string baseUrl = "http://10.10.10.4:8081/?command=image&name=";
 
         #endregion
@@ -171,6 +169,12 @@ namespace ImageViewer
             //   indicates to be of special interest. Anchor positions do not drift, but can be corrected; the
             //   anchor will use the corrected position starting in the next frame after the correction has
             //   occurred.
+
+            Task task = new Task(async () =>
+            {
+                await tileView.CreateDeviceDependentResourcesAsync();
+            });
+            task.Start();
         }
 
         #endregion
@@ -261,9 +265,9 @@ namespace ImageViewer
                 // You can also set the relative velocity and facing of that content; the sample
                 // hologram is at a fixed point so we only need to indicate its position.
 
-                if (tileView.Tiles[focusReferenceTile] != null)
+                if (tileView.Pointer != null)
                 {
-                    renderingParameters.SetFocusPoint(currentCoordinateSystem,tileView.Tiles[focusReferenceTile].Position);
+                    renderingParameters.SetFocusPoint(currentCoordinateSystem, tileView.Pointer.Position);
                 }              
             }
 
@@ -430,7 +434,11 @@ namespace ImageViewer
         /// </summary>
         public void OnDeviceRestored(Object sender, EventArgs e)
         {
-            tileView.CreateDeviceDependentResourcesAsync();
+            Task task = new Task(async () =>
+            {
+                await tileView.CreateDeviceDependentResourcesAsync();
+            });
+            task.Start();
         }
 
         void OnLocatabilityChanged(SpatialLocator sender, Object args)

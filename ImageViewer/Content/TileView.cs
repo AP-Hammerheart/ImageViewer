@@ -37,7 +37,7 @@ namespace ImageViewer.Content
                         Position = new Vector3(
                             -1.0f * maxX * tileSize + (0.5f * tileSize) + x * tileSize,
                             0.5f * maxY * tileSize - (0.5f * tileSize) - y * tileSize,
-                            -1 * distanceFromUser)
+                            -1 * DistanceFromUser)
                     };
 
                     Tiles[(maxX * maxY) + (maxY * x + y)] = new TileRenderer(deviceResources, loader, ImageViewerMain.Image2
@@ -51,7 +51,7 @@ namespace ImageViewer.Content
                         Position = new Vector3(
                             (0.5f * tileSize) + x * tileSize,
                             0.5f * maxY * tileSize - (0.5f * tileSize) - y * tileSize,
-                            -1 * distanceFromUser)
+                            -1 * DistanceFromUser)
                     };
                 }
             }
@@ -67,7 +67,7 @@ namespace ImageViewer.Content
                     break;
                 case Direction.DOWN:
                     Level += number;
-                    if (Level > minScale) Level = minScale;
+                    if (Level > MinScale) Level = MinScale;
                     break;
             }
 

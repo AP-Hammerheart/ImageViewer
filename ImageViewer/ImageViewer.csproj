@@ -72,9 +72,11 @@
     <Compile Include="Content\PanRenderer.cs" />
     <Compile Include="Content\PlaneRenderer.cs" />
     <Compile Include="Content\BaseRenderer.cs" />
+    <Compile Include="Content\PointerRenderer.cs" />
     <Compile Include="Content\PyramidRenderer.cs" />
     <Compile Include="Content\StatusBarRenderer.cs" />
     <Compile Include="Content\PanView.cs" />
+    <Compile Include="Content\Tag.cs" />
     <Compile Include="Content\TileCounterRenderer.cs" />
     <Compile Include="Content\TileRenderer.cs" />
     <Compile Include="Content\TextureLoader.cs" />
@@ -112,8 +114,8 @@
     <Content Include="Content\SRGS\en-US\SRGS.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Textures\statusbar.png" />
-    <Content Include="Content\Textures\test.dds" />
+    <Content Include="Content\Textures\green.png" />
+    <Content Include="Content\Textures\red.png" />
     <Content Include="Content\Textures\test.png" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>

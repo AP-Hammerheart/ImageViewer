@@ -43,6 +43,7 @@ namespace ImageViewer.Content
 
         // Variables used with the rendering loop.
         private bool loadingComplete = false;
+        private bool refreshNeeded = true;
 
         // If the current D3D Device supports VPRT, we can avoid using a geometry
         // shader just to set the render target array index.
@@ -65,8 +66,6 @@ namespace ImageViewer.Content
             PIXEL_SHADER = pixelShader;
 
             this.deviceResources = deviceResources;
-
-            CreateDeviceDependentResourcesAsync();
         }
 
         private void UpdateTransform()
@@ -85,13 +84,11 @@ namespace ImageViewer.Content
 
             // Update the model transform buffer for the hologram.
             context.UpdateSubresource(ref modelConstantBufferData, modelConstantBuffer);
+            refreshNeeded = false;
         }
 
-        /// <summary>
-        /// Called once per frame.
-        /// </summary>
         internal virtual void Update(StepTimer timer)
-        {          
+        {
         }
 
         /// <summary>
@@ -107,6 +104,11 @@ namespace ImageViewer.Content
             if (!loadingComplete || !TextureReady)
             {
                 return;
+            }
+
+            if (refreshNeeded)
+            {
+                UpdateTransform();
             }
 
             var context = deviceResources.D3DDeviceContext;
@@ -139,7 +141,7 @@ namespace ImageViewer.Content
         /// geometry, and vertex and pixel shaders. In some cases this will also 
         /// store a geometry shader.
         /// </summary>
-        internal async void CreateDeviceDependentResourcesAsync()
+        internal async Task CreateDeviceDependentResourcesAsync()
         {
             ReleaseDeviceDependentResources();
 
@@ -165,13 +167,13 @@ namespace ImageViewer.Content
             var pixelShaderByteCode = await DirectXHelper.ReadDataAsync(await folder.GetFileAsync(PIXEL_SHADER));
             pixelShader = ToDispose(new PixelShader(deviceResources.D3DDevice, pixelShaderByteCode));
 
-            samplerState = new SamplerState(deviceResources.D3DDevice, TextureLoader.SamplerStateDescription());
-
+            samplerState = ToDispose(new SamplerState(deviceResources.D3DDevice, TextureLoader.SamplerStateDescription()));
+  
             await LoadTextureAsync();
             LoadGeometry();
 
+            refreshNeeded = true;
             loadingComplete = true;
-            UpdateTransform();       
         }
 
         internal abstract InputElement[] InputElement { get; }   
@@ -215,10 +217,7 @@ namespace ImageViewer.Content
             set
             {
                 position = value;
-                if (loadingComplete)
-                {
-                    UpdateTransform();
-                }                
+                refreshNeeded = true;               
             }
         } 
 
@@ -231,10 +230,7 @@ namespace ImageViewer.Content
             set
             {
                 rotationX = (float)Math.IEEERemainder(value * ((float)Math.PI / 180.0f), 2 * Math.PI);
-                if (loadingComplete)
-                {
-                    UpdateTransform();
-                }
+                refreshNeeded = true;
             }
         }
 
@@ -247,10 +243,7 @@ namespace ImageViewer.Content
             set
             {
                 rotationY = (float)Math.IEEERemainder(value * ((float)Math.PI / 180.0f), 2 * Math.PI);
-                if (loadingComplete)
-                {
-                    UpdateTransform();
-                }
+                refreshNeeded = true;
             }
         }
 
@@ -263,14 +256,11 @@ namespace ImageViewer.Content
             set
             {
                 rotationZ = (float)Math.IEEERemainder(value * ((float)Math.PI / 180.0f), 2 * Math.PI);
-                if (loadingComplete)
-                {
-                    UpdateTransform();
-                }
+                refreshNeeded = true;
             }
         }
 
-        internal Matrix4x4 Transformer
+        internal virtual Matrix4x4 Transformer
         {
             get
             {
@@ -280,10 +270,7 @@ namespace ImageViewer.Content
             set
             {
                 transformer = value;
-                if (loadingComplete)
-                {
-                    UpdateTransform();
-                }
+                refreshNeeded = true;
             }
         }
     }

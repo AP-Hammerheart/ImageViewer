@@ -9,13 +9,8 @@ namespace ImageViewer.Content
     internal abstract class BaseView
     {
         protected readonly TextureLoader loader;
-        private PyramidRenderer pointer = null;
-
         private bool cancel = false;
         private bool loading = false;
-
-        protected static readonly float distanceFromUser = 1.4f; // meters
-        protected static readonly int minScale = 8;
 
         protected static readonly int image2offsetX = -5500;
         protected static readonly int image2offsetY = -2000;
@@ -30,10 +25,15 @@ namespace ImageViewer.Content
 
         protected int PixelSize(int level) => (int)System.Math.Pow(2, level);
         protected virtual int TileOffset(int level) => TileResolution * PixelSize(level);
-        protected int Step => TileOffset(Level);
+        internal int Step => TileOffset(Level);
         internal PlaneRenderer[] Tiles { get; set; }
         protected int TileResolution { get; set; }
-        internal string DebugString { get; set; }
+        internal string DebugString { get; set; } = "";
+        internal PointerRenderer Pointer { get; set; }
+
+        internal static float ViewSize { get; } = 0.5f;
+        protected static float DistanceFromUser { get; } = 1.4f;
+        protected static int MinScale { get; } = 8;
 
         internal BaseView(
             DeviceResources deviceResources,
@@ -51,7 +51,7 @@ namespace ImageViewer.Content
                 bottomRight: new Vector3(-0.3f, 0.25f, 0.0f),
                 topRight: new Vector3(-0.3f, 0.30f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, -1 * distanceFromUser),
+                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
                 TextPosition = new Vector2(20, 10),
                 Text = "ImageViewer",
                 FontSize = 40,
@@ -67,7 +67,7 @@ namespace ImageViewer.Content
                 bottomRight: new Vector3(-0.2f, 0.25f, 0.0f),
                 topRight: new Vector3(-0.2f, 0.30f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, -1 * distanceFromUser),
+                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
                 ImageWidth = 160
             };
 
@@ -77,24 +77,24 @@ namespace ImageViewer.Content
                 loader: loader,
                 bottomLeft: new Vector3(-0.2f, 0.25f, 0.0f),
                 topLeft: new Vector3(-0.2f, 0.30f, 0.0f),
-                bottomRight: new Vector3(0.1f, 0.25f, 0.0f),
-                topRight: new Vector3(0.1f, 0.30f, 0.0f))
+                bottomRight: new Vector3(0.15f, 0.25f, 0.0f),
+                topRight: new Vector3(0.15f, 0.30f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, -1 * distanceFromUser),
-                ImageWidth = 480
+                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
+                ImageWidth = 560
             };
 
             statusItems[3] = new DebugRenderer(
                 view: this,
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(0.1f, 0.25f, 0.0f),
-                topLeft: new Vector3(0.1f, 0.30f, 0.0f),
+                bottomLeft: new Vector3(0.15f, 0.25f, 0.0f),
+                topLeft: new Vector3(0.15f, 0.30f, 0.0f),
                 bottomRight: new Vector3(0.3f, 0.25f, 0.0f),
                 topRight: new Vector3(0.3f, 0.30f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, -1 * distanceFromUser),
-                ImageWidth = 320
+                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
+                ImageWidth = 240
             };
 
             statusItems[4] = new MemoryUseRenderer(
@@ -105,7 +105,7 @@ namespace ImageViewer.Content
                 bottomRight: new Vector3(0.4f, 0.25f, 0.0f),
                 topRight: new Vector3(0.4f, 0.30f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, -1 * distanceFromUser),
+                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
                 ImageWidth = 160
             };
 
@@ -117,18 +117,18 @@ namespace ImageViewer.Content
                 bottomRight: new Vector3(0.5f, 0.25f, 0.0f),
                 topRight: new Vector3(0.5f, 0.30f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, -1 * distanceFromUser),
+                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
                 ImageWidth = 160
             };
 
-            pointer = new PyramidRenderer(this, deviceResources, loader, 
-                new PyramidRenderer.Corners(
-                    origo: new Vector3(0.0f, 0.0f, -1 * distanceFromUser), 
-                    topLeft: new Vector3(-0.5f, 0.25f, -1 * distanceFromUser),
-                    bottomLeft: new Vector3(-0.5f, -0.25f, -1 * distanceFromUser)))
+            Pointer = new PointerRenderer(this, deviceResources, loader, 
+                new PointerRenderer.Corners(
+                    origo: new Vector3(0.0f, 0.0f, -1 * DistanceFromUser), 
+                    topLeft: new Vector3(-0.5f, 0.25f, -1 * DistanceFromUser),
+                    bottomLeft: new Vector3(-0.5f, -0.25f, -1 * DistanceFromUser)))
             {
-                Position = new Vector3(0, 0, -1 * distanceFromUser)
-            };
+                Position = new Vector3(0, 0, -1 * DistanceFromUser)
+            };        
         }
 
         internal void SetTransformer(Matrix4x4 transformer)
@@ -143,7 +143,7 @@ namespace ImageViewer.Content
                 renderer.Transformer = transformer;
             }
 
-            pointer.Transformer = transformer;
+            Pointer.Transformer = transformer;
         }
 
         internal void Update(StepTimer timer)
@@ -157,12 +157,12 @@ namespace ImageViewer.Content
                 renderer?.Update(timer);
             }
 
-            pointer?.Update(timer);
+            Pointer?.Update(timer);
         }
 
         internal void Update(SpatialPointerPose pose)
         {
-            pointer?.Update(pose);
+            Pointer?.Update(pose);
         }
 
         internal void Render()
@@ -177,7 +177,7 @@ namespace ImageViewer.Content
                 renderer?.Render();
             }
 
-            pointer?.Render();
+            Pointer?.Render();
         }
 
         internal void Dispose()
@@ -200,22 +200,22 @@ namespace ImageViewer.Content
                 Tiles = null;
             }
 
-            pointer?.Dispose();
+            Pointer?.Dispose();
         }
 
-        internal void CreateDeviceDependentResourcesAsync()
+        internal async Task CreateDeviceDependentResourcesAsync()
         {
             foreach (var renderer in Tiles)
             {
-                renderer?.CreateDeviceDependentResourcesAsync();
+                await renderer?.CreateDeviceDependentResourcesAsync();
             }
 
             foreach (var renderer in statusItems)
             {
-                renderer?.CreateDeviceDependentResourcesAsync();
+                await renderer?.CreateDeviceDependentResourcesAsync();
             }
 
-            pointer?.CreateDeviceDependentResourcesAsync();
+            await Pointer?.CreateDeviceDependentResourcesAsync();
         }
 
         internal void ReleaseDeviceDependentResources()
@@ -230,7 +230,7 @@ namespace ImageViewer.Content
                 renderer?.ReleaseDeviceDependentResources();
             }
 
-            pointer?.ReleaseDeviceDependentResources();
+            Pointer?.ReleaseDeviceDependentResources();
         }
 
         internal void HandleVoiceCommand(Command command, Direction direction, int number)
@@ -291,6 +291,9 @@ namespace ImageViewer.Content
 
                 case Windows.System.VirtualKey.Q: Scale(Direction.UP, 1); break;
                 case Windows.System.VirtualKey.A: Scale(Direction.DOWN, 1); break;
+
+                case Windows.System.VirtualKey.T: Pointer.AddTag(); break;
+                case Windows.System.VirtualKey.R: Pointer.RemoveTag(); break;
             }
         }
 
@@ -304,10 +307,12 @@ namespace ImageViewer.Content
             {
                 switch (number)
                 {
-                    case 0: pointer.Visible = false; break;
-                    case 1: pointer.Visible = true; break;
-                    case 2: pointer.Locked = false; break;
-                    case 3: pointer.Locked = true; break;
+                    case 0: Pointer.Visible = false; break;
+                    case 1: Pointer.Visible = true; break;
+                    case 2: Pointer.Locked = false; break;
+                    case 3: Pointer.Locked = true; break;
+                    case 4: Pointer.AddTag(); break;
+                    case 5: Pointer.RemoveTag(); break;
                 }
             }
         }
@@ -331,7 +336,7 @@ namespace ImageViewer.Content
         {
             loading = true;
 
-            for (var level = minScale; level >= 0; level--)
+            for (var level = MinScale; level >= 0; level--)
             {
                 var step = TileOffset(level);
 

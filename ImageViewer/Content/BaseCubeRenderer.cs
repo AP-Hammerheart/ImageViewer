@@ -9,7 +9,7 @@ namespace ImageViewer.Content
         private Texture2D texture = null;
         private ShaderResourceView resourceView = null;
 
-        private readonly TextureLoader loader;
+        protected readonly TextureLoader loader;
         private bool textureReady = false;
 
         internal BaseCubeRenderer(DeviceResources deviceResources, TextureLoader loader)
@@ -29,6 +29,8 @@ namespace ImageViewer.Content
 
         internal override bool TextureReady => textureReady;
 
+        internal string TextureFile { get; set; } = "Content\\Textures\\test.png";
+
         internal override void SetTextureResource(PixelShaderStage pixelShader)
         {
             if (textureReady)
@@ -42,8 +44,8 @@ namespace ImageViewer.Content
             await base.LoadTextureAsync();
 
             var shaderResourceDesc = TextureLoader.ShaderDescriptionCube();
-            texture = loader.TextureCube(deviceResources, "Content\\Textures\\test.png");
-            resourceView = new ShaderResourceView(deviceResources.D3DDevice, texture, shaderResourceDesc);
+            texture = ToDispose(loader.TextureCube(deviceResources, TextureFile));
+            resourceView = ToDispose(new ShaderResourceView(deviceResources.D3DDevice, texture, shaderResourceDesc));
             textureReady = true;
         }
 
@@ -51,11 +53,8 @@ namespace ImageViewer.Content
         {
             base.ReleaseDeviceDependentResources();
 
-            resourceView?.Dispose();
-            resourceView = null;
-
-            texture?.Dispose();
-            texture = null;
+            RemoveAndDispose(ref texture);
+            RemoveAndDispose(ref resourceView);
         }
     }
 }

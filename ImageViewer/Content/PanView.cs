@@ -24,12 +24,12 @@ namespace ImageViewer.Content
 
             Tiles[0] = new PanRenderer(deviceResources, loader, "", tileSize, backBufferResolution: TileResolution)
             {
-                Position = new Vector3(-0.5f * tileSize, 0, -1 * distanceFromUser)
+                Position = new Vector3(-0.5f * tileSize, 0, -1 * DistanceFromUser)
             };
 
             Tiles[1] = new PanRenderer(deviceResources, loader, "", tileSize, backBufferResolution: TileResolution)
             {
-                Position = new Vector3(0.5f * tileSize, 0, -1 * distanceFromUser)
+                Position = new Vector3(0.5f * tileSize, 0, -1 * DistanceFromUser)
             };
 
             UpdateImages();
@@ -47,7 +47,7 @@ namespace ImageViewer.Content
                     else return;
                     break;
                 case Direction.DOWN:
-                    if (Level < minScale)
+                    if (Level < MinScale)
                     {
                         Level += number;
                     }
@@ -99,6 +99,8 @@ namespace ImageViewer.Content
 
         private void UpdateImages()
         {
+            Pointer.Update();
+
             var step = PixelSize(Level) * (TileResolution - ViewResolution);
             var x = (ImageX / step) * step;
             var y = (ImageY / step) * step;
