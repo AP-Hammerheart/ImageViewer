@@ -16,7 +16,7 @@ namespace ImageViewer.Content
         internal TileView(
             ImageViewerMain main,
             DeviceResources deviceResources,
-            TextureLoader loader) : base(deviceResources, loader)
+            TextureLoader loader) : base(main, deviceResources, loader)
         {
             TileResolution = 256;
 

@@ -15,7 +15,7 @@ using Windows.Storage.Streams;
 
 namespace ImageViewer.Content
 {
-    internal class TextureLoader
+    internal class TextureLoader : IDisposable
     {
         private readonly ulong MAX_MEMORY_USE = 900000000; // 900 MB
         private ulong memoryUse = 0;
@@ -440,5 +440,18 @@ namespace ImageViewer.Content
                 OptionFlags = flags,
                 SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
             };
+
+        public void Dispose()
+        {
+            foreach (var texture in textures)
+            {
+                var key = texture.Key;
+                var val = texture.Value;
+                textures.Remove(key);
+                val.Item1.Dispose();
+                val.Item2.Dispose();
+                val = null;
+            }
+        }
     }
 }

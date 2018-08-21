@@ -1,13 +1,14 @@
 ﻿using ImageViewer.Common;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
 using Windows.Globalization;
 using Windows.Graphics.Holographic;
+using Windows.Media.Playback;
 using Windows.Media.SpeechRecognition;
+using Windows.Media.SpeechSynthesis;
 using Windows.UI.Core;
 
 namespace ImageViewer
@@ -25,7 +26,6 @@ namespace ImageViewer
         private static readonly uint HResultRecognizerNotFound = 0x8004503a;
 
         private SpeechRecognizer speechRecognizer;
-
         private ImageViewerMain main;
 
         private DeviceResources         deviceResources;
@@ -35,9 +35,15 @@ namespace ImageViewer
         // The holographic space the app will use for rendering.
         private HolographicSpace        holographicSpace    = null;
 
+        internal static MediaPlayer MediaPlayer { get; set; }
+        internal static SpeechSynthesizer Synthesizer { get; set; }
+
         public AppView()
         {
             windowVisible = true;
+
+            MediaPlayer = new MediaPlayer();
+            Synthesizer = new SpeechSynthesizer();
         }
 
         public void Dispose()
@@ -52,6 +58,24 @@ namespace ImageViewer
             {
                 main.Dispose();
                 main = null;
+            }
+
+            if (speechRecognizer != null)
+            {
+                speechRecognizer.Dispose();
+                speechRecognizer = null;
+            }
+
+            if (Synthesizer != null)
+            {
+                Synthesizer.Dispose();
+                Synthesizer = null;
+            }
+
+            if (MediaPlayer != null)
+            {
+                MediaPlayer.Dispose();
+                MediaPlayer = null;
             }
         }
 
@@ -73,7 +97,7 @@ namespace ImageViewer
             // resources.
             deviceResources = new DeviceResources();
 
-            main = new ImageViewerMain(deviceResources);
+            main = new ImageViewerMain(deviceResources, this);
         }
 
         /// <summary>

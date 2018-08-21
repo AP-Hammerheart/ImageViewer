@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Gaming.Input;
 using Windows.Graphics.Holographic;
+using Windows.Media.Core;
+using Windows.Media.SpeechSynthesis;
 using Windows.Perception.Spatial;
 using Windows.UI.Input.Spatial;
 
@@ -35,7 +37,8 @@ namespace ImageViewer
             CLEAR_CACHE,
             ADD_TAG,
             REMOVE_TAG,
-            RESET_POSITION
+            RESET_POSITION,
+            HELP
         }
 
         internal enum Direction
@@ -51,19 +54,13 @@ namespace ImageViewer
 
         #endregion
 
-        #region Variables
-
-        #region Static setting variables
-
-        private static readonly string baseUrl = "http://10.10.10.4:8081/?command=image&name=";
-
-        #endregion
-
         #region Content variables
 
+        private readonly AppView appview;
+
         private TextureLoader               loader;
-        //private TileView                    tileView;
-        private PanView tileView;
+        private PanView                     mainView;
+        private MediaSource                 mediaSource;
 
         #endregion
 
@@ -95,17 +92,16 @@ namespace ImageViewer
 
         #endregion
 
-        #endregion
-
         #region Initialize
 
         /// <summary>
         /// Loads and initializes application assets when the application is loaded.
         /// </summary>
         /// <param name="deviceResources"></param>
-        public ImageViewerMain(DeviceResources deviceResources)
+        public ImageViewerMain(DeviceResources deviceResources, AppView appView)
         {
             this.deviceResources = deviceResources;
+            this.appview = appView;
 
             // Register to be notified if the Direct3D device is lost.
             this.deviceResources.DeviceLost     += this.OnDeviceLost;
@@ -131,9 +127,9 @@ namespace ImageViewer
         {
             this.holographicSpace = holographicSpace;
 
-            loader = new TextureLoader(deviceResources, baseUrl);
+            loader = new TextureLoader(deviceResources, BaseUrl);
             //tileView = new TileView(this, deviceResources, loader);
-            tileView = new PanView(this, deviceResources, loader);
+            mainView = new PanView(this, deviceResources, loader);
 
             spatialInputHandler = new SpatialInputHandler();
 
@@ -178,7 +174,7 @@ namespace ImageViewer
 
             Task task = new Task(async () =>
             {
-                await tileView.CreateDeviceDependentResourcesAsync();
+                await mainView.CreateDeviceDependentResourcesAsync();
             });
             task.Start();
         }
@@ -241,17 +237,17 @@ namespace ImageViewer
                 var mover = Matrix4x4.CreateTranslation(pose.Head.Position);
                 var transformer = rotator * mover;
 
-                tileView.SetTransformer(transformer);
+                mainView.SetTransformer(transformer);
             }
 
             timer1.Tick(() => 
             {
-                tileView.Update(timer1);
+                mainView.Update(timer1);
             });
 
             timer2.Tick(() =>
             {
-                tileView.Update(SpatialPointerPose.TryGetAtTimestamp(currentCoordinateSystem, prediction.Timestamp));
+                mainView.Update(SpatialPointerPose.TryGetAtTimestamp(currentCoordinateSystem, prediction.Timestamp));
             });
 
             // We complete the frame update by using information about our content positioning
@@ -271,9 +267,9 @@ namespace ImageViewer
                 // You can also set the relative velocity and facing of that content; the sample
                 // hologram is at a fixed point so we only need to indicate its position.
 
-                if (tileView.Pointer != null)
+                if (mainView.Pointer != null)
                 {
-                    renderingParameters.SetFocusPoint(currentCoordinateSystem, tileView.Pointer.Position);
+                    renderingParameters.SetFocusPoint(currentCoordinateSystem, mainView.Pointer.Position);
                 }              
             }
 
@@ -367,7 +363,7 @@ namespace ImageViewer
                     // Only render world-locked content when positional tracking is active.
                     if (cameraActive)
                     {
-                        tileView.Render();                
+                        mainView.Render();                
                     }
 
                     atLeastOneCameraRendered = true;
@@ -385,11 +381,14 @@ namespace ImageViewer
 
         public void Dispose()
         {
-            loader?.ReleaseDeviceDependentResources();
+            loader?.Dispose();
             loader = null;
 
-            tileView.Dispose();
-            tileView = null;
+            mainView?.Dispose();
+            mainView = null;
+
+            mediaSource?.Dispose();
+            mediaSource = null;
         }
 
         public void SaveAppState()
@@ -418,7 +417,7 @@ namespace ImageViewer
 
         public void OnKeyPressed(Windows.System.VirtualKey key)
         {
-            tileView.OnKeyPressed(key);
+            mainView.OnKeyPressed(key);
         }
 
         public void OnPointerPressed()
@@ -431,7 +430,7 @@ namespace ImageViewer
         /// </summary>
         public void OnDeviceLost(Object sender, EventArgs e)
         {
-            tileView?.ReleaseDeviceDependentResources();
+            mainView?.ReleaseDeviceDependentResources();
             loader?.ReleaseDeviceDependentResources();
         }
 
@@ -442,7 +441,7 @@ namespace ImageViewer
         {
             Task task = new Task(async () =>
             {
-                await tileView.CreateDeviceDependentResourcesAsync();
+                await mainView.CreateDeviceDependentResourcesAsync();
             });
             task.Start();
         }
@@ -576,14 +575,38 @@ namespace ImageViewer
                 number = Int32.Parse(list3[0]);
             }
 
-            tileView.HandleVoiceCommand(command, direction, number);
+            mainView.HandleVoiceCommand(command, direction, number);
         }
 
         #region Helpers
 
+        internal async void Speak(string text)
+        {
+            if (mediaSource != null)
+            {
+                mediaSource.Dispose();
+                mediaSource = null;
+            }
+
+            mediaSource = await SynthesizeText(text);
+            AppView.MediaPlayer.Source = mediaSource;
+            AppView.MediaPlayer.Play();
+        }
+
+        private async Task<MediaSource> SynthesizeText(string text)
+        {
+            using (var stream = await AppView.Synthesizer.SynthesizeTextToStreamAsync(text))
+            {
+                var source = MediaSource.CreateFromStream(stream, string.Empty);
+                return source;
+            }
+        }
+
         internal static string Image1 { get; } = "image1.ndpi";
 
         internal static string Image2 { get; } = "image2.ndpi";
+
+        internal static string BaseUrl { get; } = "http://10.10.10.4:8081/?command=image&name=";
 
         private static float Angle(Vector3 v1, Vector3 v2, Vector3 up)
         {

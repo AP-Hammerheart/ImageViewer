@@ -17,7 +17,7 @@ namespace ImageViewer.Content
         internal PanView(
             ImageViewerMain main,
             DeviceResources deviceResources,
-            TextureLoader loader) : base(deviceResources, loader)
+            TextureLoader loader) : base(main, deviceResources, loader)
         {
             TileResolution = 2560;
 

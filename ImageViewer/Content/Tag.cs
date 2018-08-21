@@ -2,12 +2,13 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using System;
 using System.Numerics;
 using System.Threading.Tasks;
 
 namespace ImageViewer.Content
 {
-    internal class Tag
+    internal class Tag : IDisposable
     {
         private PyramidRenderer left;
         private PyramidRenderer right;
@@ -89,6 +90,15 @@ namespace ImageViewer.Content
                 left.Render();
                 right.Render();
             }
+        }
+
+        public void Dispose()
+        {
+            left?.Dispose();
+            left = null;
+
+            right?.Dispose();
+            right = null;
         }
     }
 }
