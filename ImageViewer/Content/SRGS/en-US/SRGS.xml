@@ -102,6 +102,24 @@ xmlns="http://www.w3.org/2001/06/grammar">
                     <tag>out.TYPE=0;</tag>
                     <tag>out.NUMBER=0;</tag>
                 </item>
+                <item>
+                    add tag
+                    <tag>out.COMMAND=8;</tag>
+                    <tag>out.TYPE=0;</tag>
+                    <tag>out.NUMBER=0;</tag>
+                </item>
+                <item>
+                    remove tag
+                    <tag>out.COMMAND=9;</tag>
+                    <tag>out.TYPE=0;</tag>
+                    <tag>out.NUMBER=0;</tag>
+                </item>
+                <item>
+                    reset position
+                    <tag>out.COMMAND=10;</tag>
+                    <tag>out.TYPE=0;</tag>
+                    <tag>out.NUMBER=0;</tag>
+                </item>
             </one-of>
         </item>
     </rule>

@@ -1,4 +1,7 @@
-﻿using ImageViewer.Common;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using ImageViewer.Common;
 using System.Numerics;
 using System.Threading.Tasks;
 using Windows.UI.Input.Spatial;
@@ -243,6 +246,9 @@ namespace ImageViewer.Content
                 case Command.PRELOAD: if (!loading) PreLoadTiles(); break;
                 case Command.CANCEL: if (loading) cancel = true; break;
                 case Command.CLEAR_CACHE: ClearCache(); break;
+                case Command.ADD_TAG: Pointer.AddTag(); break;
+                case Command.REMOVE_TAG: Pointer.RemoveTag(); break;
+                case Command.RESET_POSITION: Reset(); break;
             }
         }
 
@@ -294,6 +300,8 @@ namespace ImageViewer.Content
 
                 case Windows.System.VirtualKey.T: Pointer.AddTag(); break;
                 case Windows.System.VirtualKey.R: Pointer.RemoveTag(); break;
+
+                case Windows.System.VirtualKey.Space: Reset(); break;
             }
         }
 
@@ -390,6 +398,21 @@ namespace ImageViewer.Content
             }
 
             loading = false;
+        }
+
+        private void Reset()
+        {
+            foreach (var renderer in Tiles)
+            {
+                renderer.Transformer = Matrix4x4.Identity;
+            }
+
+            foreach (var renderer in statusItems)
+            {
+                renderer.Transformer = Matrix4x4.Identity;
+            }
+
+            Pointer.Transformer = Matrix4x4.Identity;
         }
     }
 }

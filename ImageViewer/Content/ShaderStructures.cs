@@ -1,10 +1,10 @@
-﻿using System.Numerics;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System.Numerics;
 
 namespace ImageViewer.Content
 {
-    /// <summary>
-    /// Constant buffer used to send hologram position transform to the shader pipeline.
-    /// </summary>
     internal struct ModelConstantBuffer
     {
         internal Matrix4x4 model;

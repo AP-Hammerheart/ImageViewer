@@ -1,25 +1,28 @@
-﻿using ImageViewer.Common;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using ImageViewer.Common;
 using System.Numerics;
 using System.Threading.Tasks;
 
 namespace ImageViewer.Content
 {
-    internal class KeyRenderer : StatusBarRenderer
+    internal class DebugRenderer : StatusBarRenderer
     {
         private readonly BaseView view;
 
-        internal KeyRenderer(
+        internal DebugRenderer(
             BaseView view,
-            DeviceResources deviceResources, 
+            DeviceResources deviceResources,
             TextureLoader loader)
             : base(deviceResources, loader)
         {
             this.view = view;
         }
 
-        internal KeyRenderer(
+        internal DebugRenderer(
             BaseView view,
-            DeviceResources deviceResources, 
+            DeviceResources deviceResources,
             TextureLoader loader,
             Vector3 bottomLeft,
             Vector3 topLeft,
@@ -32,11 +35,11 @@ namespace ImageViewer.Content
 
         internal override void Update(StepTimer timer)
         {
-            var chr = view.VirtualKey.ToString();
-            if (!chr.Equals(Text))
+            var txt = view.DebugString;
+            if (!txt.Equals(Text))
             {
                 updating = true;
-                Text = chr;
+                Text = txt;
 
                 Task task = new Task(async () =>
                 {

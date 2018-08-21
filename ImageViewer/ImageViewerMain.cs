@@ -1,4 +1,7 @@
-﻿using ImageViewer.Common;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using ImageViewer.Common;
 using ImageViewer.Content;
 using System;
 using System.Collections.Generic;
@@ -29,7 +32,10 @@ namespace ImageViewer
             SET,
             PRELOAD,
             CANCEL,
-            CLEAR_CACHE
+            CLEAR_CACHE,
+            ADD_TAG,
+            REMOVE_TAG,
+            RESET_POSITION
         }
 
         internal enum Direction

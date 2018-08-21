@@ -63,25 +63,25 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Content\BaseCubeRenderer.cs" />
-    <Compile Include="Content\BaseView.cs" />
-    <Compile Include="Content\ClockRenderer.cs" />
-    <Compile Include="Content\DebugRenderer.cs" />
-    <Compile Include="Content\KeyRenderer.cs" />
-    <Compile Include="Content\MemoryUseRenderer.cs" />
-    <Compile Include="Content\PanRenderer.cs" />
-    <Compile Include="Content\PlaneRenderer.cs" />
-    <Compile Include="Content\BaseRenderer.cs" />
-    <Compile Include="Content\PointerRenderer.cs" />
-    <Compile Include="Content\PyramidRenderer.cs" />
-    <Compile Include="Content\StatusBarRenderer.cs" />
-    <Compile Include="Content\PanView.cs" />
+    <Compile Include="Content\Renderers\BaseCubeRenderer.cs" />
+    <Compile Include="Content\Views\BaseView.cs" />
+    <Compile Include="Content\Renderers\ClockRenderer.cs" />
+    <Compile Include="Content\Renderers\DebugRenderer.cs" />
+    <Compile Include="Content\Renderers\KeyRenderer.cs" />
+    <Compile Include="Content\Renderers\MemoryUseRenderer.cs" />
+    <Compile Include="Content\Renderers\PanRenderer.cs" />
+    <Compile Include="Content\Renderers\PlaneRenderer.cs" />
+    <Compile Include="Content\Renderers\BaseRenderer.cs" />
+    <Compile Include="Content\Renderers\PointerRenderer.cs" />
+    <Compile Include="Content\Renderers\PyramidRenderer.cs" />
+    <Compile Include="Content\Renderers\StatusBarRenderer.cs" />
+    <Compile Include="Content\Views\PanView.cs" />
     <Compile Include="Content\Tag.cs" />
-    <Compile Include="Content\TileCounterRenderer.cs" />
-    <Compile Include="Content\TileRenderer.cs" />
+    <Compile Include="Content\Renderers\TileCounterRenderer.cs" />
+    <Compile Include="Content\Renderers\TileRenderer.cs" />
     <Compile Include="Content\TextureLoader.cs" />
-    <Compile Include="Content\TileView.cs" />
-    <Compile Include="Content\ZoomRenderer.cs" />
+    <Compile Include="Content\Views\TileView.cs" />
+    <Compile Include="Content\Renderers\ZoomRenderer.cs" />
     <Compile Include="ImageViewerMain.cs" />
     <Compile Include="AppView.cs" />
     <Compile Include="AppViewSource.cs" />
