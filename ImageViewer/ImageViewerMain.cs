@@ -38,7 +38,8 @@ namespace ImageViewer
             ADD_TAG,
             REMOVE_TAG,
             RESET_POSITION,
-            HELP
+            HELP,
+            ZOOM
         }
 
         internal enum Direction

@@ -119,6 +119,10 @@ namespace ImageViewer.Content
             UpdateImages(step);
         }
 
+        protected override void Zoom(Direction direction, int number)
+        {
+        }
+
         private void UpdateImages(int step)
         {
             for (var x = 0; x < maxX; x++)

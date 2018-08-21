@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using ImageViewer.Common;
 using System.Numerics;
 using System.Threading.Tasks;
-using ImageViewer.Common;
 
 namespace ImageViewer.Content
 {
@@ -12,26 +12,20 @@ namespace ImageViewer.Content
         private readonly BaseView view;
 
         internal ZoomRenderer(
-            BaseView view, 
-            DeviceResources deviceResources, 
+            BaseView view,
+            DeviceResources deviceResources,
             TextureLoader loader)
-            : base(deviceResources, loader)
-        {
-            this.view = view;
-        }
+            : base(deviceResources, loader) => this.view = view;
 
         internal ZoomRenderer(
-            BaseView view, 
-            DeviceResources deviceResources, 
+            BaseView view,
+            DeviceResources deviceResources,
             TextureLoader loader,
             Vector3 bottomLeft,
             Vector3 topLeft,
             Vector3 bottomRight,
             Vector3 topRight)
-            : base(deviceResources, loader, bottomLeft, topLeft, bottomRight, topRight)
-        {
-            this.view = view;
-        }
+            : base(deviceResources, loader, bottomLeft, topLeft, bottomRight, topRight) => this.view = view;
 
         private string Zoom(int level)
         {

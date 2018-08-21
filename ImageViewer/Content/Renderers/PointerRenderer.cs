@@ -12,6 +12,24 @@ namespace ImageViewer.Content
 {
     internal class PointerRenderer : PyramidRenderer
     {
+        internal struct Coordinate
+        {
+            internal Coordinate(int X, int Y, Vector3 pL, Vector3 pR)
+            {
+                this.X = X;
+                this.Y = Y;
+
+                this.pL = pL;
+                this.pR = pR;
+            }
+
+            internal int X;
+            internal int Y;
+
+            internal Vector3 pL;
+            internal Vector3 pR;
+        }
+
         internal struct Corners
         {
             internal Corners(Vector3 origo, Vector3 topLeft, Vector3 bottomLeft)
@@ -50,20 +68,11 @@ namespace ImageViewer.Content
 
         internal void AddTag()
         {
-            var pos = Position;
-            pos.X = Position.X <= 0 ? Position.X + Math.Abs(corners.topLeft.X) : Position.X - Math.Abs(corners.topLeft.X);
-
-            var pL = Position.X <= 0 ? Position : pos;
-            var pR = Position.X <= 0 ? pos : Position;
-
-            var v = (1.0f / BaseView.ViewSize) * view.Step;
-
-            var X = view.ImageX + (int)(v * (pL.X - corners.topLeft.X));
-            var Y = view.ImageY + (int)(v * (corners.topLeft.Y - pL.Y));
+            var c = Coordinates();
 
             var task = new Task(async () =>
             {
-                var tag = new Tag(deviceResources, loader, X, Y, this.Transformer, pL, pR);
+                var tag = new Tag(deviceResources, loader, c.X, c.Y, this.Transformer, c.pL, c.pR);
                 await tag.CreateDeviceDependentResourcesAsync();
                 tags.Add(tag);
             });
@@ -135,6 +144,15 @@ namespace ImageViewer.Content
             }
         }
 
+        protected override void Dispose(bool disposeManagedResources)
+        {
+            base.Dispose(disposeManagedResources);
+            foreach (var tag in tags)
+            {
+                tag.Dispose();
+            }
+        }
+
         internal override Matrix4x4 Transformer
         {
             get
@@ -150,6 +168,22 @@ namespace ImageViewer.Content
                     tag.SetTransformer(value);
                 }
             }
+        }
+
+        internal Coordinate Coordinates()
+        {
+            var pos = Position;
+            pos.X = Position.X <= 0 ? Position.X + Math.Abs(corners.topLeft.X) : Position.X - Math.Abs(corners.topLeft.X);
+
+            var pL = Position.X <= 0 ? Position : pos;
+            var pR = Position.X <= 0 ? pos : Position;
+
+            var v = (1.0f / BaseView.ViewSize) * view.Step;
+            var X = view.ImageX + (int)(v * (pL.X - corners.topLeft.X));
+            var Y = view.ImageY + (int)(v * (corners.topLeft.Y - pL.Y));
+
+            var c = new Coordinate(X, Y, pL, pR);
+            return c;
         }
     }
 }

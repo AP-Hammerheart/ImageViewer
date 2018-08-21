@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ImageViewer.Content
 {
-    class PanRenderer : PlaneRenderer
+    internal class PanRenderer : PlaneRenderer
     {
         private Texture2D texture = null;
         private ShaderResourceView view = null;
@@ -142,6 +142,19 @@ namespace ImageViewer.Content
         internal override void ReleaseDeviceDependentResources()
         {
             base.ReleaseDeviceDependentResources();
+
+            textureReady = false;
+
+            view?.Dispose();
+            view = null;
+
+            texture?.Dispose();
+            texture = null;
+        }
+
+        protected override void Dispose(bool disposeManagedResources)
+        {
+            base.Dispose(disposeManagedResources);
 
             textureReady = false;
 

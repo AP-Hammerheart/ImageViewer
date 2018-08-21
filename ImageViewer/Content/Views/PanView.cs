@@ -100,6 +100,34 @@ namespace ImageViewer.Content
             UpdateImages();
         }
 
+        protected override void Zoom(Direction direction, int number)
+        {
+            var c = Pointer.Coordinates();
+
+            switch (direction)
+            {
+                case Direction.UP:
+                    if (Level > 0)
+                    {
+                        Level -= number;
+                    }
+                    else return;
+                    break;
+                case Direction.DOWN:
+                    if (Level < MinScale)
+                    {
+                        Level += number;
+                    }
+                    else return;
+                    break;
+            }
+       
+            ImageX = c.X - (Step / 2);
+            ImageY = c.Y - (Step / 2);
+
+            UpdateImages();
+        }
+
         private void UpdateImages()
         {
             Pointer.Update();

@@ -126,6 +126,25 @@ xmlns="http://www.w3.org/2001/06/grammar">
                     <tag>out.TYPE=0;</tag>
                     <tag>out.NUMBER=0;</tag>
                 </item>
+                <item>
+                    <one-of>
+                        <item>
+                            zoom
+                            <tag>out.COMMAND=12;</tag>
+                            <ruleref uri="#zoom"/>
+                            <tag>out.TYPE=rules.latest();</tag>
+                            <ruleref uri="#number"/>
+                            <tag>out.NUMBER=rules.latest();</tag>
+                        </item>
+                        <item>
+                            zoom
+                            <tag>out.COMMAND=12;</tag>
+                            <ruleref uri="#zoom"/>
+                            <tag>out.TYPE=rules.latest();</tag>
+                            <tag>out.NUMBER=1;</tag>
+                        </item>
+                    </one-of>
+                </item>
             </one-of>
         </item>
     </rule>
@@ -168,6 +187,13 @@ xmlns="http://www.w3.org/2001/06/grammar">
             <tag>out=out.THOUSAND+out.COMBINED;</tag>
         </item>
     </rule>
+  
+    <rule id="zoom">
+        <one-of>
+            <item>in<tag>out=0;</tag></item>
+            <item>out<tag>out=1;</tag></item>
+        </one-of>
+    </rule>  
 
     <rule id="direction">
         <one-of>

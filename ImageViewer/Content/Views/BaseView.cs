@@ -47,8 +47,8 @@ namespace ImageViewer.Content
                     place the hologram to the original position";
 
         private readonly ImageViewerMain main;
-
         protected readonly TextureLoader loader;
+
         private bool cancel = false;
         private bool loading = false;
 
@@ -288,6 +288,7 @@ namespace ImageViewer.Content
                 case Command.REMOVE_TAG: Pointer.RemoveTag(); break;
                 case Command.RESET_POSITION: Reset(); break;
                 case Command.HELP: Help(); break;
+                case Command.ZOOM: Zoom(direction, number); break;
             }
         }
 
@@ -347,6 +348,8 @@ namespace ImageViewer.Content
         protected abstract void Scale(Direction direction, int number);
 
         protected abstract void Move(Direction direction, int number);
+
+        protected abstract void Zoom(Direction direction, int number);
 
         private void SetPointer(Direction direction, int number)
         {

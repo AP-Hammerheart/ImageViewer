@@ -18,7 +18,6 @@ namespace ImageViewer.Content
     internal class TextureLoader : IDisposable
     {
         private readonly ulong MAX_MEMORY_USE = 900000000; // 900 MB
-        private ulong memoryUse = 0;
 
         private Dictionary<string, Tuple<ShaderResourceView, Texture2D>> textures; 
         private Queue<string> loadQueue = new Queue<string>();
@@ -43,9 +42,6 @@ namespace ImageViewer.Content
             factory = new ImagingFactory2();
             localCacheFolder = ApplicationData.Current.LocalCacheFolder;
             textures = new Dictionary<string, Tuple<ShaderResourceView, Texture2D>>();
-
-            var report = Windows.System.MemoryManager.GetAppMemoryReport();
-            memoryUse = report.PrivateCommitUsage;
         }
 
         internal void ReleaseDeviceDependentResources()
@@ -102,7 +98,7 @@ namespace ImageViewer.Content
                     if (dataStream != null)
                     {
                         var report = Windows.System.MemoryManager.GetAppMemoryReport();
-                        memoryUse = report.PrivateCommitUsage;
+                        var memoryUse = report.PrivateCommitUsage;
 
                         if (memoryUse > MAX_MEMORY_USE && lastUse.Count > 200) // Release old texture if memory runs low
                         {

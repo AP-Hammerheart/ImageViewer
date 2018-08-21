@@ -33,10 +33,7 @@ namespace ImageViewer.Content
             vertexShader: "Content\\Shaders\\VertexShaderPlane.cso",
             VPRTvertexShader: "Content\\Shaders\\VPRTVertexShaderPlane.cso",
             geometryShader: "Content\\Shaders\\GeometryShaderPlane.cso",
-            pixelShader: "Content\\Shaders\\PixelShaderPlane.cso")
-        {
-            this.loader = loader;
-        }
+            pixelShader: "Content\\Shaders\\PixelShaderPlane.cso") => this.loader = loader;
 
         internal StatusBarRenderer(
           DeviceResources deviceResources,
@@ -66,9 +63,7 @@ namespace ImageViewer.Content
             };
 
         internal override int VertexSize => SharpDX.Utilities.SizeOf<VertexPlane>();
-
         internal override bool TextureReady => Active != -1;
-
         internal string Text { get; set; } = "";
         internal Vector2 TextPosition { get; set; } = new Vector2(10, 15);
         internal Color TextColor { get; set; } = Colors.Black;
@@ -125,7 +120,6 @@ namespace ImageViewer.Content
 
             var old = Active;
             var idx = Active == 0 ? 1 : 0;
-
 
             using (var stream = await DrawText())
             {
