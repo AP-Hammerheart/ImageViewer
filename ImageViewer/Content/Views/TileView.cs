@@ -123,6 +123,10 @@ namespace ImageViewer.Content
         {
         }
 
+        protected override void UpdateImages()
+        {
+        }
+
         private void UpdateImages(int step)
         {
             for (var x = 0; x < maxX; x++)

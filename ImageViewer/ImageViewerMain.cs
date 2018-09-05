@@ -233,12 +233,12 @@ namespace ImageViewer
 
             if (null != pose)
             {
-                var angle = Angle(pose.Head.ForwardDirection, new Vector3(0.0f, 0.0f, -1.0f), new Vector3(0.0f, 1.0f, 0.0f));
-                var rotator = Matrix4x4.CreateRotationY(-angle);
-                var mover = Matrix4x4.CreateTranslation(pose.Head.Position);
-                var transformer = rotator * mover;
+                //var angle = Angle(pose.Head.ForwardDirection, new Vector3(0.0f, 0.0f, -1.0f), new Vector3(0.0f, 1.0f, 0.0f));
+                //var rotator = Matrix4x4.CreateRotationY(-angle);
+                //var mover = Matrix4x4.CreateTranslation(pose.Head.Position);
+                //var transformer = rotator * mover;
 
-                mainView.SetTransformer(transformer);
+                //mainView.SetTransformer(transformer);
             }
 
             timer1.Tick(() => 

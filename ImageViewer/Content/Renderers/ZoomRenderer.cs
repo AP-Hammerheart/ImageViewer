@@ -45,7 +45,7 @@ namespace ImageViewer.Content
 
         internal override void Update(StepTimer timer)
         {
-            var zoom = "X:" + view.ImageX.ToString() + " Y:" + view.ImageY.ToString() + " Z:" + Zoom(view.Level);
+            var zoom = "X: " + view.ImageX.ToString() + "  Y: " + view.ImageY.ToString() + "  Zoom: " + Zoom(view.Level);
             if (!zoom.Equals(Text))
             {
                 updating = true;

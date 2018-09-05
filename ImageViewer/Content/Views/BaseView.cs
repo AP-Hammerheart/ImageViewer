@@ -73,6 +73,8 @@ namespace ImageViewer.Content
         internal static float ViewSize { get; } = 0.5f;
         protected static float DistanceFromUser { get; } = 1.4f;
         protected static int MinScale { get; } = 8;
+        public Vector3 Origo { get; set; } = Vector3.Zero;
+        public float RotationAngle { get; set; } = 0;
 
         internal BaseView(
             ImageViewerMain main,
@@ -89,56 +91,30 @@ namespace ImageViewer.Content
                 loader: loader,
                 bottomLeft: new Vector3(-0.5f, 0.25f, 0.0f),
                 topLeft: new Vector3(-0.5f, 0.30f, 0.0f),
-                bottomRight: new Vector3(-0.3f, 0.25f, 0.0f),
-                topRight: new Vector3(-0.3f, 0.30f, 0.0f))
+                bottomRight: new Vector3(-0.2f, 0.25f, 0.0f),
+                topRight: new Vector3(-0.2f, 0.30f, 0.0f))
             {
                 Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
                 TextPosition = new Vector2(20, 10),
                 Text = "ImageViewer",
                 FontSize = 40,
-                ImageWidth = 320,
+                ImageWidth = 480,
             };
 
-            statusItems[1] = new KeyRenderer(
-                view: this,
-                deviceResources: deviceResources,
-                loader: loader,
-                bottomLeft: new Vector3(-0.3f, 0.25f, 0.0f),
-                topLeft: new Vector3(-0.3f, 0.30f, 0.0f),
-                bottomRight: new Vector3(-0.2f, 0.25f, 0.0f),
-                topRight: new Vector3(-0.2f, 0.30f, 0.0f))
-            {
-                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
-                ImageWidth = 160
-            };
-
-            statusItems[2] = new ZoomRenderer(
+            statusItems[1] = new ZoomRenderer(
                 view: this,
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(-0.2f, 0.25f, 0.0f),
                 topLeft: new Vector3(-0.2f, 0.30f, 0.0f),
-                bottomRight: new Vector3(0.15f, 0.25f, 0.0f),
-                topRight: new Vector3(0.15f, 0.30f, 0.0f))
-            {
-                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
-                ImageWidth = 560
-            };
-
-            statusItems[3] = new DebugRenderer(
-                view: this,
-                deviceResources: deviceResources,
-                loader: loader,
-                bottomLeft: new Vector3(0.15f, 0.25f, 0.0f),
-                topLeft: new Vector3(0.15f, 0.30f, 0.0f),
                 bottomRight: new Vector3(0.3f, 0.25f, 0.0f),
                 topRight: new Vector3(0.3f, 0.30f, 0.0f))
             {
                 Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
-                ImageWidth = 240
+                ImageWidth = 800
             };
 
-            statusItems[4] = new MemoryUseRenderer(
+            statusItems[2] = new MemoryUseRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(0.3f, 0.25f, 0.0f),
@@ -150,7 +126,7 @@ namespace ImageViewer.Content
                 ImageWidth = 160
             };
 
-            statusItems[5] = new ClockRenderer(
+            statusItems[3] = new ClockRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(0.4f, 0.25f, 0.0f),
@@ -162,6 +138,32 @@ namespace ImageViewer.Content
                 ImageWidth = 160
             };
 
+            statusItems[4] = new KeyRenderer(
+                view: this,
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(-0.5f, -0.3f, 0.0f),
+                topLeft: new Vector3(-0.5f, -0.25f, 0.0f),
+                bottomRight: new Vector3(0.0f, -0.3f, 0.0f),
+                topRight: new Vector3(0.0f, -0.25f, 0.0f))
+            {
+                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
+                ImageWidth = 800
+            };
+
+            statusItems[5] = new DebugRenderer(
+                view: this,
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(0.0f, -0.3f, 0.0f),
+                topLeft: new Vector3(0.0f, -0.25f, 0.0f),
+                bottomRight: new Vector3(0.5f, -0.3f, 0.0f),
+                topRight: new Vector3(0.5f, -0.25f, 0.0f))
+            {
+                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
+                ImageWidth = 800
+            };
+
             Pointer = new PointerRenderer(this, deviceResources, loader, 
                 new PointerRenderer.Corners(
                     origo: new Vector3(0.0f, 0.0f, -1 * DistanceFromUser), 
@@ -170,21 +172,6 @@ namespace ImageViewer.Content
             {
                 Position = new Vector3(0, 0, -1 * DistanceFromUser)
             };        
-        }
-
-        internal void SetTransformer(Matrix4x4 transformer)
-        {
-            foreach (var renderer in Tiles)
-            {
-                renderer.Transformer = transformer;
-            }
-
-            foreach (var renderer in statusItems)
-            {
-                renderer.Transformer = transformer;
-            }
-
-            Pointer.Transformer = transformer;
         }
 
         internal void Update(StepTimer timer)
@@ -320,29 +307,140 @@ namespace ImageViewer.Content
 
                 case Windows.System.VirtualKey.NumberPad4:
                 case Windows.System.VirtualKey.Left:
+                case Windows.System.VirtualKey.GamepadRightThumbstickLeft:
                     Move(Direction.LEFT, 1);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad6:
-                case Windows.System.VirtualKey.Right: Move(Direction.RIGHT, 1);
+                case Windows.System.VirtualKey.Right:
+                case Windows.System.VirtualKey.GamepadRightThumbstickRight:
+                    Move(Direction.RIGHT, 1);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad8:
                 case Windows.System.VirtualKey.Up:
+                case Windows.System.VirtualKey.GamepadRightThumbstickUp:
                     Move(Direction.UP, 1);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad2:
-                case Windows.System.VirtualKey.Down: Move(Direction.DOWN, 1); break;
+                case Windows.System.VirtualKey.Down:
+                case Windows.System.VirtualKey.GamepadRightThumbstickDown:
+                    Move(Direction.DOWN, 1);
+                    break;
 
-                case Windows.System.VirtualKey.Q: Scale(Direction.UP, 1); break;
-                case Windows.System.VirtualKey.A: Scale(Direction.DOWN, 1); break;
+                case Windows.System.VirtualKey.GamepadLeftThumbstickLeft: Move(Direction.LEFT, 10); break;
+                case Windows.System.VirtualKey.GamepadLeftThumbstickRight: Move(Direction.RIGHT, 10); break;
+                case Windows.System.VirtualKey.GamepadLeftThumbstickUp: Move(Direction.UP, 10); break;
+                case Windows.System.VirtualKey.GamepadLeftThumbstickDown: Move(Direction.DOWN, 10); break;
 
-                case Windows.System.VirtualKey.T: Pointer.AddTag(); break;
-                case Windows.System.VirtualKey.R: Pointer.RemoveTag(); break;
+                case Windows.System.VirtualKey.Q:
+                case Windows.System.VirtualKey.GamepadY:
+                    Scale(Direction.UP, 1);
+                    break;
 
-                case Windows.System.VirtualKey.Space: Reset(); break;
+                case Windows.System.VirtualKey.GamepadMenu:
+                    Zoom(Direction.UP, 1);
+                    break;
+
+                case Windows.System.VirtualKey.A:
+                case Windows.System.VirtualKey.GamepadA:
+                    Scale(Direction.DOWN, 1);
+                    break;
+
+                case Windows.System.VirtualKey.T:                
+                case Windows.System.VirtualKey.GamepadRightTrigger:
+                    Pointer.AddTag();
+                    break;
+                case Windows.System.VirtualKey.R:
+                case Windows.System.VirtualKey.GamepadRightShoulder:
+                    Pointer.RemoveTag();
+                    break;
+
+                case Windows.System.VirtualKey.Space:
+                case Windows.System.VirtualKey.GamepadView:
+                    Reset();
+                    break;
+
+                case Windows.System.VirtualKey.GamepadLeftTrigger:
+                    SetPosition(0, 0, 0.1f);
+                    break;
+
+                case Windows.System.VirtualKey.GamepadLeftShoulder:
+                    SetPosition(0, 0, -0.1f);
+                    break;
+
+                case Windows.System.VirtualKey.GamepadDPadLeft:
+                    SetPosition(-0.1f, 0, 0);
+                    break;
+
+                case Windows.System.VirtualKey.GamepadDPadRight:
+                    SetPosition(0.1f, 0, 0);
+                    break;
+
+                case Windows.System.VirtualKey.GamepadDPadUp:
+                    SetPosition(0, 0.1f, 0);
+                    break;
+
+                case Windows.System.VirtualKey.GamepadDPadDown:
+                    SetPosition(0, -0.1f, 0); break;
+
+                case Windows.System.VirtualKey.GamepadX:
+                    SetAngle(5.0f);
+                    break;
+
+                case Windows.System.VirtualKey.GamepadB:
+                    SetAngle(-5.0f);
+                    break;
             }
+        }
+
+        private void SetPosition(float dX, float dY, float dZ)
+        {
+            var dp = new Vector3(dX, dY, dZ);
+            Origo = Origo + dp;
+
+            foreach (var renderer in Tiles)
+            {
+                var pos = renderer.Position + dp;
+                renderer.Position = pos;
+            }
+
+            foreach (var renderer in statusItems)
+            {
+                var pos = renderer.Position + dp;
+                renderer.Position = pos;
+            }
+
+            Pointer.SetPosition(dp);
+        }
+
+        private void SetAngle(float angle)
+        {
+            RotationAngle = RotationAngle + angle;
+            if (RotationAngle >= 360.0f)
+            {
+                RotationAngle -= 360.0f;
+            }
+            if (RotationAngle < 0.0f)
+            {
+                RotationAngle += 360.0f;
+            }
+
+            var rotator = Matrix4x4.CreateRotationY((float)(Math.PI * RotationAngle / 180.0f), Origo);
+
+            foreach (var renderer in Tiles)
+            {
+                renderer.Rotator = rotator;
+            }
+
+            foreach (var renderer in statusItems)
+            {
+                renderer.Rotator = rotator;
+            }
+
+            Pointer.RotationY = RotationAngle;
+            Pointer.SetRotator(rotator);
         }
 
         protected abstract void Scale(Direction direction, int number);
@@ -350,6 +448,8 @@ namespace ImageViewer.Content
         protected abstract void Move(Direction direction, int number);
 
         protected abstract void Zoom(Direction direction, int number);
+
+        protected abstract void UpdateImages();
 
         private void SetPointer(Direction direction, int number)
         {
@@ -444,17 +544,13 @@ namespace ImageViewer.Content
 
         private void Reset()
         {
-            foreach (var renderer in Tiles)
-            {
-                renderer.Transformer = Matrix4x4.Identity;
-            }
+            Level = 7;
+            ImageX = 0;
+            ImageY = 0;
+            UpdateImages();
 
-            foreach (var renderer in statusItems)
-            {
-                renderer.Transformer = Matrix4x4.Identity;
-            }
-
-            Pointer.Transformer = Matrix4x4.Identity;
+            SetPosition(-1 * Origo.X, -1 * Origo.Y, -1 * Origo.Z);
+            SetAngle(-1 * RotationAngle);
         }
 
         private void Help()

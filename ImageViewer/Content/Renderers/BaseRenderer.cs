@@ -20,7 +20,7 @@ namespace ImageViewer.Content
         private readonly string PIXEL_SHADER;
 
         private Vector3 position = Vector3.Zero;
-        private Matrix4x4 transformer = Matrix4x4.Identity;
+        private Matrix4x4 rotator = Matrix4x4.Identity;
 
         private float rotationX = 0.0f;
         private float rotationY = 0.0f;
@@ -78,7 +78,7 @@ namespace ImageViewer.Content
             var modelRotationZ = Matrix4x4.CreateRotationZ(rotationZ);
 
             var modelTranslation = Matrix4x4.CreateTranslation(Position);
-            var modelTransform = modelRotationX * modelRotationY * modelRotationZ * modelTranslation * transformer;
+            var modelTransform = modelRotationX * modelRotationY * modelRotationZ * modelTranslation * rotator;
 
             modelConstantBufferData.model = Matrix4x4.Transpose(modelTransform);
 
@@ -263,16 +263,16 @@ namespace ImageViewer.Content
             }
         }
 
-        internal virtual Matrix4x4 Transformer
+        internal virtual Matrix4x4 Rotator
         {
             get
             {
-                return transformer;
+                return rotator;
             }
 
             set
             {
-                transformer = value;
+                rotator = value;
                 refreshNeeded = true;
             }
         }

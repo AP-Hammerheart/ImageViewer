@@ -22,7 +22,7 @@ namespace ImageViewer.Content
             TextureLoader loader,
             int X,
             int Y,
-            Matrix4x4 transformer,
+            Matrix4x4 rotator,
             Vector3 positionLeft,
             Vector3 positionRight
             )
@@ -33,14 +33,14 @@ namespace ImageViewer.Content
             left = new PyramidRenderer(deviceResources, loader)
             {
                 Position = positionLeft,
-                Transformer = transformer,
+                Rotator = rotator,
                 TextureFile = "Content\\Textures\\red.png"
             };
 
             right = new PyramidRenderer(deviceResources, loader)
             {
                 Position = positionRight,
-                Transformer = transformer,
+                Rotator = rotator,
                 TextureFile = "Content\\Textures\\green.png"
             };
         }
@@ -58,13 +58,7 @@ namespace ImageViewer.Content
             right.ReleaseDeviceDependentResources();
         }
 
-        internal void SetTransformer(Matrix4x4 transformer)
-        {
-            left.Transformer = transformer;
-            right.Transformer = transformer;
-        }
-
-        internal void Update(BaseView view, Vector3 topLeft)
+        internal void Update(BaseView view, PointerRenderer.Corners corners)
         {
             var step = view.Step;
             if (X < view.ImageX || Y < view.ImageY || X > view.ImageX + step || Y > view.ImageY + step)
@@ -76,8 +70,16 @@ namespace ImageViewer.Content
                 var xx = (float)((double)BaseView.ViewSize * ((double)(X - view.ImageX) / (double)step));
                 var yy = (float)((double)BaseView.ViewSize * ((double)(Y - view.ImageY) / (double)step));
 
-                left.Position = new Vector3(topLeft.X + xx, topLeft.Y - yy, topLeft.Z);
-                right.Position = new Vector3(topLeft.X + xx + BaseView.ViewSize, topLeft.Y - yy, topLeft.Z);
+                var pL = new Vector3(corners.orig_topLeft.X + xx, corners.orig_topLeft.Y - yy, corners.orig_topLeft.Z);
+                var pR = new Vector3(corners.orig_topLeft.X + xx + BaseView.ViewSize, corners.orig_topLeft.Y - yy, corners.orig_topLeft.Z);
+
+                var translation = Matrix4x4.CreateTranslation(corners.Position);
+
+                var p = Vector4.Transform(pL, translation);
+                left.Position = new Vector3(p.X, p.Y, p.Z);
+
+                p = Vector4.Transform(pR, translation);
+                right.Position = new Vector3(p.X, p.Y, p.Z);
 
                 visible = true;
             }
@@ -99,6 +101,18 @@ namespace ImageViewer.Content
 
             right?.Dispose();
             right = null;
+        }
+
+        internal void SetPosition(Vector3 dp)
+        {
+            left.Position += dp;
+            right.Position += dp;
+        }
+
+        internal void SetRotator(Matrix4x4 rotator)
+        {
+            left.Rotator = rotator;
+            right.Rotator = rotator;
         }
     }
 }

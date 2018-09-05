@@ -128,7 +128,7 @@ namespace ImageViewer.Content
             UpdateImages();
         }
 
-        private void UpdateImages()
+        protected override void UpdateImages()
         {
             Pointer.Update();
 
