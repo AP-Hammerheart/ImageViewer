@@ -13,6 +13,10 @@ namespace ImageViewer.Content
         private static readonly int maxX = 5;
         private static readonly int maxY = 5;
 
+        protected override int LargeStep => 3;
+
+        internal override int TileCount { get; } = 5;
+
         internal TileView(
             ImageViewerMain main,
             DeviceResources deviceResources,
@@ -125,10 +129,13 @@ namespace ImageViewer.Content
 
         protected override void UpdateImages()
         {
+            UpdateImages(Step);
         }
 
         private void UpdateImages(int step)
         {
+            Pointer.Update();
+
             for (var x = 0; x < maxX; x++)
             {
                 for (var y = 0; y < maxY; y++)

@@ -64,6 +64,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Content\Renderers\BaseCubeRenderer.cs" />
+    <Compile Include="Content\Renderers\ScalerRenderer.cs" />
     <Compile Include="Content\Views\BaseView.cs" />
     <Compile Include="Content\Renderers\ClockRenderer.cs" />
     <Compile Include="Content\Renderers\DebugRenderer.cs" />

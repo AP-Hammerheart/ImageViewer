@@ -221,7 +221,6 @@ namespace ImageViewer.Content
             }
             else
             {
-
                 var bytes = await DirectXHelper.ReadDataAsync((StorageFile)file);
                 var dataStream = new SharpDX.DataStream(bytes.Length, true, true);
                 await dataStream.WriteAsync(bytes, 0, bytes.Length);

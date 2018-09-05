@@ -223,7 +223,7 @@ namespace ImageViewer.Content
             var pL = pos1.X <= corners.orig_origo.X ? pos1 : pos2;
             var pR = pos1.X <= corners.orig_origo.X ? pos2 : pos1;
 
-            var v = (1.0f / BaseView.ViewSize) * view.Step;
+            var v = (1.0f / BaseView.ViewSize) * view.Step * view.TileCount;
             var X = view.ImageX + (int)(v * (pL.X - corners.orig_topLeft.X));
             var Y = view.ImageY + (int)(v * (corners.orig_topLeft.Y - pL.Y));
 

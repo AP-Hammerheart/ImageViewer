@@ -60,15 +60,15 @@ namespace ImageViewer.Content
 
         internal void Update(BaseView view, PointerRenderer.Corners corners)
         {
-            var step = view.Step;
-            if (X < view.ImageX || Y < view.ImageY || X > view.ImageX + step || Y > view.ImageY + step)
+            var width = view.Step * view.TileCount;
+            if (X < view.ImageX || Y < view.ImageY || X > view.ImageX + width || Y > view.ImageY + width)
             {
                 visible = false;
             }
             else
             {
-                var xx = (float)((double)BaseView.ViewSize * ((double)(X - view.ImageX) / (double)step));
-                var yy = (float)((double)BaseView.ViewSize * ((double)(Y - view.ImageY) / (double)step));
+                var xx = (float)((double)BaseView.ViewSize * ((double)(X - view.ImageX) / (double)width));
+                var yy = (float)((double)BaseView.ViewSize * ((double)(Y - view.ImageY) / (double)width));
 
                 var pL = new Vector3(corners.orig_topLeft.X + xx, corners.orig_topLeft.Y - yy, corners.orig_topLeft.Z);
                 var pR = new Vector3(corners.orig_topLeft.X + xx + BaseView.ViewSize, corners.orig_topLeft.Y - yy, corners.orig_topLeft.Z);

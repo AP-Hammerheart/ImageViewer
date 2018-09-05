@@ -14,6 +14,8 @@ namespace ImageViewer.Content
 
         protected override int TileOffset(int level) => PixelSize(level) * (TileResolution - ViewResolution);
 
+        protected override int LargeStep => 10;
+
         internal PanView(
             ImageViewerMain main,
             DeviceResources deviceResources,

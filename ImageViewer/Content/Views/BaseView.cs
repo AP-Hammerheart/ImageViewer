@@ -62,7 +62,7 @@ namespace ImageViewer.Content
         internal int ImageY { get; set; } = 0;
         internal int ImageX { get; set; } = 0;
         internal Windows.System.VirtualKey VirtualKey { get; set; } = Windows.System.VirtualKey.None;
-
+        protected abstract int LargeStep { get; }
         protected int PixelSize(int level) => (int)System.Math.Pow(2, level);
         protected virtual int TileOffset(int level) => TileResolution * PixelSize(level);
         internal int Step => TileOffset(Level);
@@ -75,6 +75,9 @@ namespace ImageViewer.Content
         protected static int MinScale { get; } = 8;
         public Vector3 Origo { get; set; } = Vector3.Zero;
         public float RotationAngle { get; set; } = 0;
+        internal int Scaler { get; set; } = 1;
+
+        internal virtual int TileCount { get; } = 1;
 
         internal BaseView(
             ImageViewerMain main,
@@ -84,7 +87,7 @@ namespace ImageViewer.Content
             this.main = main;
             this.loader = loader;
 
-            statusItems = new StatusBarRenderer[6];
+            statusItems = new StatusBarRenderer[8];
 
             statusItems[0] = new StatusBarRenderer(
                 deviceResources: deviceResources,
@@ -144,24 +147,49 @@ namespace ImageViewer.Content
                 loader: loader,
                 bottomLeft: new Vector3(-0.5f, -0.3f, 0.0f),
                 topLeft: new Vector3(-0.5f, -0.25f, 0.0f),
-                bottomRight: new Vector3(0.0f, -0.3f, 0.0f),
-                topRight: new Vector3(0.0f, -0.25f, 0.0f))
+                bottomRight: new Vector3(-0.1f, -0.3f, 0.0f),
+                topRight: new Vector3(-0.1f, -0.25f, 0.0f))
             {
                 Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
-                ImageWidth = 800
+                ImageWidth = 640
             };
 
             statusItems[5] = new DebugRenderer(
                 view: this,
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(0.0f, -0.3f, 0.0f),
-                topLeft: new Vector3(0.0f, -0.25f, 0.0f),
+                bottomLeft: new Vector3(-0.1f, -0.3f, 0.0f),
+                topLeft: new Vector3(-0.1f, -0.25f, 0.0f),
+                bottomRight: new Vector3(0.35f, -0.3f, 0.0f),
+                topRight: new Vector3(0.35f, -0.25f, 0.0f))
+            {
+                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
+                ImageWidth = 720
+            };
+
+            statusItems[6] = new TileCounterRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(0.35f, -0.3f, 0.0f),
+                topLeft: new Vector3(0.35f, -0.25f, 0.0f),
+                bottomRight: new Vector3(0.45f, -0.3f, 0.0f),
+                topRight: new Vector3(0.45f, -0.25f, 0.0f))
+            {
+                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
+                ImageWidth = 160
+            };
+
+            statusItems[7] = new ScalerRenderer(
+                view: this,
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(0.45f, -0.3f, 0.0f),
+                topLeft: new Vector3(0.45f, -0.25f, 0.0f),
                 bottomRight: new Vector3(0.5f, -0.3f, 0.0f),
                 topRight: new Vector3(0.5f, -0.25f, 0.0f))
             {
                 Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
-                ImageWidth = 800
+                ImageWidth = 80
             };
 
             Pointer = new PointerRenderer(this, deviceResources, loader, 
@@ -276,6 +304,7 @@ namespace ImageViewer.Content
                 case Command.RESET_POSITION: Reset(); break;
                 case Command.HELP: Help(); break;
                 case Command.ZOOM: Zoom(direction, number); break;
+                case Command.SWITCH: main.Switch(); break;
             }
         }
 
@@ -286,53 +315,53 @@ namespace ImageViewer.Content
             switch (key)
             {
                 case Windows.System.VirtualKey.NumberPad1:
-                    Move(Direction.LEFT, 1);
-                    Move(Direction.DOWN, 1);
+                    Move(Direction.LEFT, Scaler * 1);
+                    Move(Direction.DOWN, Scaler * 1);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad3:
-                    Move(Direction.RIGHT, 1);
-                    Move(Direction.DOWN, 1);
+                    Move(Direction.RIGHT, Scaler * 1);
+                    Move(Direction.DOWN, Scaler * 1);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad7:
-                    Move(Direction.LEFT, 1);
-                    Move(Direction.UP, 1);
+                    Move(Direction.LEFT, Scaler * 1);
+                    Move(Direction.UP, Scaler * 1);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad9:
-                    Move(Direction.RIGHT, 1);
-                    Move(Direction.UP, 1);
+                    Move(Direction.RIGHT, Scaler * 1);
+                    Move(Direction.UP, Scaler * 1);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad4:
                 case Windows.System.VirtualKey.Left:
                 case Windows.System.VirtualKey.GamepadRightThumbstickLeft:
-                    Move(Direction.LEFT, 1);
+                    Move(Direction.LEFT, Scaler * 1);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad6:
                 case Windows.System.VirtualKey.Right:
                 case Windows.System.VirtualKey.GamepadRightThumbstickRight:
-                    Move(Direction.RIGHT, 1);
+                    Move(Direction.RIGHT, Scaler * 1);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad8:
                 case Windows.System.VirtualKey.Up:
                 case Windows.System.VirtualKey.GamepadRightThumbstickUp:
-                    Move(Direction.UP, 1);
+                    Move(Direction.UP, Scaler * 1);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad2:
                 case Windows.System.VirtualKey.Down:
                 case Windows.System.VirtualKey.GamepadRightThumbstickDown:
-                    Move(Direction.DOWN, 1);
+                    Move(Direction.DOWN, Scaler * 1);
                     break;
 
-                case Windows.System.VirtualKey.GamepadLeftThumbstickLeft: Move(Direction.LEFT, 10); break;
-                case Windows.System.VirtualKey.GamepadLeftThumbstickRight: Move(Direction.RIGHT, 10); break;
-                case Windows.System.VirtualKey.GamepadLeftThumbstickUp: Move(Direction.UP, 10); break;
-                case Windows.System.VirtualKey.GamepadLeftThumbstickDown: Move(Direction.DOWN, 10); break;
+                case Windows.System.VirtualKey.GamepadLeftThumbstickLeft: Move(Direction.LEFT, Scaler * LargeStep); break;
+                case Windows.System.VirtualKey.GamepadLeftThumbstickRight: Move(Direction.RIGHT, Scaler * LargeStep); break;
+                case Windows.System.VirtualKey.GamepadLeftThumbstickUp: Move(Direction.UP, Scaler * LargeStep); break;
+                case Windows.System.VirtualKey.GamepadLeftThumbstickDown: Move(Direction.DOWN, Scaler * LargeStep); break;
 
                 case Windows.System.VirtualKey.Q:
                 case Windows.System.VirtualKey.GamepadY:
@@ -340,7 +369,13 @@ namespace ImageViewer.Content
                     break;
 
                 case Windows.System.VirtualKey.GamepadMenu:
-                    Zoom(Direction.UP, 1);
+                    switch (Scaler)
+                    {
+                        case 1: Scaler = 2; break;
+                        case 2: Scaler = 5; break;
+                        case 5: Scaler = 10; break;
+                        default: Scaler = 1; break;
+                    }
                     break;
 
                 case Windows.System.VirtualKey.A:
@@ -391,6 +426,14 @@ namespace ImageViewer.Content
 
                 case Windows.System.VirtualKey.GamepadB:
                     SetAngle(-5.0f);
+                    break;
+
+                case Windows.System.VirtualKey.GamepadLeftThumbstickButton:
+                    Zoom(Direction.DOWN, 1);
+                    break;
+
+                case Windows.System.VirtualKey.GamepadRightThumbstickButton:
+                    Zoom(Direction.UP, 1);
                     break;
             }
         }

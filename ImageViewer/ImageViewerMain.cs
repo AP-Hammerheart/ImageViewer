@@ -12,7 +12,6 @@ using Windows.Foundation;
 using Windows.Gaming.Input;
 using Windows.Graphics.Holographic;
 using Windows.Media.Core;
-using Windows.Media.SpeechSynthesis;
 using Windows.Perception.Spatial;
 using Windows.UI.Input.Spatial;
 
@@ -39,7 +38,8 @@ namespace ImageViewer
             REMOVE_TAG,
             RESET_POSITION,
             HELP,
-            ZOOM
+            ZOOM,
+            SWITCH
         }
 
         internal enum Direction
@@ -60,8 +60,11 @@ namespace ImageViewer
         private readonly AppView appview;
 
         private TextureLoader               loader;
-        private PanView                     mainView;
+        private BaseView                    mainView;
         private MediaSource                 mediaSource;
+
+        bool panView = true;
+        bool updatingView = false;
 
         #endregion
 
@@ -129,7 +132,6 @@ namespace ImageViewer
             this.holographicSpace = holographicSpace;
 
             loader = new TextureLoader(deviceResources, BaseUrl);
-            //tileView = new TileView(this, deviceResources, loader);
             mainView = new PanView(this, deviceResources, loader);
 
             spatialInputHandler = new SpatialInputHandler();
@@ -178,6 +180,40 @@ namespace ImageViewer
                 await mainView.CreateDeviceDependentResourcesAsync();
             });
             task.Start();
+        }
+
+        internal void Switch()
+        {
+            updatingView = true;
+
+            // Allow rendering to complete
+            var task1 = new Task(async () =>
+            {
+                await Task.Delay(200);
+            });
+            task1.Start();
+            task1.Wait();
+
+            mainView.Dispose();
+            mainView = null;
+
+            panView = !panView;
+
+            if (panView)
+            {
+                mainView = new PanView(this, deviceResources, loader);
+            }
+            else
+            {
+                mainView = new TileView(this, deviceResources, loader);
+            }
+
+            var task2 = new Task(async () =>
+            {
+                await mainView.CreateDeviceDependentResourcesAsync();
+                updatingView = false;
+            });
+            task2.Start();
         }
 
         #endregion
@@ -237,18 +273,22 @@ namespace ImageViewer
                 //var rotator = Matrix4x4.CreateRotationY(-angle);
                 //var mover = Matrix4x4.CreateTranslation(pose.Head.Position);
                 //var transformer = rotator * mover;
-
-                //mainView.SetTransformer(transformer);
             }
 
             timer1.Tick(() => 
             {
-                mainView.Update(timer1);
+                if (!updatingView)
+                {
+                    mainView.Update(timer1);
+                }          
             });
 
             timer2.Tick(() =>
             {
-                mainView.Update(SpatialPointerPose.TryGetAtTimestamp(currentCoordinateSystem, prediction.Timestamp));
+                if (!updatingView)
+                {
+                    mainView.Update(SpatialPointerPose.TryGetAtTimestamp(currentCoordinateSystem, prediction.Timestamp));
+                }        
             });
 
             // We complete the frame update by using information about our content positioning
@@ -268,7 +308,7 @@ namespace ImageViewer
                 // You can also set the relative velocity and facing of that content; the sample
                 // hologram is at a fixed point so we only need to indicate its position.
 
-                if (mainView.Pointer != null)
+                if (!updatingView && mainView.Pointer != null)
                 {
                     renderingParameters.SetFocusPoint(currentCoordinateSystem, mainView.Pointer.Position);
                 }              
@@ -291,7 +331,7 @@ namespace ImageViewer
         public bool Render(ref HolographicFrame holographicFrame)
         {
             // Don't try to render anything before the first Update.
-            if (timer1.FrameCount == 0)
+            if (timer1.FrameCount == 0 || updatingView)
             {
                 return false;
             }
@@ -418,7 +458,10 @@ namespace ImageViewer
 
         public void OnKeyPressed(Windows.System.VirtualKey key)
         {
-            mainView.OnKeyPressed(key);
+            if (!updatingView)
+            {
+                mainView.OnKeyPressed(key);
+            }    
         }
 
         public void OnPointerPressed()
@@ -557,6 +600,8 @@ namespace ImageViewer
 
         internal void HandleVoiceCommand(IReadOnlyDictionary<string, IReadOnlyList<string>> dictionary)
         {
+            if (updatingView) return;
+
             var command = Command.UNDEFINED;
             var direction = Direction.UNDEFINED;
             var number = 0;
