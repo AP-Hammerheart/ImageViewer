@@ -13,6 +13,7 @@ namespace ImageViewer.Content
         private Texture2D texture = null;
         private ShaderResourceView view = null;
         private bool textureReady = false;
+        private bool loading = false;
 
         private float TileSize { get; }
         private int BackBufferResolution { get; }
@@ -89,54 +90,68 @@ namespace ImageViewer.Content
 
         internal async Task UpdateTextureAsync()
         {
-            textureReady = false;
-            view?.Dispose();
-            view = null;
-            texture?.Dispose();
-            texture = null;
+            if (loading) return;
 
-            try
+            loading = true;
+            textureReady = false;
+
+            string ID = null;
+
+            // Load latest update
+            while (ID != TextureID)
             {
-                using (var stream = await loader.LoadPixelDataAsync(TextureID))
+                ID = TextureID;
+ 
+                view?.Dispose();
+                view = null;
+                texture?.Dispose();
+                texture = null;
+
+                try
                 {
-                    if (stream == null)
+                    using (var stream = await loader.LoadPixelDataAsync(ID))
                     {
-                        try
+                        if (stream == null)
                         {
-                            using (var dataStream = await loader.GetImageAsync(TextureID))
+                            try
                             {
-                                if (dataStream != null)
+                                using (var dataStream = await loader.GetImageAsync(ID))
                                 {
-                                    using (var bitmap = loader.CreateBitmap(dataStream, out SharpDX.Size2 size))
+                                    if (dataStream != null)
                                     {
-                                        texture = loader.Texture2D(deviceResources, bitmap, size);
-                                        await loader.SavePixelDataAsync(TextureID, bitmap);
+                                        using (var bitmap = loader.CreateBitmap(dataStream, out SharpDX.Size2 size))
+                                        {
+                                            texture = loader.Texture2D(deviceResources, bitmap, size);
+                                            await loader.SavePixelDataAsync(ID, bitmap);
+                                        }
                                     }
                                 }
                             }
+                            catch (System.Exception)
+                            {
+                                // Delete corrupted cache file
+                                await loader.DeleteCacheFile(ID, ".PNG");
+                            }
                         }
-                        catch (System.Exception)
+                        else
                         {
-                            // Delete corrupted cache file
-                            await loader.DeleteCacheFile(TextureID, ".PNG");
+                            var size = new SharpDX.Size2(BackBufferResolution, BackBufferResolution);
+                            texture = loader.Texture2D(deviceResources, stream, size);
                         }
                     }
-                    else
-                    {
-                        var size = new SharpDX.Size2(BackBufferResolution, BackBufferResolution);
-                        texture = loader.Texture2D(deviceResources, stream, size);
-                    }
-                }
 
-                var shaderResourceDesc = TextureLoader.ShaderDescription();
-                view = new ShaderResourceView(deviceResources.D3DDevice, texture, shaderResourceDesc);
-                textureReady = true;
+                    var shaderResourceDesc = TextureLoader.ShaderDescription();
+                    view = new ShaderResourceView(deviceResources.D3DDevice, texture, shaderResourceDesc);
+                }
+                catch (System.Exception)
+                {
+                    // Delete corrupted cache file
+                    await loader.DeleteCacheFile(ID, ".RAW");
+                }
             }
-            catch (System.Exception)
-            {
-                // Delete corrupted cache file
-                await loader.DeleteCacheFile(TextureID, ".RAW");
-            }
+
+            textureReady = true;
+            loading = false;
         }
 
         internal override void ReleaseDeviceDependentResources()
