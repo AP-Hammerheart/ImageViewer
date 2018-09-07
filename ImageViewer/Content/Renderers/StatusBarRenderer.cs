@@ -24,7 +24,7 @@ namespace ImageViewer.Content
 
         protected readonly TextureLoader loader;
         protected readonly Texture2D[] texture = new Texture2D[2];
-        protected readonly ShaderResourceView[] view = new ShaderResourceView[2];
+        protected readonly ShaderResourceView[] resourceView = new ShaderResourceView[2];
 
         internal StatusBarRenderer(DeviceResources deviceResources, TextureLoader loader) : base(
             deviceResources: deviceResources,
@@ -108,7 +108,7 @@ namespace ImageViewer.Content
             }
 
             var shaderResourceDesc = TextureLoader.ShaderDescription();
-            view[0] = new ShaderResourceView(deviceResources.D3DDevice, texture[0], shaderResourceDesc);
+            resourceView[0] = new ShaderResourceView(deviceResources.D3DDevice, texture[0], shaderResourceDesc);
 
             Active = 0;
         }
@@ -127,12 +127,12 @@ namespace ImageViewer.Content
             }
 
             var shaderResourceDesc = TextureLoader.ShaderDescription();
-            view[idx] = new ShaderResourceView(deviceResources.D3DDevice, texture[idx], shaderResourceDesc);
+            resourceView[idx] = new ShaderResourceView(deviceResources.D3DDevice, texture[idx], shaderResourceDesc);
              
             Active = idx;
 
-            view[old]?.Dispose();
-            view[old] = null;
+            resourceView[old]?.Dispose();
+            resourceView[old] = null;
                          
             texture[old]?.Dispose();
             texture[old] = null;
@@ -144,7 +144,7 @@ namespace ImageViewer.Content
         {
             if (Active != -1)
             {
-                pixelShader.SetShaderResource(0, view[Active]);
+                pixelShader.SetShaderResource(0, resourceView[Active]);
             }      
         }
 
@@ -166,8 +166,8 @@ namespace ImageViewer.Content
 
             for (var i = 0; i < 2; i++)
             {
-                view[i]?.Dispose();
-                view[i] = null;
+                resourceView[i]?.Dispose();
+                resourceView[i] = null;
 
                 texture[i]?.Dispose();
                 texture[i] = null;

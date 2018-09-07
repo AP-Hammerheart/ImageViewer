@@ -146,7 +146,7 @@ xmlns="http://www.w3.org/2001/06/grammar">
                     </one-of>
                 </item>
                 <item>
-                    switch
+                    switch view mode
                     <tag>out.COMMAND=13;</tag>
                     <tag>out.TYPE=0;</tag>
                     <tag>out.NUMBER=0;</tag>

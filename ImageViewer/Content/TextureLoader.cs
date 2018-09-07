@@ -25,7 +25,8 @@ namespace ImageViewer.Content
         private List<string> lastUse = new List<string>();
 
         private readonly ImagingFactory2 factory;
-        private readonly StorageFolder localCacheFolder;
+        private readonly StorageFolder localCacheFolderPNG = KnownFolders.PicturesLibrary;
+        private readonly StorageFolder localCacheFolderRAW = ApplicationData.Current.LocalCacheFolder;
 
         private static bool loading = false;
         private static bool preloading = false;
@@ -40,7 +41,7 @@ namespace ImageViewer.Content
             this.deviceResources = deviceResources;
             this.baseUrl = baseUrl;
             factory = new ImagingFactory2();
-            localCacheFolder = ApplicationData.Current.LocalCacheFolder;
+
             textures = new Dictionary<string, Tuple<ShaderResourceView, Texture2D>>();
         }
 
@@ -145,7 +146,7 @@ namespace ImageViewer.Content
                 var id = preloadQueue.Dequeue();
 
                 var fileName = id + ".PNG";
-                var file = await localCacheFolder.TryGetItemAsync(fileName);
+                var file = await localCacheFolderPNG.TryGetItemAsync(fileName);
 
                 if (file == null)
                 {
@@ -162,7 +163,7 @@ namespace ImageViewer.Content
                                     {
                                         await stream.CopyToAsync(memoryStream);
 
-                                        var newFile = await localCacheFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+                                        var newFile = await localCacheFolderPNG.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
                                         using (var fileStream = await newFile.OpenAsync(FileAccessMode.ReadWrite))
                                         {
                                             using (var dataWriter = new DataWriter(fileStream))
@@ -192,7 +193,7 @@ namespace ImageViewer.Content
 
         internal async Task ClearCache()
         {     
-            var files = await localCacheFolder.GetFilesAsync();
+            var files = await localCacheFolderRAW.GetFilesAsync();
             foreach (var file in files)
             {
                 await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
@@ -202,7 +203,17 @@ namespace ImageViewer.Content
         internal async Task DeleteCacheFile(string id, string fileExtension)
         {
             var fileName = id + fileExtension;
-            var file = await localCacheFolder.TryGetItemAsync(fileName);
+
+            IStorageItem file = null;
+
+            if (fileExtension == ".PNG")
+            {
+                file = await localCacheFolderPNG.TryGetItemAsync(fileName);
+            }
+            else
+            {
+                file = await localCacheFolderRAW.TryGetItemAsync(fileName);
+            }
 
             if (file != null)
             {
@@ -213,7 +224,7 @@ namespace ImageViewer.Content
         internal async Task<SharpDX.DataStream> LoadPixelDataAsync(string id)
         {
             var fileName = id + ".RAW";
-            var file = await localCacheFolder.TryGetItemAsync(fileName);
+            var file = await localCacheFolderRAW.TryGetItemAsync(fileName);
 
             if (file == null)
             {
@@ -235,7 +246,7 @@ namespace ImageViewer.Content
 
             await stream.ReadAsync(bytes, 0, (int)stream.Length);
 
-            var newFile = await localCacheFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+            var newFile = await localCacheFolderRAW.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
             using (var fileStream = await newFile.OpenAsync(FileAccessMode.ReadWrite))
             {
                 using (var dataWriter = new DataWriter(fileStream))
@@ -251,7 +262,7 @@ namespace ImageViewer.Content
         internal async Task<MemoryStream> GetImageAsync(string id)
         {
             var fileName = id + ".PNG";
-            var file = await localCacheFolder.TryGetItemAsync(fileName);
+            var file = await localCacheFolderPNG.TryGetItemAsync(fileName);
             
             if (file == null)
             {
@@ -268,7 +279,7 @@ namespace ImageViewer.Content
                                 var memoryStream = new MemoryStream((int)response.ContentLength);
                                 await stream.CopyToAsync(memoryStream);
 
-                                var newFile = await localCacheFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+                                var newFile = await localCacheFolderPNG.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
                                 using (var fileStream = await newFile.OpenAsync(FileAccessMode.ReadWrite))
                                 {
                                     using (var dataWriter = new DataWriter(fileStream))
