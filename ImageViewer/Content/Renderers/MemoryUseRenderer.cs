@@ -30,7 +30,7 @@ namespace ImageViewer.Content
             var mem = MemoryUseInMB().ToString() + " MB";
             if (!mem.Equals(Text))
             {
-                updating = true;
+                Updating = true;
                 Text = mem;
 
                 Task task = new Task(async () =>

@@ -32,7 +32,7 @@ namespace ImageViewer.Content
             var chr = view.VirtualKey.ToString();
             if (!chr.Equals(Text))
             {
-                updating = true;
+                Updating = true;
                 Text = chr;
 
                 Task task = new Task(async () =>

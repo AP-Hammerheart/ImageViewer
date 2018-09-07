@@ -48,7 +48,7 @@ namespace ImageViewer.Content
             var zoom = "X: " + view.ImageX.ToString() + "  Y: " + view.ImageY.ToString() + "  Zoom: " + Zoom(view.Level);
             if (!zoom.Equals(Text))
             {
-                updating = true;
+                Updating = true;
                 Text = zoom;
 
                 Task task = new Task(async () =>

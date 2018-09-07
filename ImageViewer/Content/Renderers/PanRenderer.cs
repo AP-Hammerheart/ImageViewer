@@ -10,19 +10,19 @@ namespace ImageViewer.Content
 {
     internal class PanRenderer : PlaneRenderer
     {
-        private Texture2D texture = null;
-        private ShaderResourceView view = null;
+        private readonly Texture2D[] texture = new Texture2D[2];
+        private readonly ShaderResourceView[] view = new ShaderResourceView[2];
+        private readonly string[] IDs = new string[2];
         private bool textureReady = false;
-        private bool loading = false;
 
         private float TileSize { get; }
         private int BackBufferResolution { get; }
-
-        internal override bool TextureReady => textureReady;
-
+        private int Active { get; set; } = -1;
+        private bool Loading { get; set; } = false;
+        internal override bool TextureReady => (Active != -1) && textureReady;
         internal int X { get; set; } = 0;
-        internal int Y { get; set; } = 0;   
-
+        internal int Y { get; set; } = 0;
+        
         public PanRenderer(DeviceResources deviceResources, TextureLoader loader, string url, float tileSize, int backBufferResolution)
             : base(deviceResources, loader, url)
         {
@@ -82,17 +82,25 @@ namespace ImageViewer.Content
 
         internal override void SetTextureResource(PixelShaderStage pixelShader)
         {
-            if (textureReady)
+            if (Active != -1 && textureReady)
             {
-                pixelShader.SetShaderResource(0, view);
+                pixelShader.SetShaderResource(0, view[Active]);
             }
         }
 
         internal async Task UpdateTextureAsync()
         {
-            if (loading) return;
+            if (Loading) return;
+            Loading = true;
 
-            loading = true;
+            // Texture already in memory
+            if (TextureID == IDs[Active == 0 ? 1 : 0])
+            {
+                Active = Active == 0 ? 1 : 0;
+                Loading = false;
+                return;
+            }
+
             textureReady = false;
 
             string ID = null;
@@ -101,11 +109,13 @@ namespace ImageViewer.Content
             while (ID != TextureID)
             {
                 ID = TextureID;
+
+                var idx = Active == 0 ? 1 : 0;
  
-                view?.Dispose();
-                view = null;
-                texture?.Dispose();
-                texture = null;
+                view[idx]?.Dispose();
+                view[idx] = null;
+                texture[idx]?.Dispose();
+                texture[idx] = null;
 
                 try
                 {
@@ -121,7 +131,7 @@ namespace ImageViewer.Content
                                     {
                                         using (var bitmap = loader.CreateBitmap(dataStream, out SharpDX.Size2 size))
                                         {
-                                            texture = loader.Texture2D(deviceResources, bitmap, size);
+                                            texture[idx] = loader.Texture2D(deviceResources, bitmap, size);
                                             await loader.SavePixelDataAsync(ID, bitmap);
                                         }
                                     }
@@ -136,12 +146,14 @@ namespace ImageViewer.Content
                         else
                         {
                             var size = new SharpDX.Size2(BackBufferResolution, BackBufferResolution);
-                            texture = loader.Texture2D(deviceResources, stream, size);
+                            texture[idx] = loader.Texture2D(deviceResources, stream, size);
                         }
                     }
 
                     var shaderResourceDesc = TextureLoader.ShaderDescription();
-                    view = new ShaderResourceView(deviceResources.D3DDevice, texture, shaderResourceDesc);
+                    view[idx] = new ShaderResourceView(deviceResources.D3DDevice, texture[idx], shaderResourceDesc);
+                    IDs[idx] = ID;
+                    Active = idx;
                 }
                 catch (System.Exception)
                 {
@@ -151,33 +163,34 @@ namespace ImageViewer.Content
             }
 
             textureReady = true;
-            loading = false;
+            Loading = false;
         }
 
         internal override void ReleaseDeviceDependentResources()
         {
             base.ReleaseDeviceDependentResources();
-
-            textureReady = false;
-
-            view?.Dispose();
-            view = null;
-
-            texture?.Dispose();
-            texture = null;
+            FreeResources();
         }
 
         protected override void Dispose(bool disposeManagedResources)
         {
             base.Dispose(disposeManagedResources);
+            FreeResources();            
+        }
 
+        private void FreeResources()
+        {
             textureReady = false;
+            Active = -1;
 
-            view?.Dispose();
-            view = null;
+            for (var i = 0; i < 2; i++)
+            {
+                view[i]?.Dispose();
+                view[i] = null;
 
-            texture?.Dispose();
-            texture = null;
+                texture[i]?.Dispose();
+                texture[i] = null;
+            }
         }
     }
 }

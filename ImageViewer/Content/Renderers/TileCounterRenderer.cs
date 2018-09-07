@@ -30,7 +30,7 @@ namespace ImageViewer.Content
             var tiles = loader.TilesInMemory().ToString();
             if (!tiles.Equals(Text))
             {
-                updating = true;
+                Updating = true;
                 Text = tiles;
 
                 Task task = new Task(async () =>

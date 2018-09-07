@@ -22,11 +22,9 @@ namespace ImageViewer.Content
         private readonly Vector3 bottomRight = new Vector3(0.5f, 0.25f, 0.0f);
         private readonly Vector3 topRight = new Vector3(0.5f, 0.30f, 0.0f);
 
-        protected bool updating = false;
-
         protected readonly TextureLoader loader;
-        protected Texture2D[] texture2D = new Texture2D[2];
-        protected ShaderResourceView[] resourceView = new ShaderResourceView[2];
+        protected readonly Texture2D[] texture = new Texture2D[2];
+        protected readonly ShaderResourceView[] view = new ShaderResourceView[2];
 
         internal StatusBarRenderer(DeviceResources deviceResources, TextureLoader loader) : base(
             deviceResources: deviceResources,
@@ -73,6 +71,7 @@ namespace ImageViewer.Content
         internal int ImageWidth { get; set; } = 1600;
         internal int ImageDPI { get; set; } = 96;
         protected int Active { get; set; } = -1;
+        protected bool Updating { get; set; } = false;
 
         internal override void LoadGeometry()
         {
@@ -105,11 +104,11 @@ namespace ImageViewer.Content
         {
             using (var stream = await DrawText())
             {
-                texture2D[0] = loader.Texture2D(deviceResources, stream);
+                texture[0] = loader.Texture2D(deviceResources, stream);
             }
 
             var shaderResourceDesc = TextureLoader.ShaderDescription();
-            resourceView[0] = new ShaderResourceView(deviceResources.D3DDevice, texture2D[0], shaderResourceDesc);
+            view[0] = new ShaderResourceView(deviceResources.D3DDevice, texture[0], shaderResourceDesc);
 
             Active = 0;
         }
@@ -124,48 +123,55 @@ namespace ImageViewer.Content
             using (var stream = await DrawText())
             {
                 if (stream == null) return;
-                texture2D[idx] = loader.Texture2D(deviceResources, stream);
+                texture[idx] = loader.Texture2D(deviceResources, stream);
             }
 
             var shaderResourceDesc = TextureLoader.ShaderDescription();
-            resourceView[idx] = new ShaderResourceView(deviceResources.D3DDevice, texture2D[idx], shaderResourceDesc);
+            view[idx] = new ShaderResourceView(deviceResources.D3DDevice, texture[idx], shaderResourceDesc);
              
             Active = idx;
 
-            resourceView[old]?.Dispose();
-            resourceView[old] = null;
+            view[old]?.Dispose();
+            view[old] = null;
                          
-            texture2D[old]?.Dispose();
-            texture2D[old] = null;
+            texture[old]?.Dispose();
+            texture[old] = null;
                 
-            updating = false;          
+            Updating = false;          
         }
 
         internal override void SetTextureResource(PixelShaderStage pixelShader)
         {
             if (Active != -1)
             {
-                pixelShader.SetShaderResource(0, resourceView[Active]);
+                pixelShader.SetShaderResource(0, view[Active]);
             }      
         }
 
         internal override void ReleaseDeviceDependentResources()
         {
             base.ReleaseDeviceDependentResources();
+            FreeResources();
+        }
 
+        protected override void Dispose(bool disposeManagedResources)
+        {
+            base.Dispose(disposeManagedResources);
+            FreeResources();
+        }
+
+        private void FreeResources()
+        {
             Active = -1;
 
-            resourceView[0]?.Dispose();
-            resourceView[1]?.Dispose();
+            for (var i = 0; i < 2; i++)
+            {
+                view[i]?.Dispose();
+                view[i] = null;
 
-            texture2D[0]?.Dispose();
-            texture2D[1]?.Dispose();
-
-            resourceView[0] = null;
-            resourceView[1] = null;
-
-            texture2D[0] = null;
-            texture2D[1] = null;
+                texture[i]?.Dispose();
+                texture[i] = null;
+            }        
         }
 
         private async Task<MemoryStream> DrawText()

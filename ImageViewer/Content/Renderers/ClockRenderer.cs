@@ -30,7 +30,7 @@ namespace ImageViewer.Content
             var time = System.DateTime.Now.ToString("h:mm:s");
             if (!time.Equals(Text))
             {
-                updating = true;
+                Updating = true;
                 Text = time;
 
                 Task task = new Task(async () =>

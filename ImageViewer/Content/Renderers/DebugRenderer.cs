@@ -32,7 +32,7 @@ namespace ImageViewer.Content
             var txt = view.DebugString;
             if (!txt.Equals(Text))
             {
-                updating = true;
+                Updating = true;
                 Text = txt;
 
                 Task task = new Task(async () =>
