@@ -358,16 +358,31 @@ namespace ImageViewer.Content
                     Move(Direction.DOWN, Scaler * 1);
                     break;
 
-                case Windows.System.VirtualKey.GamepadLeftThumbstickLeft: Move(Direction.LEFT, Scaler * LargeStep); break;
-                case Windows.System.VirtualKey.GamepadLeftThumbstickRight: Move(Direction.RIGHT, Scaler * LargeStep); break;
-                case Windows.System.VirtualKey.GamepadLeftThumbstickUp: Move(Direction.UP, Scaler * LargeStep); break;
-                case Windows.System.VirtualKey.GamepadLeftThumbstickDown: Move(Direction.DOWN, Scaler * LargeStep); break;
+                case Windows.System.VirtualKey.O:
+                case Windows.System.VirtualKey.GamepadLeftThumbstickLeft:
+                    Move(Direction.LEFT, Scaler * LargeStep);
+                    break;
+
+                case Windows.System.VirtualKey.P:
+                case Windows.System.VirtualKey.GamepadLeftThumbstickRight:
+                    Move(Direction.RIGHT, Scaler * LargeStep); break;
+
+                case Windows.System.VirtualKey.I:
+                case Windows.System.VirtualKey.GamepadLeftThumbstickUp:
+                    Move(Direction.UP, Scaler * LargeStep);
+                    break;
+
+                case Windows.System.VirtualKey.L:
+                case Windows.System.VirtualKey.GamepadLeftThumbstickDown:
+                    Move(Direction.DOWN, Scaler * LargeStep);
+                    break;
 
                 case Windows.System.VirtualKey.Q:
                 case Windows.System.VirtualKey.GamepadY:
                     Scale(Direction.UP, 1);
                     break;
 
+                case Windows.System.VirtualKey.M:
                 case Windows.System.VirtualKey.GamepadMenu:
                     switch (Scaler)
                     {
@@ -397,41 +412,51 @@ namespace ImageViewer.Content
                     Reset();
                     break;
 
+                case Windows.System.VirtualKey.Z:
                 case Windows.System.VirtualKey.GamepadLeftTrigger:
                     SetPosition(0, 0, 0.1f);
                     break;
 
+                case Windows.System.VirtualKey.C:
                 case Windows.System.VirtualKey.GamepadLeftShoulder:
                     SetPosition(0, 0, -0.1f);
                     break;
 
+                case Windows.System.VirtualKey.D:
                 case Windows.System.VirtualKey.GamepadDPadLeft:
                     SetPosition(-0.1f, 0, 0);
                     break;
 
+                case Windows.System.VirtualKey.X:
                 case Windows.System.VirtualKey.GamepadDPadRight:
                     SetPosition(0.1f, 0, 0);
                     break;
 
+                case Windows.System.VirtualKey.Y:
                 case Windows.System.VirtualKey.GamepadDPadUp:
                     SetPosition(0, 0.1f, 0);
                     break;
 
+                case Windows.System.VirtualKey.U:
                 case Windows.System.VirtualKey.GamepadDPadDown:
                     SetPosition(0, -0.1f, 0); break;
 
+                case Windows.System.VirtualKey.B:
                 case Windows.System.VirtualKey.GamepadX:
                     SetAngle(5.0f);
                     break;
 
+                case Windows.System.VirtualKey.N:
                 case Windows.System.VirtualKey.GamepadB:
                     SetAngle(-5.0f);
                     break;
 
+                case Windows.System.VirtualKey.F:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickButton:
                     Zoom(Direction.DOWN, 1);
                     break;
 
+                case Windows.System.VirtualKey.W:
                 case Windows.System.VirtualKey.GamepadRightThumbstickButton:
                     Zoom(Direction.UP, 1);
                     break;
