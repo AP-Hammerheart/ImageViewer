@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -18,6 +19,7 @@ namespace ImageViewer.Content
     internal class TextureLoader : IDisposable
     {
         private readonly ulong MAX_MEMORY_USE = 900000000; // 900 MB
+        private static Mutex mutex = new Mutex();
 
         private Dictionary<string, Tuple<ShaderResourceView, Texture2D>> textures; 
         private Queue<string> loadQueue = new Queue<string>();
@@ -30,9 +32,11 @@ namespace ImageViewer.Content
 
         private static bool loading = false;
         private static bool preloading = false;
+        private static readonly bool saveTexture = false;
 
         private readonly DeviceResources deviceResources;
         private readonly string baseUrl;
+        private string currentlyLoading = null;
 
         public int TilesInMemory() => textures.Count;
 
@@ -74,25 +78,46 @@ namespace ImageViewer.Content
             }     
         }
 
-        internal async Task LoadTextureAsync(string ID)
+        internal async Task LoadTexturesAsync(List<string> IDs)
         {
-            if (lastUse.Contains(ID))
+            mutex.WaitOne();
+
+            loadQueue.Clear();
+
+            foreach (var ID in IDs)
             {
-                lastUse.Remove(ID);
+                if (!(ID.Equals(currentlyLoading) || textures.ContainsKey(ID) || loadQueue.Contains(ID)))
+                {
+                    loadQueue.Enqueue(ID);
+                }
             }
-            lastUse.Add(ID);
 
-            if (textures.ContainsKey(ID) || loadQueue.Contains(ID)) return;
-
-            loadQueue.Enqueue(ID);
+            mutex.ReleaseMutex();
 
             if (loading) return;
 
+            mutex.WaitOne();
+
             loading = true;
 
-            while (loadQueue.Count > 0)
+            var keepLoading = loadQueue.Count > 0;
+
+            mutex.ReleaseMutex();
+
+            while (keepLoading)
             {
+                mutex.WaitOne();
+
                 var id = loadQueue.Peek();
+                currentlyLoading = id;
+
+                mutex.ReleaseMutex();
+
+                if (lastUse.Contains(id))
+                {
+                    lastUse.Remove(id);
+                }
+                lastUse.Add(id);
 
                 using (var dataStream = await GetImageAsync(id))
                 {
@@ -104,7 +129,7 @@ namespace ImageViewer.Content
                         if (memoryUse > MAX_MEMORY_USE && lastUse.Count > 200) // Release old texture if memory runs low
                         {
                             var clean = 100;
-                            for (var i=0; i < clean; i++)
+                            for (var i = 0; i < clean; i++)
                             {
                                 var oldest = lastUse[0];
                                 lastUse.RemoveAt(0);
@@ -113,22 +138,37 @@ namespace ImageViewer.Content
                                     textures.Remove(oldest);
                                     texture.Item1.Dispose();
                                     texture.Item2.Dispose();
-                                    texture = null;        
+                                    texture = null;
                                 }
-                            }      
+                            }
                         }
 
                         var texture2D = Texture2D(deviceResources, dataStream);
                         var shaderResourceDesc = ShaderDescription();
                         var resourceView = new ShaderResourceView(deviceResources.D3DDevice, texture2D, shaderResourceDesc);
 
-                        textures.Add(id, new Tuple<ShaderResourceView, Texture2D>(resourceView, texture2D));     
+                        textures.Add(id, new Tuple<ShaderResourceView, Texture2D>(resourceView, texture2D));
                     }
                 }
-                loadQueue.Dequeue();
+
+                mutex.WaitOne();
+
+                if (loadQueue.Contains(id))
+                {
+                    loadQueue.Dequeue();
+                }
+
+                keepLoading = loadQueue.Count > 0;
+                currentlyLoading = null;
+
+                mutex.ReleaseMutex();
             }
 
+            mutex.WaitOne();
+
             loading = false;
+
+            mutex.ReleaseMutex();
         }
 
         internal async Task<bool> PreloadImage(string ID)
@@ -193,8 +233,14 @@ namespace ImageViewer.Content
 
         internal async Task ClearCache()
         {     
-            var files = await localCacheFolderRAW.GetFilesAsync();
-            foreach (var file in files)
+            var filesRaw = await localCacheFolderRAW.GetFilesAsync();
+            foreach (var file in filesRaw)
+            {
+                await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
+            }
+
+            var filesPng = await localCacheFolderPNG.GetFilesAsync();
+            foreach (var file in filesPng)
             {
                 await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
             }
@@ -279,18 +325,11 @@ namespace ImageViewer.Content
                                 var memoryStream = new MemoryStream((int)response.ContentLength);
                                 await stream.CopyToAsync(memoryStream);
 
-                                var newFile = await localCacheFolderPNG.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
-                                using (var fileStream = await newFile.OpenAsync(FileAccessMode.ReadWrite))
+                                if (saveTexture)
                                 {
-                                    using (var dataWriter = new DataWriter(fileStream))
-                                    {
-                                        var buffer = memoryStream.GetWindowsRuntimeBuffer();
-                                        dataWriter.WriteBuffer(buffer);
-
-                                        await dataWriter.StoreAsync();
-                                        await fileStream.FlushAsync();
-                                    }
+                                    await SaveTextureAsync(fileName, memoryStream);    
                                 }
+                                
                                 return memoryStream;
                             }
                         }
@@ -311,6 +350,22 @@ namespace ImageViewer.Content
                 var memoryStream = new MemoryStream(bytes);
                 return memoryStream;
             }          
+        }
+
+        private async Task SaveTextureAsync(string fileName, MemoryStream memoryStream)
+        {
+            var newFile = await localCacheFolderPNG.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+            using (var fileStream = await newFile.OpenAsync(FileAccessMode.ReadWrite))
+            {
+                using (var dataWriter = new DataWriter(fileStream))
+                {
+                    var buffer = memoryStream.GetWindowsRuntimeBuffer();
+                    dataWriter.WriteBuffer(buffer);
+
+                    await dataWriter.StoreAsync();
+                    await fileStream.FlushAsync();
+                }
+            }
         }
 
         internal static SamplerStateDescription SamplerStateDescription() 

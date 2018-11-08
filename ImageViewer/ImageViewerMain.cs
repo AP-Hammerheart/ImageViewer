@@ -63,7 +63,7 @@ namespace ImageViewer
         private BaseView                    mainView;
         private MediaSource                 mediaSource;
 
-        bool panView = true;
+        bool panView = false;
         bool updatingView = false;
 
         #endregion
@@ -132,7 +132,15 @@ namespace ImageViewer
             this.holographicSpace = holographicSpace;
 
             loader = new TextureLoader(deviceResources, BaseUrl);
-            mainView = new PanView(this, deviceResources, loader);
+
+            if (panView)
+            {
+                mainView = new PanView(this, deviceResources, loader);
+            }
+            else
+            {
+                mainView = new TileView(this, deviceResources, loader);
+            }
 
             spatialInputHandler = new SpatialInputHandler();
 
@@ -652,7 +660,7 @@ namespace ImageViewer
 
         internal static string Image2 { get; } = "image2.ndpi";
 
-        internal static string BaseUrl { get; } = "http://10.10.10.4:8081/?command=image&name=";
+        internal static string BaseUrl { get; } = "http://137.135.167.62:8080/?command=image&caseID=1234&name=";
 
         private static float Angle(Vector3 v1, Vector3 v2, Vector3 up)
         {

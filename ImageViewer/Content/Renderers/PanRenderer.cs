@@ -37,7 +37,7 @@ namespace ImageViewer.Content
             UpdateGeometry();
         }
 
-        private void UpdateGeometry()
+        internal override void UpdateGeometry()
         {
             var x0 = ((float)X) / ((float)BackBufferResolution);
             var y0 = ((float)Y) / ((float)BackBufferResolution);
@@ -59,25 +59,6 @@ namespace ImageViewer.Content
             };
 
             vertexBuffer = ToDispose(Buffer.Create(deviceResources.D3DDevice, BindFlags.VertexBuffer, planeVertices));
-        }
-
-        internal override void LoadGeometry()
-        {
-            UpdateGeometry();
-            
-            ushort[] planeIndices =
-            {
-                1,2,0,
-                3,2,1,
-            };
-
-            indexCount = planeIndices.Length;
-            indexBuffer = ToDispose(Buffer.Create(deviceResources.D3DDevice, BindFlags.IndexBuffer, planeIndices));
-
-            modelConstantBuffer = ToDispose(Buffer.Create(
-                deviceResources.D3DDevice,
-                BindFlags.ConstantBuffer,
-                ref modelConstantBufferData));
         }
 
         internal override void SetTextureResource(PixelShaderStage pixelShader)

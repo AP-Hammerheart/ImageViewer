@@ -223,9 +223,11 @@ namespace ImageViewer.Content
             var pL = pos1.X <= corners.orig_origo.X ? pos1 : pos2;
             var pR = pos1.X <= corners.orig_origo.X ? pos2 : pos1;
 
-            var v = (1.0f / BaseView.ViewSize) * view.Step * view.TileCount;
+            var v = (1.0f / BaseView.ViewSize) * view.Step * view.TileCountX;
+            var h = (1.0f / BaseView.ViewSize) * view.Step * view.TileCountY;
+
             var X = view.ImageX + (int)(v * (pL.X - corners.orig_topLeft.X));
-            var Y = view.ImageY + (int)(v * (corners.orig_topLeft.Y - pL.Y));
+            var Y = view.ImageY + (int)(h * (corners.orig_topLeft.Y - pL.Y));
 
             p = Vector4.Transform(pL, translation);
             pL = new Vector3(p.X, p.Y, p.Z);

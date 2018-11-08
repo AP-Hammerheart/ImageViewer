@@ -77,7 +77,8 @@ namespace ImageViewer.Content
         public float RotationAngle { get; set; } = 0;
         internal int Scaler { get; set; } = 1;
 
-        internal virtual int TileCount { get; } = 1;
+        internal virtual int TileCountX { get; } = 1;
+        internal virtual int TileCountY { get; } = 1;
 
         internal BaseView(
             ImageViewerMain main,
@@ -511,11 +512,95 @@ namespace ImageViewer.Content
             Pointer.SetRotator(rotator);
         }
 
-        protected abstract void Scale(Direction direction, int number);
+        protected void Scale(Direction direction, int number)
+        {
+            switch (direction)
+            {
+                case Direction.UP:
+                    Level -= number;
+                    if (Level < 0)
+                    {
+                        Level = 0;
+                    }
+                    break;
+                case Direction.DOWN:
+                    Level += number;
+                    if (Level > MinScale)
+                    {
+                        Level = MinScale;
+                    }
+                    break;
+            }
 
-        protected abstract void Move(Direction direction, int number);
+            UpdateImages();
+        }
 
-        protected abstract void Zoom(Direction direction, int number);
+        protected void Move(Direction direction, int number)
+        {
+            var distance = number * PixelSize(Level);
+
+            switch (direction)
+            {
+                case Direction.LEFT:
+                    ImageX += distance;
+                    if (ImageX > maxResolution)
+                    {
+                        ImageX = maxResolution;
+                    }
+                    break;
+                case Direction.RIGHT:
+                    ImageX -= distance;
+                    if (ImageX < 0)
+                    {
+                        ImageX = 0;
+                    }
+                    break;
+                case Direction.DOWN:
+                    ImageY -= distance;
+                    if (ImageY < 0)
+                    {
+                        ImageY = 0;
+                    }
+                    break;
+                case Direction.UP:
+                    ImageY += distance;
+                    if (ImageY > maxResolution)
+                    {
+                        ImageY = maxResolution;
+                    }
+                    break;
+            }
+
+            UpdateImages();
+        }
+
+        protected void Zoom(Direction direction, int number)
+        {
+            var c = Pointer.Coordinates();
+
+            switch (direction)
+            {
+                case Direction.UP:
+                    Level -= number;
+                    if (Level < 0)
+                    {
+                        Level = 0;
+                    }
+                    break;
+                case Direction.DOWN:
+                    Level += number;
+                    if (Level > MinScale)
+                    {
+                        Level = MinScale;    
+                    }
+                    break;
+            }
+
+            ImageX = c.X - ((TileCountX * Step) / 2);
+            ImageY = c.Y - ((TileCountY * Step) / 2);
+
+            UpdateImages();
+        }
 
         protected abstract void UpdateImages();
 

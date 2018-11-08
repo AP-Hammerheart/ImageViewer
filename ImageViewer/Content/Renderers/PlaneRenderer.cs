@@ -30,5 +30,26 @@ namespace ImageViewer.Content
         internal override int VertexSize => SharpDX.Utilities.SizeOf<VertexPlane>();
 
         internal string TextureID { get; set; }
+
+        internal abstract void UpdateGeometry();
+
+        internal override void LoadGeometry()
+        {
+            UpdateGeometry();
+
+            ushort[] planeIndices =
+            {
+                1,2,0,
+                3,2,1,
+            };
+
+            indexCount = planeIndices.Length;
+            indexBuffer = ToDispose(Buffer.Create(deviceResources.D3DDevice, BindFlags.IndexBuffer, planeIndices));
+
+            modelConstantBuffer = ToDispose(Buffer.Create(
+                deviceResources.D3DDevice,
+                BindFlags.ConstantBuffer,
+                ref modelConstantBufferData));
+        }
     }
 }

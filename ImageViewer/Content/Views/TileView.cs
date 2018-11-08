@@ -2,20 +2,25 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
-using static ImageViewer.ImageViewerMain;
 
 namespace ImageViewer.Content
 {
     internal class TileView : BaseView
     {
-        private static readonly int maxX = 5;
-        private static readonly int maxY = 5;
+        private static readonly int gridX = 6;
+        private static readonly int gridY = 6;
+
+        private static readonly float tileSize = 0.1f;
+        private static readonly float negHalfTile = -0.5f * tileSize;
+        private static readonly float posHalfTile = 0.5f * tileSize;
 
         protected override int LargeStep => 3;
 
-        internal override int TileCount { get; } = 5;
+        internal override int TileCountX { get; } = 5;
+        internal override int TileCountY { get; } = 5;
 
         internal TileView(
             ImageViewerMain main,
@@ -24,179 +29,157 @@ namespace ImageViewer.Content
         {
             TileResolution = 256;
 
-            Tiles = new TileRenderer[2 * maxX * maxY];
+            Tiles = new TileRenderer[2 * gridX * gridY];
 
             var step = Step;
-            var tileSize = 0.1f;
 
-            for (var x = 0; x < maxX; x++)
+            var lx0 = -1.0f * (gridX - 1) * tileSize + posHalfTile;
+            var rx0 = posHalfTile;
+            var y0 = 0.5f * (gridY - 1) * tileSize - posHalfTile;
+            var z = -1.0f * DistanceFromUser;
+
+            var ri0 = gridX * gridY;
+
+            for (var x = 0; x < gridX; x++)
             {
-                for (var y = 0; y < maxY; y++)
+                for (var y = 0; y < gridY; y++)
                 {
-                    Tiles[maxY * x + y] = new TileRenderer(deviceResources, loader, ImageViewerMain.Image1
-                        + "&x=" + (x * step + ImageX).ToString()
-                        + "&y=" + (y * step + ImageY).ToString()
-                        + "&w=" + TileResolution.ToString()
-                        + "&h=" + TileResolution.ToString()
-                        + "&level=" + Level.ToString(),
-                        tileSize)
+                    Tiles[gridY * x + y] = new TileRenderer(deviceResources, loader, null, tileSize)
                     {
-                        Position = new Vector3(
-                            -1.0f * maxX * tileSize + (0.5f * tileSize) + x * tileSize,
-                            0.5f * maxY * tileSize - (0.5f * tileSize) - y * tileSize,
-                            -1 * DistanceFromUser)
+                        Position = new Vector3(lx0 + x * tileSize, y0 - y * tileSize, z)
                     };
 
-                    Tiles[(maxX * maxY) + (maxY * x + y)] = new TileRenderer(deviceResources, loader, ImageViewerMain.Image2
-                        + "&x=" + (x * step + ImageX + image2offsetX).ToString()
-                        + "&y=" + (y * step + ImageY + image2offsetY).ToString()
-                        + "&w=" + TileResolution.ToString()
-                        + "&h=" + TileResolution.ToString()
-                        + "&level=" + Level.ToString(),
-                        tileSize)
+                    Tiles[ri0 + (gridY * x + y)] = new TileRenderer(deviceResources, loader, null, tileSize)
                     {
-                        Position = new Vector3(
-                            (0.5f * tileSize) + x * tileSize,
-                            0.5f * maxY * tileSize - (0.5f * tileSize) - y * tileSize,
-                            -1 * DistanceFromUser)
+                        Position = new Vector3(rx0 + x * tileSize, y0 - y * tileSize, z)
                     };
                 }
             }
-        }
-
-        protected override void Scale(Direction direction, int number)
-        {
-            switch (direction)
-            {
-                case Direction.UP:
-                    Level -= number;
-                    if (Level < 0) Level = 0;
-                    break;
-                case Direction.DOWN:
-                    Level += number;
-                    if (Level > MinScale) Level = MinScale;
-                    break;
-            }
-
-            var step = Step;
-
-            ImageX = ImageX - (ImageX % step);
-            ImageY = ImageY - (ImageY % step);
-
-            UpdateImages(step);
-        }
-
-        protected override void Move(Direction direction, int number)
-        {
-            var step = Step;
-
-            switch (direction)
-            {
-                case Direction.LEFT:
-                    if (ImageX < maxResolution - ((maxX - 1) * step))
-                    {
-                        ImageX += number * step;
-                    }
-                    break;
-                case Direction.RIGHT:
-                    ImageX -= number * step;
-                    if (ImageX < 0)
-                    {
-                        ImageX = 0;
-                    }
-                    break;
-                case Direction.DOWN:
-                    ImageY -= number * step;
-                    if (ImageY < 0)
-                    {
-                        ImageY = 0;
-                    }
-                    break;
-                case Direction.UP:
-                    if (ImageY < maxResolution - ((maxY - 1) * step))
-                    {
-                        ImageY += number * step;
-                    }
-                    break;
-            }
-
-            UpdateImages(step);
-        }
-
-        protected override void Zoom(Direction direction, int number)
-        {
-            var c = Pointer.Coordinates();
-
-            switch (direction)
-            {
-                case Direction.UP:
-                    if (Level > 0)
-                    {
-                        Level -= number;
-                    }
-                    else return;
-                    break;
-                case Direction.DOWN:
-                    if (Level < MinScale)
-                    {
-                        Level += number;
-                    }
-                    else return;
-                    break;
-            }
-
-            ImageX = (c.X / Step - 2) * Step;
-            ImageY = (c.Y / Step - 2) * Step;
-
-            UpdateImages(Step);
+            UpdateImages();
         }
 
         protected override void UpdateImages()
         {
-            UpdateImages(Step);
-        }
-
-        private void UpdateImages(int step)
-        {
             Pointer.Update();
 
-            for (var x = 0; x < maxX; x++)
+            var textures = new List<string>();
+
+            var step = PixelSize(Level) * TileResolution;
+
+            var gridImageX = ImageX - (ImageX % step);
+            var gridImageY = ImageY - (ImageY % step);
+
+            var rx = (ImageX % step) / PixelSize(Level);
+            var ry = (ImageY % step) / PixelSize(Level);
+
+            var dx = ((float)rx / (float)TileResolution) * tileSize;
+            var dy = ((float)ry / (float)TileResolution) * tileSize;
+
+            var x0 = (-1.0f * (gridX - 1) * tileSize) + posHalfTile - dx;
+            var x1 = posHalfTile - dx;
+            var y0 = (0.5f * (gridY - 1) * tileSize) - posHalfTile + dy;
+            var z = -1.0f * DistanceFromUser;
+
+            var tx = (float)rx / (float)TileResolution;
+            var ty = (float)ry / (float)TileResolution;
+
+            for (var x = 0; x < gridX; x++)
             {
-                for (var y = 0; y < maxY; y++)
+                for (var y = 0; y < gridY; y++)
                 {
-                    var url1 = ImageViewerMain.Image1
-                        + "&x=" + (x * step + ImageX).ToString()
-                        + "&y=" + (y * step + ImageY).ToString()
+                    var lurl = ImageViewerMain.Image1
+                        + "&x=" + (x * step + gridImageX).ToString()
+                        + "&y=" + (y * step + gridImageY).ToString()
                         + "&w=" + TileResolution.ToString()
                         + "&h=" + TileResolution.ToString()
                         + "&level=" + Level.ToString();
 
-                    Tiles[maxY * x + y].TextureID = url1;
+                    textures.Add(lurl);
 
-                    Task task1 = new Task(async () =>
+                    var ltile = (TileRenderer)(Tiles[gridY * x + y]);
+                    ltile.TextureID = lurl;
+                    ltile.Position = Origo + new Vector3(x0 + (x * tileSize), y0 - (y * tileSize), z);
+
+                    if (x == 0 || y == 0 || x == (gridX - 1) || y == (gridY - 1))
                     {
-                        await loader.LoadTextureAsync(url1);
-                    });
-                    task1.Start();
-                    task1.Wait();
+                        ClipTile(ltile, x, y, tx, ty, dx, dy);
+                    }
 
-                    var url2 = ImageViewerMain.Image2
-                        + "&x=" + (x * step + ImageX + image2offsetX).ToString()
-                        + "&y=" + (y * step + ImageY + image2offsetY).ToString()
+                    var rurl = ImageViewerMain.Image2
+                        + "&x=" + (x * step + gridImageX + image2offsetX).ToString()
+                        + "&y=" + (y * step + gridImageY + image2offsetY).ToString()
                         + "&w=" + TileResolution.ToString()
                         + "&h=" + TileResolution.ToString()
                         + "&level=" + Level.ToString();
 
-                    Tiles[(maxX * maxY) + (maxY * x + y)].TextureID = url2;
+                    textures.Add(rurl);
 
-                    Task task2 = new Task(async () =>
+                    var rtile = ((TileRenderer)Tiles[(gridX * gridY) + (gridY * x + y)]);
+                    rtile.TextureID = rurl;
+                    rtile.Position = Origo + new Vector3(x1 + (x * tileSize), y0 - (y * tileSize), z);
+
+                    if (x == 0 || y == 0 || x == (gridX - 1) || y == (gridY - 1))
                     {
-                        await loader.LoadTextureAsync(url2);
-                    });
-                    task2.Start();
-                    task2.Wait();
+                        ClipTile(rtile, x, y, tx, ty, dx, dy);
+                    }
                 }
             }
+
+            var task = new Task(async () =>
+            {
+                await loader.LoadTexturesAsync(textures);
+            });
+            task.Start();
+        }
+
+        private void ClipTile(TileRenderer tile, int ix, int iy, float tx, float ty, float dx, float dy)
+        {
+            if (ix == 0)
+            {
+                tile.X0 = negHalfTile + dx;
+                tile.U0 = tx;
+            }
+
+            if (dx > 0.0f)
+            {
+                if (ix == gridX - 1)
+                {
+                    tile.X1 = negHalfTile + dx;
+                    tile.U1 = tx;
+                }
+            }
+            else
+            {
+                if (ix == gridX - 1)
+                {
+                    tile.X1 = tile.X0;
+                    tile.U1 = tile.U0;
+                }
+            }
+
+            if (iy == 0)
+            {
+                tile.Y1 = posHalfTile - dy;
+                tile.V1 = ty;
+            }
+
+            if (dy > 0.0f)
+            {
+                if (iy == gridY - 1)
+                {
+                    tile.Y0 = posHalfTile - dy;
+                    tile.V0 = ty;
+                }
+            }
+            else
+            {
+                if (iy == gridY - 1)
+                {
+                    tile.Y0 = tile.Y1;
+                    tile.V0 = tile.V1;
+                }
+            }
+            tile.UpdateGeometry();
         }
     }
 }

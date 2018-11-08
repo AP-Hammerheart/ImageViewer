@@ -4,7 +4,6 @@
 using ImageViewer.Common;
 using System.Numerics;
 using System.Threading.Tasks;
-using static ImageViewer.ImageViewerMain;
 
 namespace ImageViewer.Content
 {
@@ -29,103 +28,13 @@ namespace ImageViewer.Content
 
             Tiles[0] = new PanRenderer(deviceResources, loader, "", tileSize, backBufferResolution: TileResolution)
             {
-                Position = new Vector3(-0.5f * tileSize, 0, -1 * DistanceFromUser)
+                Position = new Vector3(-0.5f * tileSize, 0, -1.0f * DistanceFromUser)
             };
 
             Tiles[1] = new PanRenderer(deviceResources, loader, "", tileSize, backBufferResolution: TileResolution)
             {
-                Position = new Vector3(0.5f * tileSize, 0, -1 * DistanceFromUser)
+                Position = new Vector3(0.5f * tileSize, 0, -1.0f * DistanceFromUser)
             };
-
-            UpdateImages();
-        }
-
-        protected override void Scale(Direction direction, int number)
-        {
-            switch (direction)
-            {
-                case Direction.UP:
-                    if (Level > 0)
-                    {
-                        Level -= number;
-                    }
-                    else return;
-                    break;
-                case Direction.DOWN:
-                    if (Level < MinScale)
-                    {
-                        Level += number;
-                    }
-                    else return;
-                    break;
-            }
-
-            UpdateImages();
-        }
-
-        protected override void Move(Direction direction, int number)
-        {
-            var distance = number * PixelSize(Level);
-
-            switch (direction)
-            {
-                case Direction.LEFT:
-                    if (ImageX < maxResolution)
-                    {
-                        ImageX += distance;
-                    }
-                    else return;
-                    break;
-                case Direction.RIGHT:
-                    ImageX -= distance;
-                    if (ImageX < 0)
-                    {
-                        ImageX = 0;
-                    }
-                    break;
-                case Direction.DOWN:
-                    ImageY -= distance;
-                    if (ImageY < 0)
-                    {
-                        ImageY = 0;
-                    }
-                    break;
-                case Direction.UP:
-                    if (ImageY < maxResolution)
-                    {
-                        ImageY += distance;
-                    }
-                    else return;
-                    break;
-            }
-
-            UpdateImages();
-        }
-
-        protected override void Zoom(Direction direction, int number)
-        {
-            var c = Pointer.Coordinates();
-
-            switch (direction)
-            {
-                case Direction.UP:
-                    if (Level > 0)
-                    {
-                        Level -= number;
-                    }
-                    else return;
-                    break;
-                case Direction.DOWN:
-                    if (Level < MinScale)
-                    {
-                        Level += number;
-                    }
-                    else return;
-                    break;
-            }
-       
-            ImageX = c.X - (Step / 2);
-            ImageY = c.Y - (Step / 2);
 
             UpdateImages();
         }
