@@ -10,17 +10,17 @@ namespace ImageViewer.Content
 {
     internal class TileView : BaseView
     {
-        private static readonly int gridX = 6;
-        private static readonly int gridY = 6;
+        private static readonly int gridX = 4;
+        private static readonly int gridY = 4;
 
-        private static readonly float tileSize = 0.1f;
+        private static readonly float tileSize = 0.2f;
         private static readonly float negHalfTile = -0.5f * tileSize;
         private static readonly float posHalfTile = 0.5f * tileSize;
 
         protected override int LargeStep => 3;
 
-        internal override int TileCountX { get; } = 5;
-        internal override int TileCountY { get; } = 5;
+        internal override int TileCountX { get; } = 3;
+        internal override int TileCountY { get; } = 3;
 
         internal TileView(
             ImageViewerMain main,
@@ -130,6 +130,7 @@ namespace ImageViewer.Content
                 await loader.LoadTexturesAsync(textures);
             });
             task.Start();
+            task.Wait();
         }
 
         private void ClipTile(TileRenderer tile, int ix, int iy, float tx, float ty, float dx, float dy)

@@ -39,7 +39,8 @@ namespace ImageViewer
             RESET_POSITION,
             HELP,
             ZOOM,
-            SWITCH
+            SWITCH,
+            FORMAT
         }
 
         internal enum Direction
@@ -661,7 +662,7 @@ namespace ImageViewer
         internal static string Image2 { get; } = "image2.ndpi";
 
         internal static string BaseUrl { get; } = "http://137.135.167.62:8080/?command=image&caseID=1234&name=";
-
+    
         private static float Angle(Vector3 v1, Vector3 v2, Vector3 up)
         {
             var cross = Vector3.Cross(v1, v2);

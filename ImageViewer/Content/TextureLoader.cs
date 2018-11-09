@@ -33,10 +33,14 @@ namespace ImageViewer.Content
         private static bool loading = false;
         private static bool preloading = false;
         private static readonly bool saveTexture = false;
+        
+        private static readonly SharpDX.Size2 TextureTileSize = new SharpDX.Size2(256, 256);
 
         private readonly DeviceResources deviceResources;
         private readonly string baseUrl;
         private string currentlyLoading = null;
+
+        internal bool DownloadRaw { get; set; } = true;
 
         public int TilesInMemory() => textures.Count;
 
@@ -142,8 +146,17 @@ namespace ImageViewer.Content
                                 }
                             }
                         }
+                        Texture2D texture2D = null;
 
-                        var texture2D = Texture2D(deviceResources, dataStream);
+                        if (DownloadRaw)
+                        {
+                            texture2D = Texture2DRaw(deviceResources, dataStream, TextureTileSize);
+                        }
+                        else
+                        {
+                            texture2D = Texture2D(deviceResources, dataStream);
+                        }
+                        
                         var shaderResourceDesc = ShaderDescription();
                         var resourceView = new ShaderResourceView(deviceResources.D3DDevice, texture2D, shaderResourceDesc);
 
@@ -312,7 +325,14 @@ namespace ImageViewer.Content
             
             if (file == null)
             {
-                var request = (HttpWebRequest)WebRequest.Create(baseUrl + id);
+                var url = baseUrl + id;
+
+                if (DownloadRaw)
+                {
+                    url += "&format=RAW";
+                }
+
+                var request = (HttpWebRequest)WebRequest.Create(url);
 
                 try
                 {
@@ -377,6 +397,16 @@ namespace ImageViewer.Content
             AddressW = TextureAddressMode.Wrap,
             BorderColor = new SharpDX.Mathematics.Interop.RawColor4(0f, 0f, 0f, 1f)
         };
+
+        internal Texture2D Texture2DRaw(DeviceResources deviceResources, MemoryStream rawData, SharpDX.Size2 size)
+        {
+            using (var dataStream = new SharpDX.DataStream((int)rawData.Length, true, true))
+            {
+                dataStream.Write(rawData.ToArray(), 0, (int)rawData.Length);
+                var texture2D = Texture2D(deviceResources, dataStream, size);
+                return texture2D;
+            }               
+        }
 
         internal Texture2D Texture2D(DeviceResources deviceResources, MemoryStream imageData)
         {

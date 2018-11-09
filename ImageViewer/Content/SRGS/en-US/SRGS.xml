@@ -151,6 +151,12 @@ xmlns="http://www.w3.org/2001/06/grammar">
                     <tag>out.TYPE=0;</tag>
                     <tag>out.NUMBER=0;</tag>
                 </item>
+                <item>
+                    switch download format
+                    <tag>out.COMMAND=14;</tag>
+                    <tag>out.TYPE=0;</tag>
+                    <tag>out.NUMBER=0;</tag>
+                </item>
             </one-of>
         </item>
     </rule>

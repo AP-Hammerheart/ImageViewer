@@ -35,6 +35,8 @@ namespace ImageViewer
         // The holographic space the app will use for rendering.
         private HolographicSpace        holographicSpace    = null;
 
+        private DateTime lastEvent = DateTime.Now;
+
         internal static MediaPlayer MediaPlayer { get; set; }
         internal static SpeechSynthesizer Synthesizer { get; set; }
 
@@ -274,6 +276,18 @@ namespace ImageViewer
             //       your holographic app.
             //
             // Allow the user to interact with the holographic world using the mouse.
+
+            var now = DateTime.Now;
+            args.Handled = true;
+
+            var delta = (now - lastEvent).TotalMilliseconds;
+            if (delta < 100)
+            {
+                return;
+            }
+
+            lastEvent = now;
+
             if (null != main)
             {
                 main.OnKeyPressed(args.VirtualKey);

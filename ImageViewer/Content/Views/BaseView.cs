@@ -93,26 +93,26 @@ namespace ImageViewer.Content
             statusItems[0] = new StatusBarRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(-0.5f, 0.25f, 0.0f),
-                topLeft: new Vector3(-0.5f, 0.30f, 0.0f),
-                bottomRight: new Vector3(-0.2f, 0.25f, 0.0f),
-                topRight: new Vector3(-0.2f, 0.30f, 0.0f))
+                bottomLeft: new Vector3(-0.6f, 0.30f, 0.0f),
+                topLeft: new Vector3(-0.6f, 0.35f, 0.0f),
+                bottomRight: new Vector3(-0.2f, 0.30f, 0.0f),
+                topRight: new Vector3(-0.2f, 0.35f, 0.0f))
             {
                 Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
                 TextPosition = new Vector2(20, 10),
                 Text = "ImageViewer",
                 FontSize = 40,
-                ImageWidth = 480,
+                ImageWidth = 640,
             };
 
             statusItems[1] = new ZoomRenderer(
                 view: this,
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(-0.2f, 0.25f, 0.0f),
-                topLeft: new Vector3(-0.2f, 0.30f, 0.0f),
-                bottomRight: new Vector3(0.3f, 0.25f, 0.0f),
-                topRight: new Vector3(0.3f, 0.30f, 0.0f))
+                bottomLeft: new Vector3(-0.2f, 0.30f, 0.0f),
+                topLeft: new Vector3(-0.2f, 0.35f, 0.0f),
+                bottomRight: new Vector3(0.3f, 0.30f, 0.0f),
+                topRight: new Vector3(0.3f, 0.35f, 0.0f))
             {
                 Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
                 ImageWidth = 800
@@ -121,10 +121,10 @@ namespace ImageViewer.Content
             statusItems[2] = new MemoryUseRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(0.3f, 0.25f, 0.0f),
-                topLeft: new Vector3(0.3f, 0.30f, 0.0f),
-                bottomRight: new Vector3(0.4f, 0.25f, 0.0f),
-                topRight: new Vector3(0.4f, 0.30f, 0.0f))
+                bottomLeft: new Vector3(0.3f, 0.30f, 0.0f),
+                topLeft: new Vector3(0.3f, 0.35f, 0.0f),
+                bottomRight: new Vector3(0.4f, 0.30f, 0.0f),
+                topRight: new Vector3(0.4f, 0.35f, 0.0f))
             {
                 Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
                 ImageWidth = 160
@@ -133,36 +133,36 @@ namespace ImageViewer.Content
             statusItems[3] = new ClockRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(0.4f, 0.25f, 0.0f),
-                topLeft: new Vector3(0.4f, 0.30f, 0.0f),
-                bottomRight: new Vector3(0.5f, 0.25f, 0.0f),
-                topRight: new Vector3(0.5f, 0.30f, 0.0f))
+                bottomLeft: new Vector3(0.4f, 0.30f, 0.0f),
+                topLeft: new Vector3(0.4f, 0.35f, 0.0f),
+                bottomRight: new Vector3(0.6f, 0.30f, 0.0f),
+                topRight: new Vector3(0.6f, 0.35f, 0.0f))
             {
                 Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
-                ImageWidth = 160
+                ImageWidth = 320
             };
 
             statusItems[4] = new KeyRenderer(
                 view: this,
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(-0.5f, -0.3f, 0.0f),
-                topLeft: new Vector3(-0.5f, -0.25f, 0.0f),
-                bottomRight: new Vector3(-0.1f, -0.3f, 0.0f),
-                topRight: new Vector3(-0.1f, -0.25f, 0.0f))
+                bottomLeft: new Vector3(-0.6f, -0.35f, 0.0f),
+                topLeft: new Vector3(-0.6f, -0.30f, 0.0f),
+                bottomRight: new Vector3(-0.1f, -0.35f, 0.0f),
+                topRight: new Vector3(-0.1f, -0.30f, 0.0f))
             {
                 Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
-                ImageWidth = 640
+                ImageWidth = 800
             };
 
             statusItems[5] = new DebugRenderer(
                 view: this,
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(-0.1f, -0.3f, 0.0f),
-                topLeft: new Vector3(-0.1f, -0.25f, 0.0f),
-                bottomRight: new Vector3(0.35f, -0.3f, 0.0f),
-                topRight: new Vector3(0.35f, -0.25f, 0.0f))
+                bottomLeft: new Vector3(-0.1f, -0.35f, 0.0f),
+                topLeft: new Vector3(-0.1f, -0.30f, 0.0f),
+                bottomRight: new Vector3(0.35f, -0.35f, 0.0f),
+                topRight: new Vector3(0.35f, -0.30f, 0.0f))
             {
                 Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
                 ImageWidth = 720
@@ -171,33 +171,33 @@ namespace ImageViewer.Content
             statusItems[6] = new TileCounterRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(0.35f, -0.3f, 0.0f),
-                topLeft: new Vector3(0.35f, -0.25f, 0.0f),
-                bottomRight: new Vector3(0.45f, -0.3f, 0.0f),
-                topRight: new Vector3(0.45f, -0.25f, 0.0f))
+                bottomLeft: new Vector3(0.35f, -0.35f, 0.0f),
+                topLeft: new Vector3(0.35f, -0.30f, 0.0f),
+                bottomRight: new Vector3(0.5f, -0.35f, 0.0f),
+                topRight: new Vector3(0.5f, -0.30f, 0.0f))
             {
                 Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
-                ImageWidth = 160
+                ImageWidth = 240
             };
 
             statusItems[7] = new ScalerRenderer(
                 view: this,
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(0.45f, -0.3f, 0.0f),
-                topLeft: new Vector3(0.45f, -0.25f, 0.0f),
-                bottomRight: new Vector3(0.5f, -0.3f, 0.0f),
-                topRight: new Vector3(0.5f, -0.25f, 0.0f))
+                bottomLeft: new Vector3(0.5f, -0.35f, 0.0f),
+                topLeft: new Vector3(0.5f, -0.30f, 0.0f),
+                bottomRight: new Vector3(0.6f, -0.35f, 0.0f),
+                topRight: new Vector3(0.6f, -0.30f, 0.0f))
             {
                 Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
-                ImageWidth = 80
+                ImageWidth = 160
             };
 
             Pointer = new PointerRenderer(this, deviceResources, loader, 
                 new PointerRenderer.Corners(
                     origo: new Vector3(0.0f, 0.0f, -1 * DistanceFromUser), 
-                    topLeft: new Vector3(-0.5f, 0.25f, -1 * DistanceFromUser),
-                    bottomLeft: new Vector3(-0.5f, -0.25f, -1 * DistanceFromUser)))
+                    topLeft: new Vector3(-0.6f, 0.30f, -1 * DistanceFromUser),
+                    bottomLeft: new Vector3(-0.6f, -0.30f, -1 * DistanceFromUser)))
             {
                 Position = new Vector3(0, 0, -1 * DistanceFromUser)
             };        
@@ -306,6 +306,7 @@ namespace ImageViewer.Content
                 case Command.HELP: Help(); break;
                 case Command.ZOOM: Zoom(direction, number); break;
                 case Command.SWITCH: main.Switch(); break;
+                case Command.FORMAT: loader.DownloadRaw = !loader.DownloadRaw; break;
             }
         }
 
