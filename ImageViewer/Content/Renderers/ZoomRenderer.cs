@@ -2,10 +2,11 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.Views;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Renderers
 {
     internal class ZoomRenderer : StatusBarRenderer
     {
@@ -45,7 +46,7 @@ namespace ImageViewer.Content
 
         internal override void Update(StepTimer timer)
         {
-            var zoom = "X: " + view.ImageX.ToString() + "  Y: " + view.ImageY.ToString() + "  Zoom: " + Zoom(view.Level);
+            var zoom = "X: " + view.ImageX.ToString() + "  Y: " + view.ImageY.ToString() + "  Level: " + view.Level;
             if (!zoom.Equals(Text))
             {
                 Updating = true;

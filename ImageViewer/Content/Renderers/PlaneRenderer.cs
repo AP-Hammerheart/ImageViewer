@@ -4,7 +4,7 @@
 using ImageViewer.Common;
 using SharpDX.Direct3D11;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Renderers
 {
     internal abstract class PlaneRenderer : BaseRenderer
     {

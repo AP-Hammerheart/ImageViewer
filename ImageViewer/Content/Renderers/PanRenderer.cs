@@ -2,11 +2,12 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.Views;
 using SharpDX.Direct3D11;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Renderers
 {
     internal class PanRenderer : PlaneRenderer
     {
@@ -22,12 +23,15 @@ namespace ImageViewer.Content
         internal override bool TextureReady => (Active != -1) && textureReady;
         internal int X { get; set; } = 0;
         internal int Y { get; set; } = 0;
-        
+
+        private SharpDX.Size2 TextureTileSize = new SharpDX.Size2(0, 0);
+
         public PanRenderer(DeviceResources deviceResources, TextureLoader loader, string url, float tileSize, int backBufferResolution)
             : base(deviceResources, loader, url)
         {
             TileSize = tileSize; 
             BackBufferResolution = backBufferResolution;
+            TextureTileSize = new SharpDX.Size2(BackBufferResolution, BackBufferResolution);
         }
 
         internal void UpdateGeometry(int x, int y)
@@ -100,37 +104,7 @@ namespace ImageViewer.Content
 
                 try
                 {
-                    using (var stream = await loader.LoadPixelDataAsync(ID))
-                    {
-                        if (stream == null)
-                        {
-                            try
-                            {
-                                using (var dataStream = await loader.GetImageAsync(ID))
-                                {
-                                    if (dataStream != null)
-                                    {
-                                        using (var bitmap = loader.CreateBitmap(dataStream, out SharpDX.Size2 size))
-                                        {
-                                            texture[idx] = loader.Texture2D(deviceResources, bitmap, size);
-                                            await loader.SavePixelDataAsync(ID, bitmap);
-                                        }
-                                    }
-                                }
-                            }
-                            catch (System.Exception)
-                            {
-                                // Delete corrupted cache file
-                                await loader.DeleteCacheFile(ID, ".PNG");
-                            }
-                        }
-                        else
-                        {
-                            var size = new SharpDX.Size2(BackBufferResolution, BackBufferResolution);
-                            texture[idx] = loader.Texture2D(deviceResources, stream, size);
-                        }
-                    }
-
+                    texture[idx] = await loader.GetTextureAsync(ID, TextureTileSize);
                     var shaderResourceDesc = TextureLoader.ShaderDescription();
                     view[idx] = new ShaderResourceView(deviceResources.D3DDevice, texture[idx], shaderResourceDesc);
                     IDs[idx] = ID;
@@ -139,7 +113,7 @@ namespace ImageViewer.Content
                 catch (System.Exception)
                 {
                     // Delete corrupted cache file
-                    await loader.DeleteCacheFile(ID, ".RAW");
+                    await loader.DeleteCacheFileAsync(ID, ".RAW");
                 }
             }
 

@@ -5,7 +5,7 @@ using ImageViewer.Common;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Renderers
 {
     internal class ClockRenderer : StatusBarRenderer
     {

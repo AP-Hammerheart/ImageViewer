@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using Windows.UI;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Renderers
 {
     internal class StatusBarRenderer : BaseRenderer
     {
@@ -174,6 +174,12 @@ namespace ImageViewer.Content
             }        
         }
 
+        protected virtual void TextLines(CanvasDrawingSession drawingSession, CanvasTextFormat format)
+        {
+            format.FontSize = FontSize;
+            drawingSession.DrawText(Text, TextPosition, TextColor, format);
+        }
+
         private async Task<MemoryStream> DrawText()
         {
             using (var device = new CanvasDevice())
@@ -185,8 +191,7 @@ namespace ImageViewer.Content
                         drawingSession.Clear(BackgroundColor);
                         using (var format = new CanvasTextFormat())
                         {
-                            format.FontSize = FontSize;
-                            drawingSession.DrawText(Text, TextPosition, TextColor, format);
+                            TextLines(drawingSession, format);         
                         }
                     }
 

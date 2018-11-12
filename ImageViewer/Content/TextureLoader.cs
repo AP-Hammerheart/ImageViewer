@@ -27,27 +27,20 @@ namespace ImageViewer.Content
         private List<string> lastUse = new List<string>();
 
         private readonly ImagingFactory2 factory;
-        private readonly StorageFolder localCacheFolderPNG = KnownFolders.PicturesLibrary;
-        private readonly StorageFolder localCacheFolderRAW = ApplicationData.Current.LocalCacheFolder;
+        private readonly StorageFolder localCacheFolder = ApplicationData.Current.LocalCacheFolder;
 
         private static bool loading = false;
-        private static bool preloading = false;
-        private static readonly bool saveTexture = false;
         
         private static readonly SharpDX.Size2 TextureTileSize = new SharpDX.Size2(256, 256);
 
         private readonly DeviceResources deviceResources;
-        private readonly string baseUrl;
         private string currentlyLoading = null;
-
-        internal bool DownloadRaw { get; set; } = true;
 
         public int TilesInMemory() => textures.Count;
 
-        internal TextureLoader(DeviceResources deviceResources, string baseUrl)
+        internal TextureLoader(DeviceResources deviceResources)
         {
             this.deviceResources = deviceResources;
-            this.baseUrl = baseUrl;
             factory = new ImagingFactory2();
 
             textures = new Dictionary<string, Tuple<ShaderResourceView, Texture2D>>();
@@ -82,12 +75,10 @@ namespace ImageViewer.Content
             }     
         }
 
-        internal async Task LoadTexturesAsync(List<string> IDs)
+        private bool InitLoadQueue(List<string> IDs)
         {
             mutex.WaitOne();
-
             loadQueue.Clear();
-
             foreach (var ID in IDs)
             {
                 if (!(ID.Equals(currentlyLoading) || textures.ContainsKey(ID) || loadQueue.Contains(ID)))
@@ -95,184 +86,126 @@ namespace ImageViewer.Content
                     loadQueue.Enqueue(ID);
                 }
             }
-
             mutex.ReleaseMutex();
-
-            if (loading) return;
-
-            mutex.WaitOne();
-
-            loading = true;
-
-            var keepLoading = loadQueue.Count > 0;
-
-            mutex.ReleaseMutex();
-
-            while (keepLoading)
-            {
-                mutex.WaitOne();
-
-                var id = loadQueue.Peek();
-                currentlyLoading = id;
-
-                mutex.ReleaseMutex();
-
-                if (lastUse.Contains(id))
-                {
-                    lastUse.Remove(id);
-                }
-                lastUse.Add(id);
-
-                using (var dataStream = await GetImageAsync(id))
-                {
-                    if (dataStream != null)
-                    {
-                        var report = Windows.System.MemoryManager.GetAppMemoryReport();
-                        var memoryUse = report.PrivateCommitUsage;
-
-                        if (memoryUse > MAX_MEMORY_USE && lastUse.Count > 200) // Release old texture if memory runs low
-                        {
-                            var clean = 100;
-                            for (var i = 0; i < clean; i++)
-                            {
-                                var oldest = lastUse[0];
-                                lastUse.RemoveAt(0);
-                                if (textures.TryGetValue(oldest, out Tuple<ShaderResourceView, Texture2D> texture))
-                                {
-                                    textures.Remove(oldest);
-                                    texture.Item1.Dispose();
-                                    texture.Item2.Dispose();
-                                    texture = null;
-                                }
-                            }
-                        }
-                        Texture2D texture2D = null;
-
-                        if (DownloadRaw)
-                        {
-                            texture2D = Texture2DRaw(deviceResources, dataStream, TextureTileSize);
-                        }
-                        else
-                        {
-                            texture2D = Texture2D(deviceResources, dataStream);
-                        }
-                        
-                        var shaderResourceDesc = ShaderDescription();
-                        var resourceView = new ShaderResourceView(deviceResources.D3DDevice, texture2D, shaderResourceDesc);
-
-                        textures.Add(id, new Tuple<ShaderResourceView, Texture2D>(resourceView, texture2D));
-                    }
-                }
-
-                mutex.WaitOne();
-
-                if (loadQueue.Contains(id))
-                {
-                    loadQueue.Dequeue();
-                }
-
-                keepLoading = loadQueue.Count > 0;
-                currentlyLoading = null;
-
-                mutex.ReleaseMutex();
-            }
-
-            mutex.WaitOne();
-
-            loading = false;
-
-            mutex.ReleaseMutex();
+            return loading;
         }
 
-        internal async Task<bool> PreloadImage(string ID)
+        private bool KeepLoading()
         {
-            if (preloadQueue.Contains(ID)) return true;
+            mutex.WaitOne();
+            loading = true;
+            currentlyLoading = null;
+            var keepLoading = loadQueue.Count > 0;
+            mutex.ReleaseMutex();
+            return keepLoading;
+        }
 
-            preloadQueue.Enqueue(ID);
-
-            if (preloading) return true;
-
-            preloading = true;
-
-            while (preloadQueue.Count > 0)
+        private string NextID()
+        {
+            mutex.WaitOne();
+            var id = loadQueue.Peek();
+            currentlyLoading = id;            
+            if (lastUse.Contains(id))
             {
-                var id = preloadQueue.Dequeue();
+                lastUse.Remove(id);
+            }
+            lastUse.Add(id);
+            mutex.ReleaseMutex();
+            return id;
+        }
 
-                var fileName = id + ".PNG";
-                var file = await localCacheFolderPNG.TryGetItemAsync(fileName);
+        private void CheckMemoryUse()
+        {
+            var report = Windows.System.MemoryManager.GetAppMemoryReport();
+            var memoryUse = report.PrivateCommitUsage;
 
-                if (file == null)
+            if (memoryUse > MAX_MEMORY_USE && lastUse.Count > 200) // Release old textures if memory runs low
+            {
+                var clean = 100;
+                for (var i = 0; i < clean; i++)
                 {
-                    var request = (HttpWebRequest)WebRequest.Create(baseUrl + id);
-                    try
+                    var oldest = lastUse[0];
+                    lastUse.RemoveAt(0);
+                    if (textures.TryGetValue(oldest, out Tuple<ShaderResourceView, Texture2D> texture))
                     {
-                        using (var response = (HttpWebResponse)await request.GetResponseAsync())
-                        {
-                            if (response.StatusCode == HttpStatusCode.OK)
-                            {
-                                using (var stream = response.GetResponseStream())
-                                {
-                                    using (var memoryStream = new MemoryStream((int)response.ContentLength))
-                                    {
-                                        await stream.CopyToAsync(memoryStream);
-
-                                        var newFile = await localCacheFolderPNG.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
-                                        using (var fileStream = await newFile.OpenAsync(FileAccessMode.ReadWrite))
-                                        {
-                                            using (var dataWriter = new DataWriter(fileStream))
-                                            {
-                                                var buffer = memoryStream.GetWindowsRuntimeBuffer();
-                                                dataWriter.WriteBuffer(buffer);
-
-                                                await dataWriter.StoreAsync();
-                                                await fileStream.FlushAsync();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        preloading = false;
-                        return false;
+                        textures.Remove(oldest);
+                        texture.Item1.Dispose();
+                        texture.Item2.Dispose();
+                        texture = null;
                     }
                 }
             }
-            preloading = false;
-            return true;
         }
 
-        internal async Task ClearCache()
+        internal async Task<Texture2D> GetTextureAsync(string id, SharpDX.Size2 size)
+        {
+            Texture2D texture2D = null;
+            using (var dataStream = await GetImageAsync(id))
+            {
+                if (dataStream != null)
+                {
+                    CheckMemoryUse();
+
+                    if (Settings.UseJpeg)
+                    {
+                        texture2D = Texture2DFromJpeg(deviceResources, dataStream);
+                    }
+                    else if (Settings.DownloadRaw)
+                    {
+                        texture2D = Texture2DRaw(deviceResources, dataStream, size);
+                    }
+                    else
+                    {
+                        texture2D = Texture2D(deviceResources, dataStream);
+                    }
+                }
+            }
+
+            return texture2D;
+        }
+
+        internal async Task LoadTexturesAsync(List<string> IDs)
+        {
+            if (InitLoadQueue(IDs)) return;
+
+            while (KeepLoading())
+            {
+                var id = NextID();
+                var texture2D = await GetTextureAsync(id, TextureTileSize);
+                
+                if (texture2D != null)
+                {
+                    var shaderResourceDesc = ShaderDescription();
+                    var resourceView = new ShaderResourceView(deviceResources.D3DDevice, texture2D, shaderResourceDesc);
+                    textures.Add(id, new Tuple<ShaderResourceView, Texture2D>(resourceView, texture2D));
+                }           
+
+                mutex.WaitOne();
+                if (loadQueue.Contains(id)) loadQueue.Dequeue();
+                mutex.ReleaseMutex();
+            }
+
+            mutex.WaitOne();
+            loading = false;
+            mutex.ReleaseMutex();
+        }
+
+        internal async Task ClearCacheAsync()
         {     
-            var filesRaw = await localCacheFolderRAW.GetFilesAsync();
-            foreach (var file in filesRaw)
-            {
-                await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
-            }
-
-            var filesPng = await localCacheFolderPNG.GetFilesAsync();
-            foreach (var file in filesPng)
+            var files = await localCacheFolder.GetFilesAsync();
+            foreach (var file in files)
             {
                 await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
             }
         }
 
-        internal async Task DeleteCacheFile(string id, string fileExtension)
+        internal async Task DeleteCacheFileAsync(string id, string fileExtension)
         {
             var fileName = id + fileExtension;
 
             IStorageItem file = null;
 
-            if (fileExtension == ".PNG")
-            {
-                file = await localCacheFolderPNG.TryGetItemAsync(fileName);
-            }
-            else
-            {
-                file = await localCacheFolderRAW.TryGetItemAsync(fileName);
-            }
+            file = await localCacheFolder.TryGetItemAsync(fileName);
 
             if (file != null)
             {
@@ -280,59 +213,43 @@ namespace ImageViewer.Content
             }
         }
 
-        internal async Task<SharpDX.DataStream> LoadPixelDataAsync(string id)
+        private string FileName(string id)
         {
-            var fileName = id + ".RAW";
-            var file = await localCacheFolderRAW.TryGetItemAsync(fileName);
-
-            if (file == null)
-            {
-                return null;
-            }
-            else
-            {
-                var bytes = await DirectXHelper.ReadDataAsync((StorageFile)file);
-                var dataStream = new SharpDX.DataStream(bytes.Length, true, true);
-                await dataStream.WriteAsync(bytes, 0, bytes.Length);
-                return dataStream;
-            }
+            var raw = Settings.DownloadRaw;
+            var jpg = Settings.UseJpeg;
+            var fileName = id + (raw ? ".RAW" : jpg ? ".JPG" : ".PNG");
+            return fileName;
         }
 
-        internal async Task SavePixelDataAsync(string id, SharpDX.DataStream stream)
+        private string Url(string id)
         {
-            var fileName = id + ".RAW";
-            var bytes = new byte[stream.Length];
+            var url = Settings.BaseUrl() + id;
 
-            await stream.ReadAsync(bytes, 0, (int)stream.Length);
-
-            var newFile = await localCacheFolderRAW.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
-            using (var fileStream = await newFile.OpenAsync(FileAccessMode.ReadWrite))
+            if (Settings.DownloadRaw)
             {
-                using (var dataWriter = new DataWriter(fileStream))
-                {
-                    dataWriter.WriteBytes(bytes);
-
-                    await dataWriter.StoreAsync();
-                    await fileStream.FlushAsync();
-                }
+                url += "&format=RAW";
             }
+            else if (Settings.UseJpeg)
+            {
+                url += "&format=JPG";
+            }
+
+            return url;
         }
 
-        internal async Task<MemoryStream> GetImageAsync(string id)
+        private async Task<MemoryStream> GetImageAsync(string id)
         {
-            var fileName = id + ".PNG";
-            var file = await localCacheFolderPNG.TryGetItemAsync(fileName);
-            
+            var fileName = FileName(id);
+            IStorageItem file = null;
+
+            if (Settings.SaveTexture)
+            {
+                file = await localCacheFolder.TryGetItemAsync(fileName);
+            }
+                 
             if (file == null)
             {
-                var url = baseUrl + id;
-
-                if (DownloadRaw)
-                {
-                    url += "&format=RAW";
-                }
-
-                var request = (HttpWebRequest)WebRequest.Create(url);
+                var request = (HttpWebRequest)WebRequest.Create(Url(id));
 
                 try
                 {
@@ -345,11 +262,12 @@ namespace ImageViewer.Content
                                 var memoryStream = new MemoryStream((int)response.ContentLength);
                                 await stream.CopyToAsync(memoryStream);
 
-                                if (saveTexture)
+                                if (Settings.SaveTexture)
                                 {
-                                    await SaveTextureAsync(fileName, memoryStream);    
+                                    await SaveTextureAsync(fileName, memoryStream);
                                 }
-                                
+
+                                memoryStream.Position = 0;
                                 return memoryStream;
                             }
                         }
@@ -374,7 +292,8 @@ namespace ImageViewer.Content
 
         private async Task SaveTextureAsync(string fileName, MemoryStream memoryStream)
         {
-            var newFile = await localCacheFolderPNG.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+            var newFile = await localCacheFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+
             using (var fileStream = await newFile.OpenAsync(FileAccessMode.ReadWrite))
             {
                 using (var dataWriter = new DataWriter(fileStream))
@@ -415,6 +334,19 @@ namespace ImageViewer.Content
                 var texture2D = Texture2D(deviceResources, bitmap, size);
                 return texture2D;         
             }      
+        }
+
+        internal Texture2D Texture2DFromJpeg(DeviceResources deviceResources, MemoryStream imageData)
+        {
+            using (var bitmap = CreateBitmapFromJpeg(imageData, out SharpDX.Size2 size))
+            {
+                if (bitmap != null)
+                {
+                    var texture2D = Texture2D(deviceResources, bitmap, size);
+                    return texture2D;
+                }
+                else return null;
+            }
         }
 
         internal Texture2D Texture2D(DeviceResources deviceResources, string fileName)
@@ -499,6 +431,30 @@ namespace ImageViewer.Content
                     return dataStream;
                 }
             }           
+        }
+
+        internal SharpDX.DataStream CreateBitmapFromJpeg(MemoryStream stream, out SharpDX.Size2 size)
+        {
+            using (var istream = new WICStream(factory, stream))
+            {
+                using (var decoder = new JpegBitmapDecoder(factory))
+                {
+                    decoder.Initialize(istream, DecodeOptions.CacheOnDemand);
+
+                    using (var formatConverter = new FormatConverter(factory))
+                    {
+                        formatConverter.Initialize(decoder.GetFrame(0), PixelFormat.Format32bppPRGBA);
+
+                        var stride = formatConverter.Size.Width * 4;
+                        var dataStream = new SharpDX.DataStream(formatConverter.Size.Height * stride, true, true);
+                        formatConverter.CopyPixels(stride, dataStream);
+
+                        size = formatConverter.Size;
+
+                        return dataStream;
+                    }
+                }
+            }
         }
 
         internal static ShaderResourceViewDescription ShaderDescription() =>

@@ -2,10 +2,11 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.Views;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Renderers
 {
     internal class KeyRenderer : StatusBarRenderer
     {
@@ -29,7 +30,7 @@ namespace ImageViewer.Content
 
         internal override void Update(StepTimer timer)
         {
-            var chr = view.VirtualKey.ToString();
+            var chr = view.LastKey.ToString();
             if (!chr.Equals(Text))
             {
                 Updating = true;

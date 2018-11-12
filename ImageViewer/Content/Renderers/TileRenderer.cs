@@ -5,7 +5,7 @@ using ImageViewer.Common;
 using SharpDX.Direct3D11;
 using System.Numerics;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Renderers
 {
     internal class TileRenderer : PlaneRenderer
     {
@@ -20,7 +20,7 @@ namespace ImageViewer.Content
         internal float U1 { get; set; } = 1.0f;
         internal float V1 { get; set; } = 0.0f;
 
-        public TileRenderer(DeviceResources deviceResources, TextureLoader loader, string url, float tileSize = 0.1f)
+        public TileRenderer(DeviceResources deviceResources, TextureLoader loader, string url, float tileSize)
             : base(deviceResources, loader, url)
         {
             TileSize = tileSize;

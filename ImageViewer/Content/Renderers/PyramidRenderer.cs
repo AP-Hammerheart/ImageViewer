@@ -5,7 +5,7 @@ using ImageViewer.Common;
 using SharpDX.Direct3D11;
 using System.Numerics;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Renderers
 {
     internal class PyramidRenderer : BaseCubeRenderer
     {

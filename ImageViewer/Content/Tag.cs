@@ -2,6 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.Renderers;
+using ImageViewer.Content.Views;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -68,11 +70,11 @@ namespace ImageViewer.Content
             }
             else
             {
-                var xx = (float)((double)BaseView.ViewSize * ((double)(X - view.ImageX) / (double)width));
-                var yy = (float)((double)BaseView.ViewSize * ((double)(Y - view.ImageY) / (double)height));
+                var xx = (float)((double)Settings.ViewSize * ((double)(X - view.ImageX) / (double)width));
+                var yy = (float)((double)Settings.ViewSize * ((double)(Y - view.ImageY) / (double)height));
 
                 var pL = new Vector3(corners.orig_topLeft.X + xx, corners.orig_topLeft.Y - yy, corners.orig_topLeft.Z);
-                var pR = new Vector3(corners.orig_topLeft.X + xx + BaseView.ViewSize, corners.orig_topLeft.Y - yy, corners.orig_topLeft.Z);
+                var pR = new Vector3(corners.orig_topLeft.X + xx + Settings.ViewSize, corners.orig_topLeft.Y - yy, corners.orig_topLeft.Z);
 
                 var translation = Matrix4x4.CreateTranslation(corners.Position);
 

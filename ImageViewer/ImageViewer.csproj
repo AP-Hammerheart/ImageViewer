@@ -64,7 +64,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Content\Renderers\BaseCubeRenderer.cs" />
+    <Compile Include="Content\Renderers\NameRenderer.cs" />
     <Compile Include="Content\Renderers\ScalerRenderer.cs" />
+    <Compile Include="Content\Renderers\TextRenderer.cs" />
+    <Compile Include="Content\Settings.cs" />
     <Compile Include="Content\Views\BaseView.cs" />
     <Compile Include="Content\Renderers\ClockRenderer.cs" />
     <Compile Include="Content\Renderers\DebugRenderer.cs" />
@@ -81,6 +84,7 @@
     <Compile Include="Content\Renderers\TileCounterRenderer.cs" />
     <Compile Include="Content\Renderers\TileRenderer.cs" />
     <Compile Include="Content\TextureLoader.cs" />
+    <Compile Include="Content\Views\SettingViewer.cs" />
     <Compile Include="Content\Views\TileView.cs" />
     <Compile Include="Content\Renderers\ZoomRenderer.cs" />
     <Compile Include="ImageViewerMain.cs" />
@@ -137,6 +141,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.1.5</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>11.0.2</Version>
     </PackageReference>
     <PackageReference Include="SharpDX">
       <Version>3.0.2</Version>

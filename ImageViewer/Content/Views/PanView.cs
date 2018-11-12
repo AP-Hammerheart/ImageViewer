@@ -2,14 +2,15 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.Renderers;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Views
 {
     internal class PanView : BaseView
     {
-        internal static int ViewResolution { get; } = 1280;
+        internal static int ViewResolution { get; } = 768;
 
         protected override int TileOffset(int level) => PixelSize(level) * (TileResolution - ViewResolution);
 
@@ -20,20 +21,18 @@ namespace ImageViewer.Content
             DeviceResources deviceResources,
             TextureLoader loader) : base(main, deviceResources, loader)
         {
-            TileResolution = 2560;
+            TileResolution = 1536;
 
             Tiles = new PanRenderer[2];
 
-            var tileSize = 0.5f;
-
-            Tiles[0] = new PanRenderer(deviceResources, loader, "", tileSize, backBufferResolution: TileResolution)
+            Tiles[0] = new PanRenderer(deviceResources, loader, "", Settings.ViewSize, backBufferResolution: TileResolution)
             {
-                Position = new Vector3(-0.5f * tileSize, 0, -1.0f * DistanceFromUser)
+                Position = new Vector3(-0.5f * Settings.ViewSize, 0, Settings.DistanceFromUser)
             };
 
-            Tiles[1] = new PanRenderer(deviceResources, loader, "", tileSize, backBufferResolution: TileResolution)
+            Tiles[1] = new PanRenderer(deviceResources, loader, "", Settings.ViewSize, backBufferResolution: TileResolution)
             {
-                Position = new Vector3(0.5f * tileSize, 0, -1.0f * DistanceFromUser)
+                Position = new Vector3(0.5f * Settings.ViewSize, 0, Settings.DistanceFromUser)
             };
 
             UpdateImages();
@@ -53,7 +52,7 @@ namespace ImageViewer.Content
             ((PanRenderer)Tiles[0]).UpdateGeometry(xrem, yrem);
             ((PanRenderer)Tiles[1]).UpdateGeometry(xrem, yrem);
 
-            var url1 = ImageViewerMain.Image1
+            var url1 = Settings.Image1
                 + "&x=" + x.ToString()
                 + "&y=" + y.ToString()
                 + "&w=" + TileResolution.ToString()
@@ -72,9 +71,9 @@ namespace ImageViewer.Content
                 task1.Wait();
             }
       
-            var url2 = ImageViewerMain.Image2
-                + "&x=" + (x + image2offsetX).ToString()
-                + "&y=" + (y + image2offsetY).ToString()
+            var url2 = Settings.Image2
+                + "&x=" + (x + Settings.Image2offsetX).ToString()
+                + "&y=" + (y + Settings.Image2offsetY).ToString()
                 + "&w=" + TileResolution.ToString()
                 + "&h=" + TileResolution.ToString()
                 + "&level=" + Level.ToString();

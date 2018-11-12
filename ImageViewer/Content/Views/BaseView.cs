@@ -2,13 +2,15 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.Renderers;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
+using Windows.UI;
 using Windows.UI.Input.Spatial;
 using static ImageViewer.ImageViewerMain;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Views
 {
     internal abstract class BaseView : IDisposable
     {
@@ -49,12 +51,8 @@ namespace ImageViewer.Content
         private readonly ImageViewerMain main;
         protected readonly TextureLoader loader;
 
-        private bool cancel = false;
-        private bool loading = false;
-
-        protected static readonly int image2offsetX = -5500;
-        protected static readonly int image2offsetY = -2000;
-        protected static readonly int maxResolution = 110000;
+        private SettingViewer settingViewer;
+        private bool ShowSettings = false;
 
         protected StatusBarRenderer[] statusItems;
 
@@ -62,20 +60,18 @@ namespace ImageViewer.Content
         internal int ImageY { get; set; } = 0;
         internal int ImageX { get; set; } = 0;
         internal Windows.System.VirtualKey VirtualKey { get; set; } = Windows.System.VirtualKey.None;
+        internal Windows.System.VirtualKey LastKey { get; set; } = Windows.System.VirtualKey.None;
+        internal int KeyCount { get; set; } = 0;
         protected abstract int LargeStep { get; }
-        protected int PixelSize(int level) => (int)System.Math.Pow(2, level);
+        protected int PixelSize(int level) => (int)Math.Pow(2, Settings.Multiplier * level);
         protected virtual int TileOffset(int level) => TileResolution * PixelSize(level);
         internal int Step => TileOffset(Level);
         internal PlaneRenderer[] Tiles { get; set; }
         protected int TileResolution { get; set; }
         internal string DebugString { get; set; } = "";
         internal PointerRenderer Pointer { get; set; }
-        internal static float ViewSize { get; } = 0.5f;
-        protected static float DistanceFromUser { get; } = 1.4f;
-        protected static int MinScale { get; } = 8;
-        public Vector3 Origo { get; set; } = Vector3.Zero;
-        public float RotationAngle { get; set; } = 0;
-        internal int Scaler { get; set; } = 1;
+        internal Vector3 Origo { get; set; } = Vector3.Zero;
+        internal float RotationAngle { get; set; } = 0;
 
         internal virtual int TileCountX { get; } = 1;
         internal virtual int TileCountY { get; } = 1;
@@ -88,17 +84,19 @@ namespace ImageViewer.Content
             this.main = main;
             this.loader = loader;
 
-            statusItems = new StatusBarRenderer[8];
+            settingViewer = new SettingViewer(main, deviceResources, loader);
+
+            statusItems = new StatusBarRenderer[10];
 
             statusItems[0] = new StatusBarRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(-0.6f, 0.30f, 0.0f),
-                topLeft: new Vector3(-0.6f, 0.35f, 0.0f),
-                bottomRight: new Vector3(-0.2f, 0.30f, 0.0f),
-                topRight: new Vector3(-0.2f, 0.35f, 0.0f))
+                bottomLeft: new Vector3(-0.6f, 0.33f, 0.0f),
+                topLeft: new Vector3(-0.6f, 0.38f, 0.0f),
+                bottomRight: new Vector3(-0.2f, 0.33f, 0.0f),
+                topRight: new Vector3(-0.2f, 0.38f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
+                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 TextPosition = new Vector2(20, 10),
                 Text = "ImageViewer",
                 FontSize = 40,
@@ -109,40 +107,74 @@ namespace ImageViewer.Content
                 view: this,
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(-0.2f, 0.30f, 0.0f),
-                topLeft: new Vector3(-0.2f, 0.35f, 0.0f),
-                bottomRight: new Vector3(0.3f, 0.30f, 0.0f),
-                topRight: new Vector3(0.3f, 0.35f, 0.0f))
+                bottomLeft: new Vector3(-0.2f, 0.33f, 0.0f),
+                topLeft: new Vector3(-0.2f, 0.38f, 0.0f),
+                bottomRight: new Vector3(0.3f, 0.33f, 0.0f),
+                topRight: new Vector3(0.3f, 0.38f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
+                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 ImageWidth = 800
             };
 
             statusItems[2] = new MemoryUseRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(0.3f, 0.30f, 0.0f),
-                topLeft: new Vector3(0.3f, 0.35f, 0.0f),
-                bottomRight: new Vector3(0.4f, 0.30f, 0.0f),
-                topRight: new Vector3(0.4f, 0.35f, 0.0f))
+                bottomLeft: new Vector3(0.3f, 0.33f, 0.0f),
+                topLeft: new Vector3(0.3f, 0.38f, 0.0f),
+                bottomRight: new Vector3(0.4f, 0.33f, 0.0f),
+                topRight: new Vector3(0.4f, 0.38f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
+                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 ImageWidth = 160
             };
 
             statusItems[3] = new ClockRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(0.4f, 0.30f, 0.0f),
-                topLeft: new Vector3(0.4f, 0.35f, 0.0f),
-                bottomRight: new Vector3(0.6f, 0.30f, 0.0f),
-                topRight: new Vector3(0.6f, 0.35f, 0.0f))
+                bottomLeft: new Vector3(0.4f, 0.33f, 0.0f),
+                topLeft: new Vector3(0.4f, 0.38f, 0.0f),
+                bottomRight: new Vector3(0.6f, 0.33f, 0.0f),
+                topRight: new Vector3(0.6f, 0.38f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
+                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 ImageWidth = 320
             };
 
-            statusItems[4] = new KeyRenderer(
+            statusItems[4] = new NameRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(-0.6f, 0.30f, 0.0f),
+                topLeft: new Vector3(-0.6f, 0.33f, 0.0f),
+                bottomRight: new Vector3(0.0f, 0.30f, 0.0f),
+                topRight: new Vector3(0.0f, 0.33f, 0.0f))
+            {
+                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
+                TextPosition = new Vector2(10, 10),
+                ImageWidth = 960,
+                ImageHeight = 48,
+                FontSize = 25.0f,
+                BackgroundColor = Colors.LightGray,
+                Index = 0
+            };
+
+            statusItems[5] = new NameRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(0.0f, 0.30f, 0.0f),
+                topLeft: new Vector3(0.0f, 0.33f, 0.0f),
+                bottomRight: new Vector3(0.6f, 0.30f, 0.0f),
+                topRight: new Vector3(0.6f, 0.33f, 0.0f))
+            {
+                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
+                TextPosition = new Vector2(10, 10),
+                ImageWidth = 960,
+                ImageHeight = 48,
+                FontSize = 25.0f,
+                BackgroundColor = Colors.LightGray,
+                Index = 1
+            };
+
+            statusItems[6] = new KeyRenderer(
                 view: this,
                 deviceResources: deviceResources,
                 loader: loader,
@@ -151,11 +183,11 @@ namespace ImageViewer.Content
                 bottomRight: new Vector3(-0.1f, -0.35f, 0.0f),
                 topRight: new Vector3(-0.1f, -0.30f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
+                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 ImageWidth = 800
             };
 
-            statusItems[5] = new DebugRenderer(
+            statusItems[7] = new DebugRenderer(
                 view: this,
                 deviceResources: deviceResources,
                 loader: loader,
@@ -164,11 +196,11 @@ namespace ImageViewer.Content
                 bottomRight: new Vector3(0.35f, -0.35f, 0.0f),
                 topRight: new Vector3(0.35f, -0.30f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
+                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 ImageWidth = 720
             };
 
-            statusItems[6] = new TileCounterRenderer(
+            statusItems[8] = new TileCounterRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(0.35f, -0.35f, 0.0f),
@@ -176,11 +208,11 @@ namespace ImageViewer.Content
                 bottomRight: new Vector3(0.5f, -0.35f, 0.0f),
                 topRight: new Vector3(0.5f, -0.30f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
+                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 ImageWidth = 240
             };
 
-            statusItems[7] = new ScalerRenderer(
+            statusItems[9] = new ScalerRenderer(
                 view: this,
                 deviceResources: deviceResources,
                 loader: loader,
@@ -189,17 +221,17 @@ namespace ImageViewer.Content
                 bottomRight: new Vector3(0.6f, -0.35f, 0.0f),
                 topRight: new Vector3(0.6f, -0.30f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, -1 * DistanceFromUser),
+                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 ImageWidth = 160
             };
 
             Pointer = new PointerRenderer(this, deviceResources, loader, 
                 new PointerRenderer.Corners(
-                    origo: new Vector3(0.0f, 0.0f, -1 * DistanceFromUser), 
-                    topLeft: new Vector3(-0.6f, 0.30f, -1 * DistanceFromUser),
-                    bottomLeft: new Vector3(-0.6f, -0.30f, -1 * DistanceFromUser)))
+                    origo: new Vector3(0.0f, 0.0f, Settings.DistanceFromUser), 
+                    topLeft: new Vector3(-0.6f, 0.30f, Settings.DistanceFromUser),
+                    bottomLeft: new Vector3(-0.6f, -0.30f, Settings.DistanceFromUser)))
             {
-                Position = new Vector3(0, 0, -1 * DistanceFromUser)
+                Position = new Vector3(0, 0, Settings.DistanceFromUser)
             };        
         }
 
@@ -213,6 +245,8 @@ namespace ImageViewer.Content
             {
                 renderer?.Update(timer);
             }
+
+            settingViewer?.Update(timer);
 
             Pointer?.Update(timer);
         }
@@ -229,11 +263,18 @@ namespace ImageViewer.Content
                 renderer?.Render();
             }
 
-            foreach (var renderer in Tiles)
+            if (ShowSettings)
             {
-                renderer?.Render();
+                settingViewer?.Render();
             }
-
+            else
+            {
+                foreach (var renderer in Tiles)
+                {
+                    renderer?.Render();
+                }
+            }
+            
             Pointer?.Render();
         }
 
@@ -257,6 +298,7 @@ namespace ImageViewer.Content
                 Tiles = null;
             }
 
+            settingViewer?.Dispose();
             Pointer?.Dispose();
         }
 
@@ -271,6 +313,8 @@ namespace ImageViewer.Content
             {
                 await renderer?.CreateDeviceDependentResourcesAsync();
             }
+
+            await settingViewer?.CreateDeviceDependentResourcesAsync();
 
             await Pointer?.CreateDeviceDependentResourcesAsync();
         }
@@ -287,6 +331,8 @@ namespace ImageViewer.Content
                 renderer?.ReleaseDeviceDependentResources();
             }
 
+            settingViewer?.ReleaseDeviceDependentResources();
+
             Pointer?.ReleaseDeviceDependentResources();
         }
 
@@ -296,9 +342,19 @@ namespace ImageViewer.Content
             {
                 case Command.MOVE: Move(direction, number); break;
                 case Command.SCALE: Scale(direction, number); break;
-                case Command.SET: SetPointer(direction, number); break;
-                case Command.PRELOAD: if (!loading) PreLoadTiles(); break;
-                case Command.CANCEL: if (loading) cancel = true; break;
+                case Command.SET:
+                    if (direction == Direction.BACK)
+                    {
+                        SetPointer(direction, number);
+                    }
+                    else
+                    {
+                        Settings.SetIP(direction, number);
+                        settingViewer.Update();
+                    }
+                    break;
+                case Command.PRELOAD: break;
+                case Command.CANCEL: break;
                 case Command.CLEAR_CACHE: ClearCache(); break;
                 case Command.ADD_TAG: Pointer.AddTag(); break;
                 case Command.REMOVE_TAG: Pointer.RemoveTag(); break;
@@ -306,7 +362,7 @@ namespace ImageViewer.Content
                 case Command.HELP: Help(); break;
                 case Command.ZOOM: Zoom(direction, number); break;
                 case Command.SWITCH: main.Switch(); break;
-                case Command.FORMAT: loader.DownloadRaw = !loader.DownloadRaw; break;
+                case Command.FORMAT: Settings.DownloadRaw = !Settings.DownloadRaw; break;
             }
         }
 
@@ -317,66 +373,123 @@ namespace ImageViewer.Content
             switch (key)
             {
                 case Windows.System.VirtualKey.NumberPad1:
-                    Move(Direction.LEFT, Scaler * 1);
-                    Move(Direction.DOWN, Scaler * 1);
+                    Move(Direction.LEFT, Settings.Scaler * 1);
+                    Move(Direction.DOWN, Settings.Scaler * 1);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad3:
-                    Move(Direction.RIGHT, Scaler * 1);
-                    Move(Direction.DOWN, Scaler * 1);
+                    Move(Direction.RIGHT, Settings.Scaler * 1);
+                    Move(Direction.DOWN, Settings.Scaler * 1);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad7:
-                    Move(Direction.LEFT, Scaler * 1);
-                    Move(Direction.UP, Scaler * 1);
+                    Move(Direction.LEFT, Settings.Scaler * 1);
+                    Move(Direction.UP, Settings.Scaler * 1);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad9:
-                    Move(Direction.RIGHT, Scaler * 1);
-                    Move(Direction.UP, Scaler * 1);
+                    Move(Direction.RIGHT, Settings.Scaler * 1);
+                    Move(Direction.UP, Settings.Scaler * 1);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad4:
                 case Windows.System.VirtualKey.Left:
                 case Windows.System.VirtualKey.GamepadRightThumbstickLeft:
-                    Move(Direction.LEFT, Scaler * 1);
+                    if (ShowSettings)
+                    {
+                        settingViewer.SetItem(2);
+                    }
+                    else
+                    {
+                        Move(Direction.LEFT, Settings.Scaler * 1);
+                    }                
                     break;
 
                 case Windows.System.VirtualKey.NumberPad6:
                 case Windows.System.VirtualKey.Right:
                 case Windows.System.VirtualKey.GamepadRightThumbstickRight:
-                    Move(Direction.RIGHT, Scaler * 1);
+                    if (ShowSettings)
+                    {
+                        settingViewer.SetItem(3);
+                    }
+                    else
+                    {
+                        Move(Direction.RIGHT, Settings.Scaler * 1);
+                    }               
                     break;
 
                 case Windows.System.VirtualKey.NumberPad8:
                 case Windows.System.VirtualKey.Up:
                 case Windows.System.VirtualKey.GamepadRightThumbstickUp:
-                    Move(Direction.UP, Scaler * 1);
+                    if (ShowSettings)
+                    {
+                        settingViewer.SetItem(0);
+                    }
+                    else
+                    {
+                        Move(Direction.UP, Settings.Scaler * 1);
+                    }               
                     break;
 
                 case Windows.System.VirtualKey.NumberPad2:
                 case Windows.System.VirtualKey.Down:
                 case Windows.System.VirtualKey.GamepadRightThumbstickDown:
-                    Move(Direction.DOWN, Scaler * 1);
+                    if (ShowSettings)
+                    {
+                        settingViewer.SetItem(1);
+                    }
+                    else
+                    {
+                        Move(Direction.DOWN, Settings.Scaler * 1);
+                    }             
                     break;
 
                 case Windows.System.VirtualKey.O:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickLeft:
-                    Move(Direction.LEFT, Scaler * LargeStep);
+                    if (Pointer.Locked)
+                    {
+                        MovePointer(-0.01f, 0.0f);
+                    }
+                    else
+                    {
+                        Move(Direction.LEFT, Settings.Scaler * LargeStep);
+                    }         
                     break;
 
                 case Windows.System.VirtualKey.P:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickRight:
-                    Move(Direction.RIGHT, Scaler * LargeStep); break;
+                    if (Pointer.Locked)
+                    {
+                        MovePointer(0.01f, 0.0f);
+                    }
+                    else
+                    {
+                        Move(Direction.RIGHT, Settings.Scaler * LargeStep);
+                    }        
+                    break;
 
                 case Windows.System.VirtualKey.I:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickUp:
-                    Move(Direction.UP, Scaler * LargeStep);
+                    if (Pointer.Locked)
+                    {
+                        MovePointer(0.0f, 0.01f);
+                    }
+                    else
+                    {
+                        Move(Direction.UP, Settings.Scaler * LargeStep);
+                    }           
                     break;
 
                 case Windows.System.VirtualKey.L:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickDown:
-                    Move(Direction.DOWN, Scaler * LargeStep);
+                    if (Pointer.Locked)
+                    {
+                        MovePointer(0.0f, -0.01f);
+                    }
+                    else
+                    {
+                        Move(Direction.DOWN, Settings.Scaler * LargeStep);
+                    } 
                     break;
 
                 case Windows.System.VirtualKey.Q:
@@ -386,13 +499,14 @@ namespace ImageViewer.Content
 
                 case Windows.System.VirtualKey.M:
                 case Windows.System.VirtualKey.GamepadMenu:
-                    switch (Scaler)
+                    if (Settings.Online)
                     {
-                        case 1: Scaler = 2; break;
-                        case 2: Scaler = 5; break;
-                        case 5: Scaler = 10; break;
-                        default: Scaler = 1; break;
-                    }
+                        ShowSettings = !ShowSettings;
+                        if (!ShowSettings)
+                        {
+                            Scale(Direction.DOWN, 0);
+                        }
+                    }      
                     break;
 
                 case Windows.System.VirtualKey.A:
@@ -411,7 +525,12 @@ namespace ImageViewer.Content
 
                 case Windows.System.VirtualKey.Space:
                 case Windows.System.VirtualKey.GamepadView:
-                    Reset();
+                    //Reset();
+                    if (Settings.Online)
+                    {
+                        settingViewer.NextSlide();
+                        UpdateImages();
+                    }                 
                     break;
 
                 case Windows.System.VirtualKey.Z:
@@ -441,7 +560,8 @@ namespace ImageViewer.Content
 
                 case Windows.System.VirtualKey.U:
                 case Windows.System.VirtualKey.GamepadDPadDown:
-                    SetPosition(0, -0.1f, 0); break;
+                    SetPosition(0, -0.1f, 0);
+                    break;
 
                 case Windows.System.VirtualKey.B:
                 case Windows.System.VirtualKey.GamepadX:
@@ -465,6 +585,16 @@ namespace ImageViewer.Content
             }
         }
 
+        private void MovePointer(float x, float y)
+        {
+            Pointer.SetPositionXY(x, y);
+
+            DebugString =
+                Origo.ToString("0.00") + " "
+                + RotationAngle.ToString() + "° "
+                + Pointer.Position.ToString("0.00");
+        }
+
         private void SetPosition(float dX, float dY, float dZ)
         {
             var dp = new Vector3(dX, dY, dZ);
@@ -481,6 +611,8 @@ namespace ImageViewer.Content
                 var pos = renderer.Position + dp;
                 renderer.Position = pos;
             }
+
+            settingViewer.SetPosition(dp);
 
             Pointer.SetPosition(dp);
         }
@@ -509,6 +641,8 @@ namespace ImageViewer.Content
                 renderer.Rotator = rotator;
             }
 
+            settingViewer.SetRotator(rotator);
+
             Pointer.RotationY = RotationAngle;
             Pointer.SetRotator(rotator);
         }
@@ -526,9 +660,9 @@ namespace ImageViewer.Content
                     break;
                 case Direction.DOWN:
                     Level += number;
-                    if (Level > MinScale)
+                    if (Level > Settings.MinScale)
                     {
-                        Level = MinScale;
+                        Level = Settings.MinScale;
                     }
                     break;
             }
@@ -544,9 +678,9 @@ namespace ImageViewer.Content
             {
                 case Direction.LEFT:
                     ImageX += distance;
-                    if (ImageX > maxResolution)
+                    if (ImageX > Settings.MaxResolutionX)
                     {
-                        ImageX = maxResolution;
+                        ImageX = Settings.MaxResolutionX;
                     }
                     break;
                 case Direction.RIGHT:
@@ -565,9 +699,9 @@ namespace ImageViewer.Content
                     break;
                 case Direction.UP:
                     ImageY += distance;
-                    if (ImageY > maxResolution)
+                    if (ImageY > Settings.MaxResolutionY)
                     {
-                        ImageY = maxResolution;
+                        ImageY = Settings.MaxResolutionY;
                     }
                     break;
             }
@@ -590,15 +724,15 @@ namespace ImageViewer.Content
                     break;
                 case Direction.DOWN:
                     Level += number;
-                    if (Level > MinScale)
+                    if (Level > Settings.MinScale)
                     {
-                        Level = MinScale;    
+                        Level = Settings.MinScale;    
                     }
                     break;
             }
 
-            ImageX = c.X - ((TileCountX * Step) / 2);
-            ImageY = c.Y - ((TileCountY * Step) / 2);
+            ImageX = Math.Max(c.X - ((TileCountX * Step) / 2), 0);
+            ImageY = Math.Max(c.Y - ((TileCountY * Step) / 2), 0);
 
             UpdateImages();
         }
@@ -607,13 +741,16 @@ namespace ImageViewer.Content
 
         private void SetPointer(Direction direction, int number)
         {
-            if (direction == Direction.FRONT)
+            if (direction == Direction.BACK)
             {
                 switch (number)
                 {
                     case 0: Pointer.Visible = false; break;
                     case 1: Pointer.Visible = true; break;
-                    case 2: Pointer.Locked = false; break;
+                    case 2:
+                        Pointer.Locked = false;
+                        Pointer.Rotator = Matrix4x4.Identity;
+                        break;
                     case 3: Pointer.Locked = true; break;
                     case 4: Pointer.AddTag(); break;
                     case 5: Pointer.RemoveTag(); break;
@@ -623,77 +760,11 @@ namespace ImageViewer.Content
 
         private void ClearCache()
         {
-            if (loading)
-            {
-                cancel = false;
-                while (loading) ;
-            }
-
             Task task = new Task(async () =>
             {
-                await loader.ClearCache();
+                await loader.ClearCacheAsync();
             });
             task.Start();
-        }
-
-        private void PreLoadTiles()
-        {
-            loading = true;
-
-            for (var level = MinScale; level >= 0; level--)
-            {
-                var step = TileOffset(level);
-
-                for (var x = 0; x < maxResolution; x += step)
-                {
-                    for (var y = 0; y < maxResolution; y += step)
-                    {
-                        if (cancel)
-                        {
-                            loading = false;
-                            cancel = false;
-                            return;
-                        }
-
-                        var id1 = Image1
-                            + "&x=" + x.ToString()
-                            + "&y=" + y.ToString()
-                            + "&w=" + TileResolution.ToString()
-                            + "&h=" + TileResolution.ToString()
-                            + "&level=" + level.ToString();
-
-                        Task task1 = new Task(async () =>
-                        {
-                            var b1 = await loader.PreloadImage(id1);
-                        });
-                        task1.Start();
-                        task1.Wait();
-
-                        if (cancel)
-                        {
-                            loading = false;
-                            cancel = false;
-                            return;
-                        }
-
-                        var id2 = Image2
-                            + "&x=" + (x + image2offsetX).ToString()
-                            + "&y=" + (y + image2offsetY).ToString()
-                            + "&w=" + TileResolution.ToString()
-                            + "&h=" + TileResolution.ToString()
-                            + "&level=" + level.ToString();
-
-                        Task task2 = new Task(async () =>
-                        {
-                            var b2 = await loader.PreloadImage(id2);
-                        });
-                        task2.Start();
-                        task2.Wait();
-                    }
-                }
-            }
-
-            loading = false;
         }
 
         private void Reset()

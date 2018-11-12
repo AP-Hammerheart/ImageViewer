@@ -3,10 +3,12 @@
 
 using ImageViewer.Common;
 using ImageViewer.Content;
+using ImageViewer.Content.Views;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Gaming.Input;
@@ -59,13 +61,12 @@ namespace ImageViewer
         #region Content variables
 
         private readonly AppView appview;
+        private static Mutex mutex = new Mutex();
 
         private TextureLoader               loader;
         private BaseView                    mainView;
         private MediaSource                 mediaSource;
-
-        bool panView = false;
-        bool updatingView = false;
+        private readonly bool panView = false;
 
         #endregion
 
@@ -132,7 +133,7 @@ namespace ImageViewer
         {
             this.holographicSpace = holographicSpace;
 
-            loader = new TextureLoader(deviceResources, BaseUrl);
+            loader = new TextureLoader(deviceResources);
 
             if (panView)
             {
@@ -193,36 +194,6 @@ namespace ImageViewer
 
         internal void Switch()
         {
-            updatingView = true;
-
-            // Allow rendering to complete
-            var task1 = new Task(async () =>
-            {
-                await Task.Delay(200);
-            });
-            task1.Start();
-            task1.Wait();
-
-            mainView.Dispose();
-            mainView = null;
-
-            panView = !panView;
-
-            if (panView)
-            {
-                mainView = new PanView(this, deviceResources, loader);
-            }
-            else
-            {
-                mainView = new TileView(this, deviceResources, loader);
-            }
-
-            var task2 = new Task(async () =>
-            {
-                await mainView.CreateDeviceDependentResourcesAsync();
-                updatingView = false;
-            });
-            task2.Start();
         }
 
         #endregion
@@ -259,45 +230,55 @@ namespace ImageViewer
             SpatialCoordinateSystem currentCoordinateSystem = referenceFrame.CoordinateSystem;
 
             // Check for new input state since the last frame.
-            foreach (var gamepad in gamepads)
-            {
-                pointerPressed |= ((gamepad.GetCurrentReading().Buttons & GamepadButtons.A) == GamepadButtons.A);
-            }
+            //foreach (var gamepad in gamepads)
+            //{
+            //    pointerPressed |= ((gamepad.GetCurrentReading().Buttons & GamepadButtons.A) == GamepadButtons.A);
+            //}
 
-            SpatialInteractionSourceState pointerState = spatialInputHandler.CheckForInput();
-            SpatialPointerPose pose = null;
-            if (null != pointerState)
-            {
-                pose = pointerState.TryGetPointerPose(currentCoordinateSystem);
-            }
-            else if (pointerPressed)
-            {
-                pose = SpatialPointerPose.TryGetAtTimestamp(currentCoordinateSystem, prediction.Timestamp);
-            }
-            pointerPressed = false;
+            //SpatialInteractionSourceState pointerState = spatialInputHandler.CheckForInput();
+            //SpatialPointerPose pose = null;
+            //if (null != pointerState)
+            //{
+            //    pose = pointerState.TryGetPointerPose(currentCoordinateSystem);
+            //}
+            //else if (pointerPressed)
+            //{
+            //    pose = SpatialPointerPose.TryGetAtTimestamp(currentCoordinateSystem, prediction.Timestamp);
+            //}
+            //pointerPressed = false;
 
-            if (null != pose)
+            //if (null != pose)
+            //{
+            //    //var angle = Angle(pose.Head.ForwardDirection, new Vector3(0.0f, 0.0f, -1.0f), new Vector3(0.0f, 1.0f, 0.0f));
+            //    //var rotator = Matrix4x4.CreateRotationY(-angle);
+            //    //var mover = Matrix4x4.CreateTranslation(pose.Head.Position);
+            //    //var transformer = rotator * mover;
+            //}
+
+            mutex.WaitOne();
+
+            var key = mainView.VirtualKey;
+            var count = mainView.KeyCount;
+
+            mainView.KeyCount = 0;
+            mainView.VirtualKey = Windows.System.VirtualKey.None;
+
+            mutex.ReleaseMutex();
+
+            if (key != Windows.System.VirtualKey.None && count > 0)
             {
-                //var angle = Angle(pose.Head.ForwardDirection, new Vector3(0.0f, 0.0f, -1.0f), new Vector3(0.0f, 1.0f, 0.0f));
-                //var rotator = Matrix4x4.CreateRotationY(-angle);
-                //var mover = Matrix4x4.CreateTranslation(pose.Head.Position);
-                //var transformer = rotator * mover;
+                mainView.LastKey = key;
+                mainView.OnKeyPressed(key);                
             }
 
             timer1.Tick(() => 
             {
-                if (!updatingView)
-                {
-                    mainView.Update(timer1);
-                }          
+                mainView.Update(timer1);         
             });
 
             timer2.Tick(() =>
             {
-                if (!updatingView)
-                {
-                    mainView.Update(SpatialPointerPose.TryGetAtTimestamp(currentCoordinateSystem, prediction.Timestamp));
-                }        
+                mainView.Update(SpatialPointerPose.TryGetAtTimestamp(currentCoordinateSystem, prediction.Timestamp));       
             });
 
             // We complete the frame update by using information about our content positioning
@@ -317,7 +298,7 @@ namespace ImageViewer
                 // You can also set the relative velocity and facing of that content; the sample
                 // hologram is at a fixed point so we only need to indicate its position.
 
-                if (!updatingView && mainView.Pointer != null)
+                if (mainView.Pointer != null)
                 {
                     renderingParameters.SetFocusPoint(currentCoordinateSystem, mainView.Pointer.Position);
                 }              
@@ -340,7 +321,7 @@ namespace ImageViewer
         public bool Render(ref HolographicFrame holographicFrame)
         {
             // Don't try to render anything before the first Update.
-            if (timer1.FrameCount == 0 || updatingView)
+            if (timer1.FrameCount == 0)
             {
                 return false;
             }
@@ -466,11 +447,18 @@ namespace ImageViewer
         #region Handlers
 
         public void OnKeyPressed(Windows.System.VirtualKey key)
-        {
-            if (!updatingView)
+        {      
+            mutex.WaitOne();
+            if (mainView.VirtualKey == key)
             {
-                mainView.OnKeyPressed(key);
-            }    
+                mainView.KeyCount += 1;
+            }
+            else
+            {
+                mainView.VirtualKey = key;
+                mainView.KeyCount = 1;
+            }
+            mutex.ReleaseMutex();   
         }
 
         public void OnPointerPressed()
@@ -605,12 +593,9 @@ namespace ImageViewer
         {
             gamepads.Remove(args);
         }
-        #endregion
 
         internal void HandleVoiceCommand(IReadOnlyDictionary<string, IReadOnlyList<string>> dictionary)
         {
-            if (updatingView) return;
-
             var command = Command.UNDEFINED;
             var direction = Direction.UNDEFINED;
             var number = 0;
@@ -632,6 +617,7 @@ namespace ImageViewer
 
             mainView.HandleVoiceCommand(command, direction, number);
         }
+    #endregion
 
         #region Helpers
 
@@ -656,12 +642,6 @@ namespace ImageViewer
                 return source;
             }
         }
-
-        internal static string Image1 { get; } = "image1.ndpi";
-
-        internal static string Image2 { get; } = "image2.ndpi";
-
-        internal static string BaseUrl { get; } = "http://137.135.167.62:8080/?command=image&caseID=1234&name=";
     
         private static float Angle(Vector3 v1, Vector3 v2, Vector3 up)
         {

@@ -5,7 +5,7 @@ using ImageViewer.Common;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Renderers
 {
     internal class TileCounterRenderer : StatusBarRenderer
     {
@@ -15,11 +15,11 @@ namespace ImageViewer.Content
         }
 
         internal TileCounterRenderer(
-            DeviceResources deviceResources, 
-            TextureLoader loader, 
-            Vector3 bottomLeft, 
-            Vector3 topLeft, 
-            Vector3 bottomRight, 
+            DeviceResources deviceResources,
+            TextureLoader loader,
+            Vector3 bottomLeft,
+            Vector3 topLeft,
+            Vector3 bottomRight,
             Vector3 topRight)
             : base(deviceResources, loader, bottomLeft, topLeft, bottomRight, topRight)
         {

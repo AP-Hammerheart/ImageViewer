@@ -2,25 +2,23 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.Renderers;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Views
 {
     internal class TileView : BaseView
     {
-        private static readonly int gridX = 4;
-        private static readonly int gridY = 4;
-
         private static readonly float tileSize = 0.2f;
         private static readonly float negHalfTile = -0.5f * tileSize;
         private static readonly float posHalfTile = 0.5f * tileSize;
 
-        protected override int LargeStep => 3;
+        protected override int LargeStep => 10;
 
-        internal override int TileCountX { get; } = 3;
-        internal override int TileCountY { get; } = 3;
+        internal override int TileCountX { get; } = Settings.GridX - 1;
+        internal override int TileCountY { get; } = Settings.GridY - 1;
 
         internal TileView(
             ImageViewerMain main,
@@ -29,27 +27,27 @@ namespace ImageViewer.Content
         {
             TileResolution = 256;
 
-            Tiles = new TileRenderer[2 * gridX * gridY];
+            Tiles = new TileRenderer[2 * Settings.GridX * Settings.GridY];
 
             var step = Step;
 
-            var lx0 = -1.0f * (gridX - 1) * tileSize + posHalfTile;
+            var lx0 = -1.0f * TileCountX * tileSize + posHalfTile;
             var rx0 = posHalfTile;
-            var y0 = 0.5f * (gridY - 1) * tileSize - posHalfTile;
-            var z = -1.0f * DistanceFromUser;
+            var y0 = 0.5f * TileCountY * tileSize - posHalfTile;
+            var z = Settings.DistanceFromUser;
 
-            var ri0 = gridX * gridY;
+            var ri0 = Settings.GridX * Settings.GridY;
 
-            for (var x = 0; x < gridX; x++)
+            for (var x = 0; x < Settings.GridX; x++)
             {
-                for (var y = 0; y < gridY; y++)
+                for (var y = 0; y < Settings.GridY; y++)
                 {
-                    Tiles[gridY * x + y] = new TileRenderer(deviceResources, loader, null, tileSize)
+                    Tiles[Settings.GridY * x + y] = new TileRenderer(deviceResources, loader, null, tileSize)
                     {
                         Position = new Vector3(lx0 + x * tileSize, y0 - y * tileSize, z)
                     };
 
-                    Tiles[ri0 + (gridY * x + y)] = new TileRenderer(deviceResources, loader, null, tileSize)
+                    Tiles[ri0 + (Settings.GridY * x + y)] = new TileRenderer(deviceResources, loader, null, tileSize)
                     {
                         Position = new Vector3(rx0 + x * tileSize, y0 - y * tileSize, z)
                     };
@@ -75,19 +73,19 @@ namespace ImageViewer.Content
             var dx = ((float)rx / (float)TileResolution) * tileSize;
             var dy = ((float)ry / (float)TileResolution) * tileSize;
 
-            var x0 = (-1.0f * (gridX - 1) * tileSize) + posHalfTile - dx;
+            var x0 = (-1.0f * TileCountX * tileSize) + posHalfTile - dx;
             var x1 = posHalfTile - dx;
-            var y0 = (0.5f * (gridY - 1) * tileSize) - posHalfTile + dy;
-            var z = -1.0f * DistanceFromUser;
+            var y0 = (0.5f * TileCountY * tileSize) - posHalfTile + dy;
+            var z = Settings.DistanceFromUser;
 
             var tx = (float)rx / (float)TileResolution;
             var ty = (float)ry / (float)TileResolution;
 
-            for (var x = 0; x < gridX; x++)
+            for (var x = 0; x < Settings.GridX; x++)
             {
-                for (var y = 0; y < gridY; y++)
+                for (var y = 0; y < Settings.GridY; y++)
                 {
-                    var lurl = ImageViewerMain.Image1
+                    var lurl = Settings.Image1
                         + "&x=" + (x * step + gridImageX).ToString()
                         + "&y=" + (y * step + gridImageY).ToString()
                         + "&w=" + TileResolution.ToString()
@@ -96,29 +94,29 @@ namespace ImageViewer.Content
 
                     textures.Add(lurl);
 
-                    var ltile = (TileRenderer)(Tiles[gridY * x + y]);
+                    var ltile = (TileRenderer)(Tiles[Settings.GridY * x + y]);
                     ltile.TextureID = lurl;
                     ltile.Position = Origo + new Vector3(x0 + (x * tileSize), y0 - (y * tileSize), z);
 
-                    if (x == 0 || y == 0 || x == (gridX - 1) || y == (gridY - 1))
+                    if (x == 0 || y == 0 || x == TileCountX || y == TileCountY)
                     {
                         ClipTile(ltile, x, y, tx, ty, dx, dy);
                     }
 
-                    var rurl = ImageViewerMain.Image2
-                        + "&x=" + (x * step + gridImageX + image2offsetX).ToString()
-                        + "&y=" + (y * step + gridImageY + image2offsetY).ToString()
+                    var rurl = Settings.Image2
+                        + "&x=" + (x * step + gridImageX + Settings.Image2offsetX).ToString()
+                        + "&y=" + (y * step + gridImageY + Settings.Image2offsetY).ToString()
                         + "&w=" + TileResolution.ToString()
                         + "&h=" + TileResolution.ToString()
                         + "&level=" + Level.ToString();
 
                     textures.Add(rurl);
 
-                    var rtile = ((TileRenderer)Tiles[(gridX * gridY) + (gridY * x + y)]);
+                    var rtile = ((TileRenderer)Tiles[(Settings.GridX * Settings.GridY) + (Settings.GridY * x + y)]);
                     rtile.TextureID = rurl;
                     rtile.Position = Origo + new Vector3(x1 + (x * tileSize), y0 - (y * tileSize), z);
 
-                    if (x == 0 || y == 0 || x == (gridX - 1) || y == (gridY - 1))
+                    if (x == 0 || y == 0 || x == TileCountX || y == TileCountY)
                     {
                         ClipTile(rtile, x, y, tx, ty, dx, dy);
                     }
@@ -143,7 +141,7 @@ namespace ImageViewer.Content
 
             if (dx > 0.0f)
             {
-                if (ix == gridX - 1)
+                if (ix == TileCountX)
                 {
                     tile.X1 = negHalfTile + dx;
                     tile.U1 = tx;
@@ -151,7 +149,7 @@ namespace ImageViewer.Content
             }
             else
             {
-                if (ix == gridX - 1)
+                if (ix == TileCountX)
                 {
                     tile.X1 = tile.X0;
                     tile.U1 = tile.U0;
@@ -166,7 +164,7 @@ namespace ImageViewer.Content
 
             if (dy > 0.0f)
             {
-                if (iy == gridY - 1)
+                if (iy == TileCountY)
                 {
                     tile.Y0 = posHalfTile - dy;
                     tile.V0 = ty;
@@ -174,7 +172,7 @@ namespace ImageViewer.Content
             }
             else
             {
-                if (iy == gridY - 1)
+                if (iy == TileCountY)
                 {
                     tile.Y0 = tile.Y1;
                     tile.V0 = tile.V1;

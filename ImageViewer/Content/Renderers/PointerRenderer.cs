@@ -2,13 +2,13 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
-using System;
+using ImageViewer.Content.Views;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 using Windows.UI.Input.Spatial;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Renderers
 {
     internal class PointerRenderer : PyramidRenderer
     {
@@ -223,8 +223,8 @@ namespace ImageViewer.Content
             var pL = pos1.X <= corners.orig_origo.X ? pos1 : pos2;
             var pR = pos1.X <= corners.orig_origo.X ? pos2 : pos1;
 
-            var v = (1.0f / BaseView.ViewSize) * view.Step * view.TileCountX;
-            var h = (1.0f / BaseView.ViewSize) * view.Step * view.TileCountY;
+            var v = (1.0f / Settings.ViewSize) * view.Step * view.TileCountX;
+            var h = (1.0f / Settings.ViewSize) * view.Step * view.TileCountY;
 
             var X = view.ImageX + (int)(v * (pL.X - corners.orig_topLeft.X));
             var Y = view.ImageY + (int)(h * (corners.orig_topLeft.Y - pL.Y));
@@ -239,8 +239,22 @@ namespace ImageViewer.Content
             return c;
         }
 
+        internal void SetPositionXY(float x, float y)
+        {
+            var left = corners.bottomLeft + 0.5f * (corners.topLeft - corners.bottomLeft);
+            var x_norm = Vector3.Normalize(corners.origo - left);
+            var y_norm = Vector3.Normalize(corners.topLeft - corners.bottomLeft);
+
+            Position += (x * x_norm) + (y * y_norm); 
+        }
+
         internal void SetPosition(Vector3 dp)
         {
+            if (Locked)
+            {
+                Position += dp;
+            }
+
             corners.Position += dp;
 
             foreach (var tag in tags)
@@ -251,6 +265,11 @@ namespace ImageViewer.Content
 
         internal void SetRotator(Matrix4x4 rotator)
         {
+            if (Locked)
+            {
+                Rotator = rotator;
+            }
+
             corners.Rotator = rotator;
 
             foreach (var tag in tags)

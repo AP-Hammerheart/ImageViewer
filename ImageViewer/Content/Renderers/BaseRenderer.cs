@@ -7,7 +7,7 @@ using System;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Renderers
 {
     /// <summary>
     /// This sample renderer instantiates a basic rendering pipeline.

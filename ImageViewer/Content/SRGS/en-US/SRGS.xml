@@ -61,24 +61,28 @@ xmlns="http://www.w3.org/2001/06/grammar">
                     <tag>out.COMMAND=4;</tag>
                     <one-of>
                         <item>
-                            x
+                            a
                             <tag>out.TYPE=0</tag>
                         </item>
                         <item>
-                            y
+                            b
                             <tag>out.TYPE=1</tag>
                         </item>
                         <item>
-                            level
+                            c
                             <tag>out.TYPE=2</tag>
                         </item>
                         <item>
-                            image
+                            f
                             <tag>out.TYPE=3</tag>
                         </item>
                         <item>
-                            pointer
+                            port
                             <tag>out.TYPE=4</tag>
+                        </item>
+                        <item>
+                            pointer
+                            <tag>out.TYPE=5</tag>
                         </item>
                     </one-of>                    
                     <ruleref uri="#number"/>           
