@@ -18,7 +18,12 @@ namespace ImageViewer.Content.Renderers
             Vector3 topLeft,
             Vector3 bottomRight,
             Vector3 topRight)
-            : base(deviceResources, loader, bottomLeft, topLeft, bottomRight, topRight) {}
+            : base(deviceResources, 
+                  loader, 
+                  bottomLeft, 
+                  topLeft, 
+                  bottomRight, 
+                  topRight) {}
 
         internal int Index { get; set; } = 0;
 

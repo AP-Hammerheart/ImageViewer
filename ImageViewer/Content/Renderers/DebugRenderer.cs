@@ -26,11 +26,23 @@ namespace ImageViewer.Content.Renderers
             Vector3 topLeft,
             Vector3 bottomRight,
             Vector3 topRight)
-            : base(deviceResources, loader, bottomLeft, topLeft, bottomRight, topRight) => this.view = view;
+            : base(deviceResources, 
+                  loader, 
+                  bottomLeft, 
+                  topLeft, 
+                  bottomRight, 
+                  topRight) 
+            => this.view = view;
 
         internal override void Update(StepTimer timer)
         {
             var txt = view.DebugString;
+
+            if (view.ErrorString.Length > 0)
+            {
+                txt = view.ErrorString;
+            }
+
             if (!txt.Equals(Text))
             {
                 Updating = true;

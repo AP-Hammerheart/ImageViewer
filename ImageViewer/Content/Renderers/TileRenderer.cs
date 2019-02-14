@@ -20,7 +20,11 @@ namespace ImageViewer.Content.Renderers
         internal float U1 { get; set; } = 1.0f;
         internal float V1 { get; set; } = 0.0f;
 
-        public TileRenderer(DeviceResources deviceResources, TextureLoader loader, string url, float tileSize)
+        public TileRenderer(
+            DeviceResources deviceResources, 
+            TextureLoader loader, 
+            string url, 
+            float tileSize)
             : base(deviceResources, loader, url)
         {
             TileSize = tileSize;
@@ -46,7 +50,10 @@ namespace ImageViewer.Content.Renderers
                 new VertexPlane(new Vector3(X1, Y1, 0.0f), new Vector2(U1, V1))
             };
 
-            vertexBuffer = ToDispose(Buffer.Create(deviceResources.D3DDevice, BindFlags.VertexBuffer, planeVertices));
+            vertexBuffer = ToDispose(Buffer.Create(
+                deviceResources.D3DDevice, 
+                BindFlags.VertexBuffer, 
+                planeVertices));
         }
 
         internal override bool TextureReady => loader.TextureReady(TextureID);

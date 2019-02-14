@@ -26,12 +26,19 @@ namespace ImageViewer.Content.Renderers
 
         private SharpDX.Size2 TextureTileSize = new SharpDX.Size2(0, 0);
 
-        public PanRenderer(DeviceResources deviceResources, TextureLoader loader, string url, float tileSize, int backBufferResolution)
+        public PanRenderer(
+            DeviceResources deviceResources, 
+            TextureLoader loader, 
+            string url, 
+            float tileSize, 
+            int backBufferResolution)
             : base(deviceResources, loader, url)
         {
             TileSize = tileSize; 
             BackBufferResolution = backBufferResolution;
-            TextureTileSize = new SharpDX.Size2(BackBufferResolution, BackBufferResolution);
+            TextureTileSize = new SharpDX.Size2(
+                BackBufferResolution, 
+                BackBufferResolution);
         }
 
         internal void UpdateGeometry(int x, int y)
@@ -46,8 +53,10 @@ namespace ImageViewer.Content.Renderers
             var x0 = ((float)X) / ((float)BackBufferResolution);
             var y0 = ((float)Y) / ((float)BackBufferResolution);
 
-            var x1 = x0 + ((float)PanView.ViewResolution) / ((float)BackBufferResolution);
-            var y1 = y0 + ((float)PanView.ViewResolution) / ((float)BackBufferResolution);
+            var x1 = x0 + ((float)PanView.ViewResolution) 
+                / ((float)BackBufferResolution);
+            var y1 = y0 + ((float)PanView.ViewResolution) 
+                / ((float)BackBufferResolution);
 
             if (vertexBuffer != null)
             {
@@ -56,13 +65,28 @@ namespace ImageViewer.Content.Renderers
 
             VertexPlane[] planeVertices =
             {
-                new VertexPlane(new Vector3(-0.5f * TileSize, -0.5f * TileSize, 0.0f), new Vector2(x0, y1)),
-                new VertexPlane(new Vector3(-0.5f * TileSize,  0.5f * TileSize, 0.0f), new Vector2(x0, y0)),
-                new VertexPlane(new Vector3( 0.5f * TileSize, -0.5f * TileSize, 0.0f), new Vector2(x1, y1)),
-                new VertexPlane(new Vector3( 0.5f * TileSize,  0.5f * TileSize, 0.0f), new Vector2(x1, y0))
+                new VertexPlane(new Vector3(
+                    -0.5f * TileSize, 
+                    -0.5f * TileSize, 0.0f), 
+                    new Vector2(x0, y1)),
+                new VertexPlane(new Vector3(
+                    -0.5f * TileSize,  
+                    0.5f * TileSize, 0.0f), 
+                    new Vector2(x0, y0)),
+                new VertexPlane(new Vector3(
+                    0.5f * TileSize, 
+                    -0.5f * TileSize, 0.0f), 
+                    new Vector2(x1, y1)),
+                new VertexPlane(new Vector3(
+                    0.5f * TileSize,  
+                    0.5f * TileSize, 0.0f), 
+                    new Vector2(x1, y0))
             };
 
-            vertexBuffer = ToDispose(Buffer.Create(deviceResources.D3DDevice, BindFlags.VertexBuffer, planeVertices));
+            vertexBuffer = ToDispose(Buffer.Create(
+                deviceResources.D3DDevice, 
+                BindFlags.VertexBuffer, 
+                planeVertices));
         }
 
         internal override void SetTextureResource(PixelShaderStage pixelShader)
@@ -106,7 +130,10 @@ namespace ImageViewer.Content.Renderers
                 {
                     texture[idx] = await loader.GetTextureAsync(ID, TextureTileSize);
                     var shaderResourceDesc = TextureLoader.ShaderDescription();
-                    view[idx] = new ShaderResourceView(deviceResources.D3DDevice, texture[idx], shaderResourceDesc);
+                    view[idx] = new ShaderResourceView(
+                        deviceResources.D3DDevice, 
+                        texture[idx], 
+                        shaderResourceDesc);
                     IDs[idx] = ID;
                     Active = idx;
                 }

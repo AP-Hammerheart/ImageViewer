@@ -26,21 +26,23 @@ namespace ImageViewer.Content.Renderers
         protected readonly Texture2D[] texture = new Texture2D[2];
         protected readonly ShaderResourceView[] resourceView = new ShaderResourceView[2];
 
-        internal StatusBarRenderer(DeviceResources deviceResources, TextureLoader loader) : base(
-            deviceResources: deviceResources,
-            vertexShader: "Content\\Shaders\\VertexShaderPlane.cso",
-            VPRTvertexShader: "Content\\Shaders\\VPRTVertexShaderPlane.cso",
-            geometryShader: "Content\\Shaders\\GeometryShaderPlane.cso",
-            pixelShader: "Content\\Shaders\\PixelShaderPlane.cso") => this.loader = loader;
+        internal StatusBarRenderer(DeviceResources deviceResources, TextureLoader loader) 
+            : base(
+                deviceResources: deviceResources,
+                vertexShader: "Content\\Shaders\\VertexShaderPlane.cso",
+                VPRTvertexShader: "Content\\Shaders\\VPRTVertexShaderPlane.cso",
+                geometryShader: "Content\\Shaders\\GeometryShaderPlane.cso",
+                pixelShader: "Content\\Shaders\\PixelShaderPlane.cso") 
+            => this.loader = loader;
 
         internal StatusBarRenderer(
-          DeviceResources deviceResources,
-          TextureLoader loader,
-          Vector3 bottomLeft,
-          Vector3 topLeft,
-          Vector3 bottomRight,
-          Vector3 topRight) : 
-            base(
+            DeviceResources deviceResources,
+            TextureLoader loader,
+            Vector3 bottomLeft,
+            Vector3 topLeft,
+            Vector3 bottomRight,
+            Vector3 topRight) 
+            : base(
                 deviceResources: deviceResources,
                 vertexShader: "Content\\Shaders\\VertexShaderPlane.cso",
                 VPRTvertexShader: "Content\\Shaders\\VPRTVertexShaderPlane.cso",
@@ -56,8 +58,15 @@ namespace ImageViewer.Content.Renderers
 
         internal override InputElement[] InputElement => new InputElement[]
             {
-                new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0, InputClassification.PerVertexData, 0),
-                new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 12, 0, InputClassification.PerVertexData, 0),
+                new InputElement(
+                    "POSITION", 0, 
+                    SharpDX.DXGI.Format.R32G32B32_Float, 0, 0, 
+                    InputClassification.PerVertexData, 0),
+
+                new InputElement(
+                    "TEXCOORD", 0, 
+                    SharpDX.DXGI.Format.R32G32_Float, 12, 0, 
+                    InputClassification.PerVertexData, 0),
             };
 
         internal override int VertexSize => SharpDX.Utilities.SizeOf<VertexPlane>();
@@ -83,7 +92,10 @@ namespace ImageViewer.Content.Renderers
                 new VertexPlane(topRight, new Vector2(1.0f, 0.0f))
             };
 
-            vertexBuffer = ToDispose(SharpDX.Direct3D11.Buffer.Create(deviceResources.D3DDevice, BindFlags.VertexBuffer, planeVertices));
+            vertexBuffer = ToDispose(SharpDX.Direct3D11.Buffer.Create(
+                deviceResources.D3DDevice, 
+                BindFlags.VertexBuffer, 
+                planeVertices));
 
             ushort[] planeIndices =
             {
@@ -92,7 +104,10 @@ namespace ImageViewer.Content.Renderers
             };
 
             indexCount = planeIndices.Length;
-            indexBuffer = ToDispose(SharpDX.Direct3D11.Buffer.Create(deviceResources.D3DDevice, BindFlags.IndexBuffer, planeIndices));
+            indexBuffer = ToDispose(SharpDX.Direct3D11.Buffer.Create(
+                deviceResources.D3DDevice, 
+                BindFlags.IndexBuffer, 
+                planeIndices));
 
             modelConstantBuffer = ToDispose(SharpDX.Direct3D11.Buffer.Create(
                 deviceResources.D3DDevice,
@@ -108,7 +123,10 @@ namespace ImageViewer.Content.Renderers
             }
 
             var shaderResourceDesc = TextureLoader.ShaderDescription();
-            resourceView[0] = new ShaderResourceView(deviceResources.D3DDevice, texture[0], shaderResourceDesc);
+            resourceView[0] = new ShaderResourceView(
+                deviceResources.D3DDevice, 
+                texture[0], 
+                shaderResourceDesc);
 
             Active = 0;
         }
@@ -127,7 +145,10 @@ namespace ImageViewer.Content.Renderers
             }
 
             var shaderResourceDesc = TextureLoader.ShaderDescription();
-            resourceView[idx] = new ShaderResourceView(deviceResources.D3DDevice, texture[idx], shaderResourceDesc);
+            resourceView[idx] = new ShaderResourceView(
+                deviceResources.D3DDevice, 
+                texture[idx], 
+                shaderResourceDesc);
              
             Active = idx;
 
@@ -184,7 +205,11 @@ namespace ImageViewer.Content.Renderers
         {
             using (var device = new CanvasDevice())
             {
-                using (var renderTarget = new CanvasRenderTarget(device, ImageWidth, ImageHeight, ImageDPI))
+                using (var renderTarget = new CanvasRenderTarget(
+                    device, 
+                    ImageWidth, 
+                    ImageHeight, 
+                    ImageDPI))
                 {
                     using (var drawingSession = renderTarget.CreateDrawingSession())
                     {

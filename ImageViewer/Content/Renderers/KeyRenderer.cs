@@ -16,7 +16,8 @@ namespace ImageViewer.Content.Renderers
             BaseView view,
             DeviceResources deviceResources,
             TextureLoader loader)
-            : base(deviceResources, loader) => this.view = view;
+            : base(deviceResources, loader) 
+            => this.view = view;
 
         internal KeyRenderer(
             BaseView view,
@@ -26,7 +27,13 @@ namespace ImageViewer.Content.Renderers
             Vector3 topLeft,
             Vector3 bottomRight,
             Vector3 topRight)
-            : base(deviceResources, loader, bottomLeft, topLeft, bottomRight, topRight) => this.view = view;
+            : base(deviceResources, 
+                  loader, 
+                  bottomLeft, 
+                  topLeft, 
+                  bottomRight, 
+                  topRight) 
+            => this.view = view;
 
         internal override void Update(StepTimer timer)
         {

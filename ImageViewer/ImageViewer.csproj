@@ -64,9 +64,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Content\Renderers\BaseCubeRenderer.cs" />
+    <Compile Include="Content\Renderers\FpsRenderer.cs" />
     <Compile Include="Content\Renderers\NameRenderer.cs" />
+    <Compile Include="Content\Renderers\RotateRenderer.cs" />
     <Compile Include="Content\Renderers\ScalerRenderer.cs" />
     <Compile Include="Content\Renderers\TextRenderer.cs" />
+    <Compile Include="Content\Rotator.cs" />
     <Compile Include="Content\Settings.cs" />
     <Compile Include="Content\Views\BaseView.cs" />
     <Compile Include="Content\Renderers\ClockRenderer.cs" />
@@ -84,6 +87,7 @@
     <Compile Include="Content\Renderers\TileCounterRenderer.cs" />
     <Compile Include="Content\Renderers\TileRenderer.cs" />
     <Compile Include="Content\TextureLoader.cs" />
+    <Compile Include="Content\Views\RotatorView.cs" />
     <Compile Include="Content\Views\SettingViewer.cs" />
     <Compile Include="Content\Views\TileView.cs" />
     <Compile Include="Content\Renderers\ZoomRenderer.cs" />
