@@ -227,7 +227,7 @@ namespace ImageViewer.Content.Views
         {
             foreach (var item in settingItems)
             {
-                item.Rotator = rotator;
+                item.GlobalRotator = rotator;
             }
         }
 

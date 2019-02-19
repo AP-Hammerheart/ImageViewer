@@ -9,10 +9,10 @@ namespace ImageViewer.Content.Renderers
 {
     internal class TileCounterRenderer : StatusBarRenderer
     {
-        internal TileCounterRenderer(DeviceResources deviceResources, TextureLoader loader)
-            : base(deviceResources, loader)
-        {
-        }
+        internal TileCounterRenderer(
+            DeviceResources deviceResources, 
+            TextureLoader loader)
+            : base(deviceResources, loader) {}
 
         internal TileCounterRenderer(
             DeviceResources deviceResources,
@@ -21,9 +21,12 @@ namespace ImageViewer.Content.Renderers
             Vector3 topLeft,
             Vector3 bottomRight,
             Vector3 topRight)
-            : base(deviceResources, loader, bottomLeft, topLeft, bottomRight, topRight)
-        {
-        }
+            : base(deviceResources, 
+                  loader, 
+                  bottomLeft, 
+                  topLeft, 
+                  bottomRight, 
+                  topRight) {}
 
         internal override void Update(StepTimer timer)
         {

@@ -12,7 +12,8 @@ namespace ImageViewer.Content.Views
     {
         internal static int ViewResolution { get; } = 768;
 
-        protected override int TileOffset(int level) => PixelSize(level) * (TileResolution - ViewResolution);
+        protected override int TileOffset(int level) 
+            => PixelSize(level) * (TileResolution - ViewResolution);
 
         protected override int LargeStep => 10;
 
@@ -43,11 +44,11 @@ namespace ImageViewer.Content.Views
             Pointer.Update();
 
             var step = PixelSize(Level) * (TileResolution - ViewResolution);
-            var x = (ImageX / step) * step;
-            var y = (ImageY / step) * step;
+            var x = (TopLeftX / step) * step;
+            var y = (TopLeftY / step) * step;
 
-            var xrem = (ImageX % step) / PixelSize(Level);
-            var yrem = (ImageY % step) / PixelSize(Level);
+            var xrem = (TopLeftX % step) / PixelSize(Level);
+            var yrem = (TopLeftY % step) / PixelSize(Level);
 
             ((PanRenderer)Tiles[0]).UpdateGeometry(xrem, yrem);
             ((PanRenderer)Tiles[1]).UpdateGeometry(xrem, yrem);

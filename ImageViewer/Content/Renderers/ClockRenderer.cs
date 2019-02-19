@@ -9,10 +9,10 @@ namespace ImageViewer.Content.Renderers
 {
     internal class ClockRenderer : StatusBarRenderer
     {
-        internal ClockRenderer(DeviceResources deviceResources, TextureLoader loader)
-            : base(deviceResources, loader)
-        {
-        }
+        internal ClockRenderer(
+            DeviceResources deviceResources, 
+            TextureLoader loader)
+            : base(deviceResources, loader) {}
 
         internal ClockRenderer(
             DeviceResources deviceResources, 
@@ -21,13 +21,17 @@ namespace ImageViewer.Content.Renderers
             Vector3 topLeft, 
             Vector3 bottomRight, 
             Vector3 topRight)
-            : base(deviceResources, loader, bottomLeft, topLeft, bottomRight, topRight)
-        {
-        }
+            : base(deviceResources, 
+                  loader, 
+                  bottomLeft, 
+                  topLeft, 
+                  bottomRight, 
+                  topRight) {}
 
         internal override void Update(StepTimer timer)
         {
-            var time = System.DateTime.Now.ToString("h:mm:s");
+            var time = System.DateTime.Now.ToString("h:mm:ss");
+
             if (!time.Equals(Text))
             {
                 Updating = true;

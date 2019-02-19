@@ -124,7 +124,15 @@ namespace ImageViewer.Content.Renderers
 
             var task = new Task(async () =>
             {
-                var tag = new Tag(deviceResources, loader, c.X, c.Y, corners.Rotator, c.pL, c.pR);
+                var tag = new Tag(
+                    deviceResources, 
+                    loader, 
+                    c.X, 
+                    c.Y, 
+                    corners.Rotator, 
+                    c.pL, 
+                    c.pR);
+
                 await tag.CreateDeviceDependentResourcesAsync();
                 tags.Add(tag);
             });
@@ -157,9 +165,17 @@ namespace ImageViewer.Content.Renderers
 
         internal void Update()
         {
+            D2[] square =
+            {
+                new D2(view.TopRightX, view.TopRightY),
+                new D2(view.TopLeftX, view.TopLeftY),
+                new D2(view.BottomLeftX, view.BottomLeftY),
+                new D2(view.BottomRightX, view.BottomRightY)
+            };
+             
             foreach (var tag in tags)
             {
-                tag.Update(view, corners);
+                tag.Update(view, corners, square);
             }
         }
 
@@ -170,7 +186,9 @@ namespace ImageViewer.Content.Renderers
                 var p0 = pose.Head.Position;
                 var p1 = pose.Head.ForwardDirection;
 
-                var s = Vector3.Dot(corners.normal, corners.origo - p0) / Vector3.Dot(corners.normal, p1);
+                var s = Vector3.Dot(corners.normal, corners.origo - p0) /
+                    Vector3.Dot(corners.normal, p1);
+
                 var ps = p0 + s * p1;
 
                 Position = ps;
@@ -223,11 +241,16 @@ namespace ImageViewer.Content.Renderers
             var pL = pos1.X <= corners.orig_origo.X ? pos1 : pos2;
             var pR = pos1.X <= corners.orig_origo.X ? pos2 : pos1;
 
-            var v = (1.0f / Settings.ViewSize) * view.Step * view.TileCountX;
-            var h = (1.0f / Settings.ViewSize) * view.Step * view.TileCountY;
+            var a = (pL.X - corners.orig_topLeft.X) / Settings.ViewSize;
+            var b = (pL.Y - corners.orig_bottomLeft.Y) / Settings.ViewSize;
 
-            var X = view.ImageX + (int)(v * (pL.X - corners.orig_topLeft.X));
-            var Y = view.ImageY + (int)(h * (corners.orig_topLeft.Y - pL.Y));
+            var X = (int)(view.BottomLeftX 
+                + a * (view.BottomRightX - view.BottomLeftX) 
+                + b * (view.TopLeftX - view.BottomLeftX));
+
+            var Y = (int)(view.BottomLeftY 
+                + a * (view.BottomRightY - view.BottomLeftY) 
+                + b * (view.TopLeftY - view.BottomLeftY));
 
             p = Vector4.Transform(pL, translation);
             pL = new Vector3(p.X, p.Y, p.Z);
@@ -241,7 +264,8 @@ namespace ImageViewer.Content.Renderers
 
         internal void SetPositionXY(float x, float y)
         {
-            var left = corners.bottomLeft + 0.5f * (corners.topLeft - corners.bottomLeft);
+            var left = corners.bottomLeft 
+                + 0.5f * (corners.topLeft - corners.bottomLeft);
             var x_norm = Vector3.Normalize(corners.origo - left);
             var y_norm = Vector3.Normalize(corners.topLeft - corners.bottomLeft);
 
@@ -267,7 +291,7 @@ namespace ImageViewer.Content.Renderers
         {
             if (Locked)
             {
-                Rotator = rotator;
+                GlobalRotator = rotator;
             }
 
             corners.Rotator = rotator;

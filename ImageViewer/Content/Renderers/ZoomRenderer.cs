@@ -3,6 +3,7 @@
 
 using ImageViewer.Common;
 using ImageViewer.Content.Views;
+using System;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -16,7 +17,8 @@ namespace ImageViewer.Content.Renderers
             BaseView view,
             DeviceResources deviceResources,
             TextureLoader loader)
-            : base(deviceResources, loader) => this.view = view;
+            : base(deviceResources, loader) 
+            => this.view = view;
 
         internal ZoomRenderer(
             BaseView view,
@@ -26,7 +28,13 @@ namespace ImageViewer.Content.Renderers
             Vector3 topLeft,
             Vector3 bottomRight,
             Vector3 topRight)
-            : base(deviceResources, loader, bottomLeft, topLeft, bottomRight, topRight) => this.view = view;
+            : base(deviceResources, 
+                  loader, 
+                  bottomLeft, 
+                  topLeft, 
+                  bottomRight, 
+                  topRight) 
+            => this.view = view;
 
         private string Zoom(int level)
         {
@@ -46,7 +54,12 @@ namespace ImageViewer.Content.Renderers
 
         internal override void Update(StepTimer timer)
         {
-            var zoom = "X: " + view.ImageX.ToString() + "  Y: " + view.ImageY.ToString() + "  Level: " + view.Level;
+            var zoom = 
+                "X: " + view.TopLeftX.ToString() 
+                + "  Y: " + view.TopLeftY.ToString()
+                + "  A: " + (Math.Round(view.Angle * 180.0 / Math.PI)).ToString()
+                + "°  Level: " + view.Level;
+
             if (!zoom.Equals(Text))
             {
                 Updating = true;

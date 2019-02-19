@@ -15,17 +15,23 @@ namespace ImageViewer.Content.Renderers
         protected readonly TextureLoader loader;
         private bool textureReady = false;
 
-        internal BaseCubeRenderer(DeviceResources deviceResources, TextureLoader loader)
+        internal BaseCubeRenderer(
+            DeviceResources deviceResources, 
+            TextureLoader loader)
             : base(
                 deviceResources,
                 "Content\\Shaders\\VertexShaderCube.cso",
                 "Content\\Shaders\\VPRTVertexShaderCube.cso",
                 "Content\\Shaders\\GeometryShaderCube.cso",
-                "Content\\Shaders\\PixelShaderCube.cso") => this.loader = loader;
+                "Content\\Shaders\\PixelShaderCube.cso") 
+            => this.loader = loader;
 
         internal override InputElement[] InputElement => new InputElement[]
             {
-                new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float,  0, 0, InputClassification.PerVertexData, 0)
+                new InputElement(
+                    "POSITION", 0, 
+                    SharpDX.DXGI.Format.R32G32B32_Float,  
+                    0, 0, InputClassification.PerVertexData, 0)
             };
 
         internal override int VertexSize => SharpDX.Utilities.SizeOf<VertexCube>();
@@ -48,7 +54,11 @@ namespace ImageViewer.Content.Renderers
 
             var shaderResourceDesc = TextureLoader.ShaderDescriptionCube();
             texture = ToDispose(loader.TextureCube(deviceResources, TextureFile));
-            resourceView = ToDispose(new ShaderResourceView(deviceResources.D3DDevice, texture, shaderResourceDesc));
+            resourceView = ToDispose(new ShaderResourceView(
+                deviceResources.D3DDevice, 
+                texture, 
+                shaderResourceDesc));
+
             textureReady = true;
         }
 

@@ -35,14 +35,14 @@ namespace ImageViewer.Content
             left = new PyramidRenderer(deviceResources, loader)
             {
                 Position = positionLeft,
-                Rotator = rotator,
+                GlobalRotator = rotator,
                 TextureFile = "Content\\Textures\\red.png"
             };
 
             right = new PyramidRenderer(deviceResources, loader)
             {
                 Position = positionRight,
-                Rotator = rotator,
+                GlobalRotator = rotator,
                 TextureFile = "Content\\Textures\\green.png"
             };
         }
@@ -60,21 +60,51 @@ namespace ImageViewer.Content
             right.ReleaseDeviceDependentResources();
         }
 
-        internal void Update(BaseView view, PointerRenderer.Corners corners)
-        {
-            var width = view.Step * view.TileCountX;
-            var height = view.Step * view.TileCountY;
-            if (X < view.ImageX || Y < view.ImageY || X > view.ImageX + width || Y > view.ImageY + height)
+        internal void Update(BaseView view, PointerRenderer.Corners corners, D2[] square)
+        {       
+            if (!Rotator.InsideSquare(square, new D2(X, Y)))
             {
                 visible = false;
             }
             else
             {
-                var xx = (float)((double)Settings.ViewSize * ((double)(X - view.ImageX) / (double)width));
-                var yy = (float)((double)Settings.ViewSize * ((double)(Y - view.ImageY) / (double)height));
+                // xc = A * ac + B * ec
+                // yd = A * bd + B * fd
 
-                var pL = new Vector3(corners.orig_topLeft.X + xx, corners.orig_topLeft.Y - yy, corners.orig_topLeft.Z);
-                var pR = new Vector3(corners.orig_topLeft.X + xx + Settings.ViewSize, corners.orig_topLeft.Y - yy, corners.orig_topLeft.Z);
+                float xc = X - view.BottomLeftX;
+                float yd = Y - view.BottomLeftY;
+
+                float ac = view.TopLeftX - view.BottomLeftX;
+                float bd = view.TopLeftY - view.BottomLeftY;
+                
+                float ec = view.BottomRightX - view.BottomLeftX;
+                float fd = view.BottomRightY - view.BottomLeftY;
+
+                float A, B;
+
+                if (ac == 0)
+                {
+                    B = xc / ec;
+                    A = yd / bd;
+                }
+                else
+                {
+                    B = ((xc / ac) * bd - yd) / (((ec / ac) * bd) - fd);
+                    A = (xc - B * ec) / ac;
+                }
+          
+                var xx = B * Settings.ViewSize;
+                var yy = A * Settings.ViewSize;
+
+                var pL = new Vector3(
+                    corners.orig_bottomLeft.X + xx, 
+                    corners.orig_bottomLeft.Y + yy, 
+                    corners.orig_topLeft.Z);
+
+                var pR = new Vector3(
+                    corners.orig_bottomLeft.X + xx + Settings.ViewSize, 
+                    corners.orig_bottomLeft.Y + yy, 
+                    corners.orig_topLeft.Z);
 
                 var translation = Matrix4x4.CreateTranslation(corners.Position);
 
@@ -114,8 +144,8 @@ namespace ImageViewer.Content
 
         internal void SetRotator(Matrix4x4 rotator)
         {
-            left.Rotator = rotator;
-            right.Rotator = rotator;
+            left.GlobalRotator = rotator;
+            right.GlobalRotator = rotator;
         }
     }
 }

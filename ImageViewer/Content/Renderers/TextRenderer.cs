@@ -9,10 +9,10 @@ namespace ImageViewer.Content.Renderers
 {
     internal class TextRenderer : StatusBarRenderer
     {
-        internal TextRenderer(DeviceResources deviceResources, TextureLoader loader)
-            : base(deviceResources, loader)
-        {
-        }
+        internal TextRenderer(
+            DeviceResources deviceResources, 
+            TextureLoader loader)
+            : base(deviceResources, loader) {}
 
         internal TextRenderer(
             DeviceResources deviceResources,
@@ -21,9 +21,12 @@ namespace ImageViewer.Content.Renderers
             Vector3 topLeft,
             Vector3 bottomRight,
             Vector3 topRight)
-            : base(deviceResources, loader, bottomLeft, topLeft, bottomRight, topRight)
-        {
-        }
+            : base(deviceResources, 
+                  loader, 
+                  bottomLeft, 
+                  topLeft, 
+                  bottomRight, 
+                  topRight) {}
 
         internal string[] Lines { get; set; } = null;
         internal float LineHeight { get; set; } = 0.0f;
@@ -41,7 +44,9 @@ namespace ImageViewer.Content.Renderers
             task.Start();
         }
 
-        protected override void TextLines(CanvasDrawingSession drawingSession, CanvasTextFormat format)
+        protected override void TextLines(
+            CanvasDrawingSession drawingSession, 
+            CanvasTextFormat format)
         {
             format.FontSize = FontSize;
             for (var i = 0; i < Lines.Length; i++)

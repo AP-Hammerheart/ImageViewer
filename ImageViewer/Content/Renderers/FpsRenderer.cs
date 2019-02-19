@@ -2,39 +2,47 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.Views;
 using System.Numerics;
 using System.Threading.Tasks;
 
 namespace ImageViewer.Content.Renderers
 {
-    internal class MemoryUseRenderer : StatusBarRenderer
+    internal class FpsRenderer : StatusBarRenderer
     {
-        internal MemoryUseRenderer(
+        private readonly BaseView view;
+
+        internal FpsRenderer(
+            BaseView view, 
             DeviceResources deviceResources, 
             TextureLoader loader)
-            : base(deviceResources, loader) {}
+            : base(deviceResources, loader) 
+            => this.view = view;
 
-        internal MemoryUseRenderer(
-            DeviceResources deviceResources, 
-            TextureLoader loader, 
-            Vector3 bottomLeft, 
-            Vector3 topLeft, 
-            Vector3 bottomRight, 
+        internal FpsRenderer(
+            BaseView view,
+            DeviceResources deviceResources,
+            TextureLoader loader,
+            Vector3 bottomLeft,
+            Vector3 topLeft,
+            Vector3 bottomRight,
             Vector3 topRight)
             : base(deviceResources, 
                   loader, 
                   bottomLeft, 
                   topLeft, 
                   bottomRight, 
-                  topRight) {}
+                  topRight) 
+            => this.view = view;
 
         internal override void Update(StepTimer timer)
         {
-            var mem = MemoryUseInMB().ToString() + " MB";
-            if (!mem.Equals(Text))
+            var fps = view.FPS.ToString() + " fps";
+
+            if (!fps.Equals(Text))
             {
                 Updating = true;
-                Text = mem;
+                Text = fps;
 
                 Task task = new Task(async () =>
                 {
@@ -42,14 +50,6 @@ namespace ImageViewer.Content.Renderers
                 });
                 task.Start();
             }
-        }
-
-        private int MemoryUseInMB()
-        {
-            var report = Windows.System.MemoryManager.GetAppMemoryReport();
-            var memoryUse = report.PrivateCommitUsage;
-
-            return (int)(memoryUse / 1000000);
         }
     }
 }

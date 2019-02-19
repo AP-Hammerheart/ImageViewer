@@ -53,6 +53,8 @@ namespace ImageViewer.Content.Views
                     };
                 }
             }
+
+            SetCorners();
             UpdateImages();
         }
 
@@ -64,11 +66,11 @@ namespace ImageViewer.Content.Views
 
             var step = PixelSize(Level) * TileResolution;
 
-            var gridImageX = ImageX - (ImageX % step);
-            var gridImageY = ImageY - (ImageY % step);
+            var gridImageX = TopLeftX - (TopLeftX % step);
+            var gridImageY = TopLeftY - (TopLeftY % step);
 
-            var rx = (ImageX % step) / PixelSize(Level);
-            var ry = (ImageY % step) / PixelSize(Level);
+            var rx = (TopLeftX % step) / PixelSize(Level);
+            var ry = (TopLeftY % step) / PixelSize(Level);
 
             var dx = ((float)rx / (float)TileResolution) * tileSize;
             var dy = ((float)ry / (float)TileResolution) * tileSize;

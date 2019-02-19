@@ -66,7 +66,8 @@ namespace ImageViewer
         private TextureLoader               loader;
         private BaseView                    mainView;
         private MediaSource                 mediaSource;
-        private readonly bool panView = false;
+
+        private readonly bool               tileView = false;
 
         #endregion
 
@@ -81,6 +82,11 @@ namespace ImageViewer
         private StepTimer                   timer1 = new StepTimer();
         private StepTimer                   timer2 = new StepTimer();
 
+        // Fps counter
+        private readonly Stopwatch          stopWatch = new Stopwatch();
+        private long                        timeStamp = 0;
+        private int                         frameCounter = 0;
+
         // Represents the holographic space around the user.
         HolographicSpace                    holographicSpace;
 
@@ -94,7 +100,7 @@ namespace ImageViewer
         List<Gamepad>                       gamepads = new List<Gamepad>();
 
         // Keep track of mouse input.
-        bool                                pointerPressed = false;
+        //bool                                pointerPressed = false;
 
         #endregion
 
@@ -127,6 +133,8 @@ namespace ImageViewer
 
             timer2.IsFixedTimeStep = true;
             timer2.TargetElapsedSeconds = 0.02;
+
+            stopWatch.Start();
         }
 
         public void SetHolographicSpace(HolographicSpace holographicSpace)
@@ -135,13 +143,14 @@ namespace ImageViewer
 
             loader = new TextureLoader(deviceResources);
 
-            if (panView)
+            if (tileView)
             {
-                mainView = new PanView(this, deviceResources, loader);
+                mainView = new TileView(this, deviceResources, loader);
+                //mainView = new PanView(this, deviceResources, loader);
             }
             else
             {
-                mainView = new TileView(this, deviceResources, loader);
+                mainView = new RotatorView(this, deviceResources, loader);
             }
 
             spatialInputHandler = new SpatialInputHandler();
@@ -393,8 +402,19 @@ namespace ImageViewer
 
                     // Only render world-locked content when positional tracking is active.
                     if (cameraActive)
-                    {
-                        mainView.Render();                
+                    {   
+                        frameCounter++;
+
+                        var now = stopWatch.ElapsedMilliseconds;
+
+                        if (now - timeStamp >= 1000)
+                        {
+                            mainView.FPS = frameCounter;
+                            timeStamp = now;
+                            frameCounter = 0;
+                        }
+
+                        mainView.Render();
                     }
 
                     atLeastOneCameraRendered = true;
@@ -463,7 +483,7 @@ namespace ImageViewer
 
         public void OnPointerPressed()
         {
-            this.pointerPressed = true;
+            //pointerPressed = true;
         }
 
         /// <summary>

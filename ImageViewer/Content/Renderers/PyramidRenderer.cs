@@ -12,9 +12,7 @@ namespace ImageViewer.Content.Renderers
         internal PyramidRenderer(
             DeviceResources deviceResources, 
             TextureLoader loader)
-            : base(deviceResources, loader)
-        {
-        }
+            : base(deviceResources, loader) {}
 
         internal override void LoadGeometry()
         {
@@ -27,7 +25,10 @@ namespace ImageViewer.Content.Renderers
                 new VertexCube(new Vector3( 0.0f,    0.0f,   0.0f))
             };
 
-            vertexBuffer = ToDispose(Buffer.Create(deviceResources.D3DDevice, BindFlags.VertexBuffer, vertices));
+            vertexBuffer = ToDispose(Buffer.Create(
+                deviceResources.D3DDevice, 
+                BindFlags.VertexBuffer, 
+                vertices));
 
             ushort[] vertexIndices =
             {
@@ -40,7 +41,10 @@ namespace ImageViewer.Content.Renderers
             };
 
             indexCount = vertexIndices.Length;
-            indexBuffer = ToDispose(Buffer.Create(deviceResources.D3DDevice, BindFlags.IndexBuffer, vertexIndices));
+            indexBuffer = ToDispose(Buffer.Create(
+                deviceResources.D3DDevice, 
+                BindFlags.IndexBuffer, 
+                vertexIndices));
 
             modelConstantBuffer = ToDispose(Buffer.Create(
                 deviceResources.D3DDevice,

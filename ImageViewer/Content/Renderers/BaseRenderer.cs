@@ -20,7 +20,8 @@ namespace ImageViewer.Content.Renderers
         private readonly string PIXEL_SHADER;
 
         private Vector3 position = Vector3.Zero;
-        private Matrix4x4 rotator = Matrix4x4.Identity;
+        private Matrix4x4 globalRotator = Matrix4x4.Identity;
+        private Matrix4x4 viewRotator = Matrix4x4.Identity;
 
         private float rotationX = 0.0f;
         private float rotationY = 0.0f;
@@ -48,7 +49,8 @@ namespace ImageViewer.Content.Renderers
         private bool loadingComplete = false;
         private bool refreshNeeded = true;
 
-        // If the current D3D Device supports VPRT, we can avoid using a geometry
+        // If the current D3D Device supports VPRT, 
+        // we can avoid using a geometry
         // shader just to set the render target array index.
         private bool usingVprtShaders = false;
 
@@ -78,7 +80,12 @@ namespace ImageViewer.Content.Renderers
             var modelRotationZ = Matrix4x4.CreateRotationZ(rotationZ);
 
             var modelTranslation = Matrix4x4.CreateTranslation(Position);
-            var modelTransform = modelRotationX * modelRotationY * modelRotationZ * modelTranslation * rotator;
+            var modelTransform = modelRotationX 
+                * modelRotationY 
+                * modelRotationZ 
+                * modelTranslation 
+                * viewRotator 
+                * globalRotator;
 
             modelConstantBufferData.model = Matrix4x4.Transpose(modelTransform);
 
@@ -153,24 +160,40 @@ namespace ImageViewer.Content.Renderers
             var folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
 
             var vertexShaderFileName = usingVprtShaders ? VPRT_VERTEX_SHADER : VERTEX_SHADER;
-            var vertexShaderByteCode = await DirectXHelper.ReadDataAsync(await folder.GetFileAsync(vertexShaderFileName));
+            var vertexShaderByteCode = await DirectXHelper.ReadDataAsync(
+                await folder.GetFileAsync(vertexShaderFileName));
 
-            vertexShader = ToDispose(new VertexShader(deviceResources.D3DDevice, vertexShaderByteCode));
+            vertexShader = ToDispose(new VertexShader(
+                deviceResources.D3DDevice, 
+                vertexShaderByteCode));
 
             var vertexDesc = InputElement;
 
-            inputLayout = ToDispose(new InputLayout(deviceResources.D3DDevice, vertexShaderByteCode, vertexDesc));
+            inputLayout = ToDispose(new InputLayout(
+                deviceResources.D3DDevice, 
+                vertexShaderByteCode, 
+                vertexDesc));
 
             if (!usingVprtShaders)
             {
-                var geometryShaderByteCode = await DirectXHelper.ReadDataAsync(await folder.GetFileAsync(GEOMETRY_SHADER));
-                geometryShader = ToDispose(new GeometryShader(deviceResources.D3DDevice, geometryShaderByteCode));
+                var geometryShaderByteCode = await DirectXHelper.ReadDataAsync(
+                    await folder.GetFileAsync(GEOMETRY_SHADER));
+
+                geometryShader = ToDispose(new GeometryShader(
+                    deviceResources.D3DDevice, 
+                    geometryShaderByteCode));
             }
 
-            var pixelShaderByteCode = await DirectXHelper.ReadDataAsync(await folder.GetFileAsync(PIXEL_SHADER));
-            pixelShader = ToDispose(new PixelShader(deviceResources.D3DDevice, pixelShaderByteCode));
+            var pixelShaderByteCode = await DirectXHelper.ReadDataAsync(
+                await folder.GetFileAsync(PIXEL_SHADER));
 
-            samplerState = ToDispose(new SamplerState(deviceResources.D3DDevice, TextureLoader.SamplerStateDescription()));
+            pixelShader = ToDispose(new PixelShader(
+                deviceResources.D3DDevice, 
+                pixelShaderByteCode));
+
+            samplerState = ToDispose(new SamplerState(
+                deviceResources.D3DDevice, 
+                TextureLoader.SamplerStateDescription()));
   
             await LoadTextureAsync();
             LoadGeometry();
@@ -232,7 +255,9 @@ namespace ImageViewer.Content.Renderers
             }
             set
             {
-                rotationX = (float)Math.IEEERemainder(value * ((float)Math.PI / 180.0f), 2 * Math.PI);
+                rotationX = (float)Math.IEEERemainder(value 
+                    * ((float)Math.PI / 180.0f), 2 * Math.PI);
+
                 refreshNeeded = true;
             }
         }
@@ -245,7 +270,9 @@ namespace ImageViewer.Content.Renderers
             }
             set
             {
-                rotationY = (float)Math.IEEERemainder(value * ((float)Math.PI / 180.0f), 2 * Math.PI);
+                rotationY = (float)Math.IEEERemainder(value 
+                    * ((float)Math.PI / 180.0f), 2 * Math.PI);
+
                 refreshNeeded = true;
             }
         }
@@ -258,21 +285,37 @@ namespace ImageViewer.Content.Renderers
             }
             set
             {
-                rotationZ = (float)Math.IEEERemainder(value * ((float)Math.PI / 180.0f), 2 * Math.PI);
+                rotationZ = (float)Math.IEEERemainder(value 
+                    * ((float)Math.PI / 180.0f), 2 * Math.PI);
+
                 refreshNeeded = true;
             }
         }
 
-        internal virtual Matrix4x4 Rotator
+        internal virtual Matrix4x4 GlobalRotator
         {
             get
             {
-                return rotator;
+                return globalRotator;
             }
 
             set
             {
-                rotator = value;
+                globalRotator = value;
+                refreshNeeded = true;
+            }
+        }
+
+        internal virtual Matrix4x4 ViewRotator
+        {
+            get
+            {
+                return viewRotator;
+            }
+
+            set
+            {
+                viewRotator = value;
                 refreshNeeded = true;
             }
         }

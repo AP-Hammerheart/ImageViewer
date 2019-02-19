@@ -10,7 +10,11 @@ namespace ImageViewer.Content.Renderers
     {
         protected TextureLoader loader;
 
-        internal PlaneRenderer(DeviceResources deviceResources, TextureLoader loader, string id) : base(
+        internal PlaneRenderer(
+            DeviceResources deviceResources, 
+            TextureLoader loader, 
+            string id) 
+            : base(
             deviceResources: deviceResources,
             vertexShader: "Content\\Shaders\\VertexShaderPlane.cso",
             VPRTvertexShader: "Content\\Shaders\\VPRTVertexShaderPlane.cso",
@@ -23,11 +27,18 @@ namespace ImageViewer.Content.Renderers
 
         internal override InputElement[] InputElement => new InputElement[]
             {
-                new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0, InputClassification.PerVertexData, 0),
-                new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 12, 0, InputClassification.PerVertexData, 0),
+                new InputElement(
+                    "POSITION", 0, 
+                    SharpDX.DXGI.Format.R32G32B32_Float, 0, 0, 
+                    InputClassification.PerVertexData, 0),
+                new InputElement(
+                    "TEXCOORD", 0, 
+                    SharpDX.DXGI.Format.R32G32_Float, 12, 0, 
+                    InputClassification.PerVertexData, 0),
             };
 
-        internal override int VertexSize => SharpDX.Utilities.SizeOf<VertexPlane>();
+        internal override int VertexSize 
+            => SharpDX.Utilities.SizeOf<VertexPlane>();
 
         internal string TextureID { get; set; }
 
@@ -44,7 +55,10 @@ namespace ImageViewer.Content.Renderers
             };
 
             indexCount = planeIndices.Length;
-            indexBuffer = ToDispose(Buffer.Create(deviceResources.D3DDevice, BindFlags.IndexBuffer, planeIndices));
+            indexBuffer = ToDispose(Buffer.Create(
+                deviceResources.D3DDevice, 
+                BindFlags.IndexBuffer, 
+                planeIndices));
 
             modelConstantBuffer = ToDispose(Buffer.Create(
                 deviceResources.D3DDevice,
