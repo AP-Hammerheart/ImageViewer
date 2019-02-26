@@ -603,12 +603,13 @@ namespace ImageViewer.Content.Views
 
                 case Windows.System.VirtualKey.N:
                 case Windows.System.VirtualKey.GamepadB:
-                    SetAngle(-5.0f);
+                    SetAngle(-5.0f);             
                     break;
 
                 case Windows.System.VirtualKey.F:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickButton:
-                    Zoom(Direction.DOWN, 1);
+                    Pointer.Locked = !Pointer.Locked;
+                    //Zoom(Direction.DOWN, 1);
                     break;
 
                 case Windows.System.VirtualKey.W:
@@ -616,16 +617,15 @@ namespace ImageViewer.Content.Views
                     Zoom(Direction.UP, 1);
                     break;
             }
+
+            DebugString = Origo.ToString("0.00") + " "
+                + RotationAngle.ToString() + "° "
+                + Pointer.Position.ToString("0.00");
         }
 
         private void MovePointer(float x, float y)
         {
-            Pointer.SetPositionXY(x, y);
-
-            DebugString =
-                Origo.ToString("0.00") + " "
-                + RotationAngle.ToString() + "° "
-                + Pointer.Position.ToString("0.00");
+            Pointer.SetDeltaXY(x, y);
         }
 
         protected virtual void SetPosition(float dX, float dY, float dZ)
@@ -646,7 +646,6 @@ namespace ImageViewer.Content.Views
             }
 
             settingViewer.SetPosition(dp);
-
             Pointer.SetPosition(dp);
         }
 
@@ -662,7 +661,7 @@ namespace ImageViewer.Content.Views
                 RotationAngle += 360.0f;
             }
 
-            var rotator = Matrix4x4.CreateRotationY((float)(Math.PI * RotationAngle / 180.0f), Origo);
+            var rotator = Matrix4x4.CreateRotationY((float)(Math.PI * RotationAngle / 180.0f), Pointer.Origo());
 
             foreach (var renderer in Tiles)
             {

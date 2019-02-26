@@ -163,10 +163,16 @@ namespace ImageViewer.Content.Views
                     }
                     break;
                 case Direction.DOWN:
-                    Angle = Math.PI;
+                    if (Settings.Scaler > 1)
+                    {
+                        Settings.Scaler /= 2;
+                    }
                     break;
                 case Direction.UP:
-                    Angle = 0.0;
+                    if (Settings.Scaler < 1024)
+                    {
+                        Settings.Scaler *= 2;
+                    }
                     break;
             }
 
@@ -176,8 +182,7 @@ namespace ImageViewer.Content.Views
 
         protected override void Move(Direction direction, int number)
         {
-            var distance = number * PixelSize(Level);
-            var moveStep = PixelSize(Level) * 32;
+            var moveStep = PixelSize(Level) * Settings.Scaler;
 
             switch (direction)
             {

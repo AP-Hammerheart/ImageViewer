@@ -3,6 +3,7 @@
 
 using ImageViewer.Common;
 using ImageViewer.Content.Views;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -218,6 +219,8 @@ namespace ImageViewer.Content.Renderers
             }
         }
 
+        internal Vector3 Origo() => corners.origo;
+
         internal Coordinate Coordinates()
         {
             var translation = Matrix4x4.CreateTranslation(corners.Position);
@@ -238,8 +241,10 @@ namespace ImageViewer.Content.Renderers
                 pos2.X = corners.orig_topLeft.X + (pos1.X - corners.orig_origo.X);
             }
 
-            var pL = pos1.X <= corners.orig_origo.X ? pos1 : pos2;
-            var pR = pos1.X <= corners.orig_origo.X ? pos2 : pos1;
+            var left = pos1.X <= corners.orig_origo.X;
+
+            var pL = left ? pos1 : pos2;
+            var pR = left ? pos2 : pos1;
 
             var a = (pL.X - corners.orig_topLeft.X) / Settings.ViewSize;
             var b = (pL.Y - corners.orig_bottomLeft.Y) / Settings.ViewSize;
@@ -262,24 +267,67 @@ namespace ImageViewer.Content.Renderers
             return c;
         }
 
-        internal void SetPositionXY(float x, float y)
+        internal void SetDeltaXY(float x, float y)
         {
             var left = corners.bottomLeft 
                 + 0.5f * (corners.topLeft - corners.bottomLeft);
+
             var x_norm = Vector3.Normalize(corners.origo - left);
             var y_norm = Vector3.Normalize(corners.topLeft - corners.bottomLeft);
 
             Position += (x * x_norm) + (y * y_norm); 
         }
 
+        private void SetXY(float x, float y)
+        {
+            var left = corners.bottomLeft
+                + 0.5f * (corners.topLeft - corners.bottomLeft);
+
+            var x_norm = Vector3.Normalize(corners.origo - left);
+            var y_norm = Vector3.Normalize(corners.topLeft - corners.bottomLeft);
+
+            Position = left + x * x_norm + y * y_norm;
+        }
+
+        private Tuple<float, float> GetXY()
+        {
+            var left = corners.bottomLeft
+                + 0.5f * (corners.topLeft - corners.bottomLeft);
+
+            var x_vec = corners.origo - left;
+            var vec = (Position - left);
+            var len = vec.Length();
+
+            var x = 0.0f;
+            var y = 0.0f;
+
+            if (len > 0)
+            {
+                var ang = Math.Acos(Vector3.Dot(x_vec, vec) 
+                    / (len * x_vec.Length()));
+
+                var len1 = (Position - corners.topLeft).Length();
+                var len2 = (Position - corners.bottomLeft).Length();
+
+                x = len * (float)Math.Cos(ang);
+                y = (len1 < len2 ? 1 : -1) * len * (float)Math.Sin(ang);                
+            }
+
+            return new Tuple<float, float>(x, y);
+        }
+
         internal void SetPosition(Vector3 dp)
         {
             if (Locked)
             {
-                Position += dp;
+                var pos = GetXY();
+                corners.Position += dp;
+                SetXY(pos.Item1, pos.Item2);
             }
-
-            corners.Position += dp;
+            else
+            {
+                corners.Position += dp;
+            }
 
             foreach (var tag in tags)
             {
@@ -291,10 +339,14 @@ namespace ImageViewer.Content.Renderers
         {
             if (Locked)
             {
-                GlobalRotator = rotator;
+                var pos = GetXY();
+                corners.Rotator = rotator;
+                SetXY(pos.Item1, pos.Item2);
             }
-
-            corners.Rotator = rotator;
+            else
+            {
+                corners.Rotator = rotator;
+            }
 
             foreach (var tag in tags)
             {
