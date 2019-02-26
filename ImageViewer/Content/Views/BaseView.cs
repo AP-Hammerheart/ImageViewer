@@ -603,7 +603,7 @@ namespace ImageViewer.Content.Views
 
                 case Windows.System.VirtualKey.N:
                 case Windows.System.VirtualKey.GamepadB:
-                    SetAngle(-5.0f);             
+                    SetAngle(-5.0f);
                     break;
 
                 case Windows.System.VirtualKey.F:
