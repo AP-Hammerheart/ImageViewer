@@ -358,7 +358,7 @@ namespace ImageViewer.Content
             }
         }
 
-        internal Texture2D Texture2D(DeviceResources deviceResources, SharpDX.DataStream stream, SharpDX.Size2 size)
+        internal static Texture2D Texture2D(DeviceResources deviceResources, SharpDX.DataStream stream, SharpDX.Size2 size)
         {
             var textDesc = TextureDescription(1, size.Width, size.Height, ResourceOptionFlags.None);
 
@@ -378,7 +378,7 @@ namespace ImageViewer.Content
             }
         }
 
-        internal Texture2D TextureCube(DeviceResources deviceResources, SharpDX.DataStream stream, SharpDX.Size2 size)
+        internal static Texture2D TextureCube(DeviceResources deviceResources, SharpDX.DataStream stream, SharpDX.Size2 size)
         {
             var arraySize = 6;
             var textDesc = TextureDescription(arraySize, size.Width, size.Height, ResourceOptionFlags.TextureCube);

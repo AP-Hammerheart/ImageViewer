@@ -64,7 +64,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Content\Renderers\BaseCubeRenderer.cs" />
+    <Compile Include="Content\Renderers\BasePlaneRenderer.cs" />
     <Compile Include="Content\Renderers\FpsRenderer.cs" />
+    <Compile Include="Content\Renderers\FrameRenderer.cs" />
+    <Compile Include="Content\Renderers\ImageRenderer.cs" />
     <Compile Include="Content\Renderers\NameRenderer.cs" />
     <Compile Include="Content\Renderers\RotateRenderer.cs" />
     <Compile Include="Content\Renderers\ScalerRenderer.cs" />
@@ -123,8 +126,11 @@
     <Content Include="Content\SRGS\en-US\SRGS.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Textures\base.png" />
     <Content Include="Content\Textures\green.png" />
+    <Content Include="Content\Textures\macro.jpg" />
     <Content Include="Content\Textures\red.png" />
+    <Content Include="Content\Textures\solid.png" />
     <Content Include="Content\Textures\test.png" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>

@@ -37,85 +37,16 @@ namespace ImageViewer.Content.Views
             TextureLoader loader) : base(main, deviceResources, loader)
         {
             this.deviceResources = deviceResources;
-
-            TileResolution = 256;
             diagonal = Math.Sqrt(2.0) * 1.5 * (double)(TileResolution);
-
-            var z = Settings.DistanceFromUser;
-            var textures = new List<string>();
-
-            var tiles = Rotator.Tiles(Angle, dx, dy, tileSize);
-
-            var rotator1 = Matrix4x4.CreateRotationZ(
-                -1.0f * (float)(Angle),
-                new Vector3(Origo.X - 0.3f, Origo.Y, Origo.Z));
-
-            var rotator2 = Matrix4x4.CreateRotationZ(
-                -1.0f * (float)(Angle),
-                new Vector3(Origo.X + 0.3f, Origo.Y, Origo.Z));
 
             Tiles = new RotateRenderer[2 * maxTiles];
 
-            for (var i = 0; i < tiles.Count; i++)
+            for (var i = 0; i < 2 * maxTiles; i++)
             {
-                var image1 = Image(Settings.Image1, tiles[i].Item1);
-                textures.Add(image1);
-
-                Tiles[i] = new RotateRenderer(
-                    deviceResources,
-                    loader,
-                    image1,
-                    tiles[i].Item2,
-                    tiles[i].Item3)
-                {
-                    Position = new Vector3(Origo.X - 0.3f, Origo.Y, Origo.Z + z),
-                    ViewRotator = rotator1
-                };
-
-                var image2 = Image(Settings.Image2, tiles[i].Item1);
-                textures.Add(image2);
-
-                Tiles[maxTiles + i] = new RotateRenderer(
-                    deviceResources,
-                    loader,
-                    image1,
-                    tiles[i].Item2,
-                    tiles[i].Item3)
-                {
-                    Position = new Vector3(Origo.X + 0.3f, Origo.Y, Origo.Z + z),
-                    ViewRotator = rotator2
-                };
+                Tiles[i] = new RotateRenderer(deviceResources, loader, "", null, null);
             }
 
-            for (var i = tiles.Count; i < maxTiles; i++)
-            {
-                Tiles[i] = new RotateRenderer(
-                    deviceResources,
-                    loader,
-                    "",
-                    tiles[0].Item2,
-                    tiles[0].Item3)
-                {
-                    Position = new Vector3(Origo.X - 0.3f, Origo.Y, Origo.Z + z),
-                };
-
-                Tiles[maxTiles + i] = new RotateRenderer(
-                    deviceResources,
-                    loader,
-                    "",
-                    tiles[0].Item2,
-                    tiles[0].Item3)
-                {
-                    Position = new Vector3(Origo.X + 0.3f, Origo.Y, Origo.Z + z),
-                };
-            }
-
-            var task = new Task(async () =>
-            {
-                await loader.LoadTexturesAsync(textures);
-            });
-            task.Start();
-            task.Wait();
+            UpdateImages();
         }
 
         private void Update()
@@ -267,6 +198,8 @@ namespace ImageViewer.Content.Views
         {
             Update();
             Pointer.Update();
+
+            navigationFrame.UpdateGeometry();
 
             var textures = new List<string>();
 
