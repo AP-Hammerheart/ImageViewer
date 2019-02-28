@@ -22,6 +22,11 @@ namespace ImageViewer.Content.Renderers
 
         internal override void UpdateGeometry()
         {
+            if (PlaneVertices == null || PlaneIndices == null)
+            {
+                return;
+            }
+
             if (vertexBuffer != null)
             {
                 RemoveAndDispose(ref vertexBuffer);

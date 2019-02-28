@@ -15,7 +15,7 @@ using Windows.UI;
 
 namespace ImageViewer.Content.Renderers
 {
-    internal class StatusBarRenderer : BaseRenderer
+    internal class StatusBarRenderer : BasePlaneRenderer
     {
         private readonly Vector3 bottomLeft = new Vector3(-0.5f, 0.25f, 0.0f);
         private readonly Vector3 topLeft = new Vector3(-0.5f, 0.30f, 0.0f);
@@ -27,12 +27,7 @@ namespace ImageViewer.Content.Renderers
         protected readonly ShaderResourceView[] resourceView = new ShaderResourceView[2];
 
         internal StatusBarRenderer(DeviceResources deviceResources, TextureLoader loader) 
-            : base(
-                deviceResources: deviceResources,
-                vertexShader: "Content\\Shaders\\VertexShaderPlane.cso",
-                VPRTvertexShader: "Content\\Shaders\\VPRTVertexShaderPlane.cso",
-                geometryShader: "Content\\Shaders\\GeometryShaderPlane.cso",
-                pixelShader: "Content\\Shaders\\PixelShaderPlane.cso") 
+            : base(deviceResources: deviceResources) 
             => this.loader = loader;
 
         internal StatusBarRenderer(
@@ -42,34 +37,17 @@ namespace ImageViewer.Content.Renderers
             Vector3 topLeft,
             Vector3 bottomRight,
             Vector3 topRight) 
-            : base(
-                deviceResources: deviceResources,
-                vertexShader: "Content\\Shaders\\VertexShaderPlane.cso",
-                VPRTvertexShader: "Content\\Shaders\\VPRTVertexShaderPlane.cso",
-                geometryShader: "Content\\Shaders\\GeometryShaderPlane.cso",
-                pixelShader: "Content\\Shaders\\PixelShaderPlane.cso")
+            : base(deviceResources: deviceResources)
         {
             this.loader = loader;
             this.bottomLeft = bottomLeft;
             this.topLeft = topLeft;
             this.bottomRight = bottomRight;
             this.topRight = topRight;
+
+            Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser);
         }
 
-        internal override InputElement[] InputElement => new InputElement[]
-            {
-                new InputElement(
-                    "POSITION", 0, 
-                    SharpDX.DXGI.Format.R32G32B32_Float, 0, 0, 
-                    InputClassification.PerVertexData, 0),
-
-                new InputElement(
-                    "TEXCOORD", 0, 
-                    SharpDX.DXGI.Format.R32G32_Float, 12, 0, 
-                    InputClassification.PerVertexData, 0),
-            };
-
-        internal override int VertexSize => SharpDX.Utilities.SizeOf<VertexPlane>();
         internal override bool TextureReady => Active != -1;
         internal string Text { get; set; } = "";
         internal Vector2 TextPosition { get; set; } = new Vector2(10, 15);

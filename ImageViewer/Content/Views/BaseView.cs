@@ -54,9 +54,10 @@ namespace ImageViewer.Content.Views
         private SettingViewer settingViewer;
         private bool ShowSettings = false;
 
-        protected StatusBarRenderer[] statusItems;
+        protected BasePlaneRenderer[] statusItems;
 
-        internal int Level { get; set; } = 7;
+        internal int Level { get; set; } = 3;
+
         internal int TopLeftY { get; set; } = 0;
         internal int TopLeftX { get; set; } = 0;
 
@@ -69,32 +70,35 @@ namespace ImageViewer.Content.Views
         internal int BottomRightY { get; set; } = 0;
         internal int BottomRightX { get; set; } = 0;
 
-        internal int CenterY { get; set; } = 0;
-        internal int CenterX { get; set; } = 0;
+        internal int CenterY { get; set; } = 110000;
+        internal int CenterX { get; set; } = 50000;
 
-        internal double Angle { get; set; } = 0.0;
+        internal double Angle { get; set; } = 0;
 
         internal Windows.System.VirtualKey VirtualKey { get; set; } = Windows.System.VirtualKey.None;
         internal Windows.System.VirtualKey LastKey { get; set; } = Windows.System.VirtualKey.None;
         internal int KeyCount { get; set; } = 0;
         protected abstract int LargeStep { get; }
-        protected int PixelSize(int level) => (int)Math.Pow(2, Settings.Multiplier * level);
+        internal int PixelSize(int level) => (int)Math.Pow(2, Settings.Multiplier * level);
         protected virtual int TileOffset(int level) => TileResolution * PixelSize(level);
         internal int Step => TileOffset(Level);
         internal PlaneRenderer[] Tiles { get; set; }
-        protected int TileResolution { get; set; }
+        internal int TileResolution { get; set; } = 256;
 
         internal int FPS { get; set; } = 0;
 
         internal string DebugString { get; set; } = "";
         internal string ErrorString { get; set; } = "";
-
-        internal PointerRenderer Pointer { get; set; }
+        
         internal Vector3 Origo { get; set; } = Vector3.Zero;
         internal float RotationAngle { get; set; } = 0;
 
         internal virtual int TileCountX { get; } = 1;
         internal virtual int TileCountY { get; } = 1;
+
+        internal PointerRenderer Pointer { get; set; }
+
+        protected FrameRenderer navigationFrame;
 
         internal BaseView(
             ImageViewerMain main,
@@ -104,9 +108,22 @@ namespace ImageViewer.Content.Views
             this.main = main;
             this.loader = loader;
 
+            navigationFrame = new FrameRenderer(
+                deviceResources: deviceResources,
+                loader: loader, 
+                view: this, 
+                depth: 0.005f,
+                thickness: 0.002f,       
+                topLeft: new Vector3(-1.024264f, 0.30f, 0.424264f + Settings.DistanceFromUser),
+                bottomLeft: new Vector3(-1.024264f, -0.30f, 0.424264f + Settings.DistanceFromUser),
+                topRight: new Vector3(-0.6f, 0.30f, 0.0f + Settings.DistanceFromUser))
+            {
+                RotationY = 45,
+            };
+
             settingViewer = new SettingViewer(main, deviceResources, loader);
 
-            statusItems = new StatusBarRenderer[11];
+            statusItems = new BasePlaneRenderer[22];
 
             statusItems[0] = new StatusBarRenderer(
                 deviceResources: deviceResources,
@@ -116,10 +133,9 @@ namespace ImageViewer.Content.Views
                 bottomRight: new Vector3(-0.2f, 0.33f, 0.0f),
                 topRight: new Vector3(-0.2f, 0.38f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 TextPosition = new Vector2(20, 10),
                 Text = "ImageViewer",
-                FontSize = 40,
+                FontSize = 40.0f,
                 ImageWidth = 640,
             };
 
@@ -132,7 +148,6 @@ namespace ImageViewer.Content.Views
                 bottomRight: new Vector3(0.25f, 0.33f, 0.0f),
                 topRight: new Vector3(0.25f, 0.38f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 ImageWidth = 720
             };
 
@@ -144,7 +159,6 @@ namespace ImageViewer.Content.Views
                 bottomRight: new Vector3(0.35f, 0.33f, 0.0f),
                 topRight: new Vector3(0.35f, 0.38f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 ImageWidth = 160
             };
 
@@ -157,7 +171,6 @@ namespace ImageViewer.Content.Views
                 bottomRight: new Vector3(0.45f, 0.33f, 0.0f),
                 topRight: new Vector3(0.45f, 0.38f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 ImageWidth = 160
             };
 
@@ -169,7 +182,6 @@ namespace ImageViewer.Content.Views
                 bottomRight: new Vector3(0.6f, 0.33f, 0.0f),
                 topRight: new Vector3(0.6f, 0.38f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 ImageWidth = 240
             };
 
@@ -181,7 +193,6 @@ namespace ImageViewer.Content.Views
                 bottomRight: new Vector3(0.0f, 0.30f, 0.0f),
                 topRight: new Vector3(0.0f, 0.33f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 TextPosition = new Vector2(10, 10),
                 ImageWidth = 960,
                 ImageHeight = 48,
@@ -198,7 +209,6 @@ namespace ImageViewer.Content.Views
                 bottomRight: new Vector3(0.6f, 0.30f, 0.0f),
                 topRight: new Vector3(0.6f, 0.33f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 TextPosition = new Vector2(10, 10),
                 ImageWidth = 960,
                 ImageHeight = 48,
@@ -216,7 +226,6 @@ namespace ImageViewer.Content.Views
                 bottomRight: new Vector3(-0.1f, -0.35f, 0.0f),
                 topRight: new Vector3(-0.1f, -0.30f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 ImageWidth = 800
             };
 
@@ -229,7 +238,6 @@ namespace ImageViewer.Content.Views
                 bottomRight: new Vector3(0.35f, -0.35f, 0.0f),
                 topRight: new Vector3(0.35f, -0.30f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 ImageWidth = 720
             };
 
@@ -241,7 +249,6 @@ namespace ImageViewer.Content.Views
                 bottomRight: new Vector3(0.5f, -0.35f, 0.0f),
                 topRight: new Vector3(0.5f, -0.30f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 ImageWidth = 240
             };
 
@@ -254,8 +261,158 @@ namespace ImageViewer.Content.Views
                 bottomRight: new Vector3(0.6f, -0.35f, 0.0f),
                 topRight: new Vector3(0.6f, -0.30f, 0.0f))
             {
-                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 ImageWidth = 160
+            };
+
+            statusItems[11] = new StatusBarRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(-1.024264f, 0.33f, 0.424264f),
+                topLeft: new Vector3(-1.024264f, 0.38f, 0.424264f),
+                bottomRight: new Vector3(-0.6f, 0.33f, 0.0f),
+                topRight: new Vector3(-0.6f, 0.38f, 0.0f))
+            {
+                TextPosition = new Vector2(20, 10),
+                Text = "Lorem ipsum dolor sit amet, consectetur ",
+                FontSize = 40.0f,
+                ImageWidth = 960,
+                ImageHeight = 80,
+            };
+
+            statusItems[12] = new StatusBarRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(-1.024264f, 0.30f, 0.424264f),
+                topLeft: new Vector3(-1.024264f, 0.33f, 0.424264f),
+                bottomRight: new Vector3(-0.6f, 0.30f, 0.0f),
+                topRight: new Vector3(-0.6f, 0.33f, 0.0f))
+            {
+                TextPosition = new Vector2(10, 10),
+                Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                FontSize = 25.0f,
+                ImageWidth = 960,
+                ImageHeight = 48,
+                BackgroundColor = Colors.LightGray
+            };
+
+            statusItems[13] = new ImageRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(-1.024264f, -0.30f, 0.424264f),
+                topLeft: new Vector3(-1.024264f, 0.30f, 0.424264f),
+                bottomRight: new Vector3(-0.6f, -0.30f, 0.0f),
+                topRight: new Vector3(-0.6f, 0.30f, 0.0f))
+            {
+                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
+                TextureFile = "Content\\Textures\\base.png",
+            };
+
+            statusItems[14] = new StatusBarRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(-1.024264f, -0.35f, 0.424264f),
+                topLeft: new Vector3(-1.024264f, -0.30f, 0.424264f),
+                bottomRight: new Vector3(-0.6f, -0.35f, 0.0f),
+                topRight: new Vector3(-0.6f, -0.30f, 0.0f))
+            {
+                TextPosition = new Vector2(20, 10),
+                Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                ImageWidth = 960,
+            };
+
+            statusItems[15] = new StatusBarRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(0.6f, 0.33f, 0.0f),
+                topLeft: new Vector3(0.6f, 0.38f, 0.0f),
+                bottomRight: new Vector3(1.024264f, 0.33f, 0.424264f),
+                topRight: new Vector3(1.024264f, 0.38f, 0.424264f))
+            {
+                TextPosition = new Vector2(20, 10),
+                Text = "Referall information",
+                FontSize = 40.0f,
+                ImageWidth = 960,
+            };
+
+            statusItems[16] = new StatusBarRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(0.6f, -0.30f, 0.0f),
+                topLeft: new Vector3(0.6f, 0.33f, 0.0f),
+                bottomRight: new Vector3(1.024264f, -0.30f, 0.424264f),
+                topRight: new Vector3(1.024264f, 0.33f, 0.424264f))
+            {
+                TextPosition = new Vector2(20, 10),
+                Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                FontSize = 25.0f,
+                ImageWidth = 1280,
+                ImageHeight = 1344,
+                BackgroundColor = Colors.LightGray,
+            };
+
+            statusItems[17] = new StatusBarRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(0.6f, -0.35f, 0.0f),
+                topLeft: new Vector3(0.6f, -0.30f, 0.0f),
+                bottomRight: new Vector3(1.024264f, -0.35f, 0.424264f),
+                topRight: new Vector3(1.024264f, -0.30f, 0.424264f))
+            {
+                TextPosition = new Vector2(20, 10),
+                Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                ImageWidth = 960,
+            };
+
+            statusItems[18] = new StatusBarRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(-1.024264f, 0.33f, 1.324264f),
+                topLeft: new Vector3(-1.024264f, 0.38f, 1.324264f),
+                bottomRight: new Vector3(-1.024264f, 0.33f, 0.424264f),
+                topRight: new Vector3(-1.024264f, 0.38f, 0.424264f))
+            {
+                Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                FontSize = 40.0f,
+                ImageWidth = 1440,
+            };
+
+            statusItems[19] = new StatusBarRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(-1.024264f, 0.30f, 1.324264f),
+                topLeft: new Vector3(-1.024264f, 0.33f, 1.324264f),
+                bottomRight: new Vector3(-1.024264f, 0.30f, 0.424264f),
+                topRight: new Vector3(-1.024264f, 0.33f, 0.424264f))
+            {
+                Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                FontSize = 25.0f,
+                ImageWidth = 1440,
+                ImageHeight = 48,
+                BackgroundColor = Colors.LightGray,
+            };
+
+            statusItems[20] = new ImageRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(-1.024264f, -0.30f, 1.324264f),
+                topLeft: new Vector3(-1.024264f, 0.30f, 1.324264f),
+                bottomRight: new Vector3(-1.024264f, -0.30f, 0.424264f),
+                topRight: new Vector3(-1.024264f, 0.30f, 0.424264f))
+            {
+                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
+                TextureFile = "Content\\Textures\\macro.jpg",
+            };
+
+            statusItems[21] = new StatusBarRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(-1.024264f, -0.35f, 1.324264f),
+                topLeft: new Vector3(-1.024264f, -0.30f, 1.324264f),
+                bottomRight: new Vector3(-1.024264f, -0.35f, 0.424264f),
+                topRight: new Vector3(-1.024264f, -0.30f, 0.424264f))
+            {
+                Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                ImageWidth = 1440,
             };
 
             Pointer = new PointerRenderer(this, deviceResources, loader, 
@@ -282,6 +439,7 @@ namespace ImageViewer.Content.Views
             settingViewer?.Update(timer);
 
             Pointer?.Update(timer);
+            navigationFrame?.Update(timer);
         }
 
         internal void Update(SpatialPointerPose pose)
@@ -309,6 +467,7 @@ namespace ImageViewer.Content.Views
             }
             
             Pointer?.Render();
+            navigationFrame?.Render();
         }
 
         internal void Dispose()
@@ -333,6 +492,7 @@ namespace ImageViewer.Content.Views
 
             settingViewer?.Dispose();
             Pointer?.Dispose();
+            navigationFrame?.Dispose();
         }
 
         internal async Task CreateDeviceDependentResourcesAsync()
@@ -348,8 +508,8 @@ namespace ImageViewer.Content.Views
             }
 
             await settingViewer?.CreateDeviceDependentResourcesAsync();
-
             await Pointer?.CreateDeviceDependentResourcesAsync();
+            await navigationFrame?.CreateDeviceDependentResourcesAsync();
         }
 
         internal void ReleaseDeviceDependentResources()
@@ -365,8 +525,8 @@ namespace ImageViewer.Content.Views
             }
 
             settingViewer?.ReleaseDeviceDependentResources();
-
             Pointer?.ReleaseDeviceDependentResources();
+            navigationFrame?.ReleaseDeviceDependentResources();
         }
 
         internal void HandleVoiceCommand(Command command, Direction direction, int number)
@@ -635,18 +795,17 @@ namespace ImageViewer.Content.Views
 
             foreach (var renderer in Tiles)
             {
-                var pos = renderer.Position + dp;
-                renderer.Position = pos;
+                renderer.Position = renderer.Position + dp;
             }
 
             foreach (var renderer in statusItems)
             {
-                var pos = renderer.Position + dp;
-                renderer.Position = pos;
+                renderer.Position = renderer.Position + dp;
             }
 
             settingViewer.SetPosition(dp);
             Pointer.SetPosition(dp);
+            navigationFrame.SetPosition(dp);
         }
 
         private void SetAngle(float angle)
@@ -677,6 +836,8 @@ namespace ImageViewer.Content.Views
 
             Pointer.RotationY = RotationAngle;
             Pointer.SetRotator(rotator);
+
+            navigationFrame.GlobalRotator = rotator;
         }
 
         protected virtual void SetCorners()
@@ -846,6 +1007,7 @@ namespace ImageViewer.Content.Views
             }
 
             Pointer?.Dispose();
+            navigationFrame?.Dispose();
         }
     }
 }

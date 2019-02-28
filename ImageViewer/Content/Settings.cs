@@ -50,19 +50,19 @@ namespace ImageViewer.Content
 
         internal static string URL { get; set; } = NetworkServerUrl;
 
-        internal static string CaseID { get; set; } = "1234";
+        internal static string CaseID { get; set; } = "T3461-18";
 
-        internal static string Image1 { get; set; } = "image1.ndpi";
+        internal static string Image1 { get; set; } = "aligned_41.14x_01_aligned__41.14x_01_1_T3502-18_Z4.svs";
 
-        internal static string Image2 { get; set; } = "image2.ndpi";
+        internal static string Image2 { get; set; } = "aligned_41.14x_01_aligned__41.14x_01_1_T3502-18_Z4.svs";
 
-        internal static int Image2offsetX { get; set; } = -5500;
+        internal static int Image2offsetX { get; set; } = 0;
 
-        internal static int Image2offsetY { get; set; } = -2000;
+        internal static int Image2offsetY { get; set; } = 0;
 
-        internal static int Scaler { get; set; } = 1;
+        internal static int Scaler { get; set; } = 32;
 
-        internal static int Multiplier { get; set; } = 1;
+        internal static int Multiplier { get; set; } = 2;
 
         internal static int MaxResolutionX { get; set; } = 110000;
 
