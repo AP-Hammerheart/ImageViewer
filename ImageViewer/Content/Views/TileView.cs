@@ -34,7 +34,7 @@ namespace ImageViewer.Content.Views
             var lx0 = -1.0f * TileCountX * tileSize + posHalfTile;
             var rx0 = posHalfTile;
             var y0 = 0.5f * TileCountY * tileSize - posHalfTile;
-            var z = Settings.DistanceFromUser;
+            var z = Constants.DistanceFromUser;
 
             var ri0 = Settings.GridX * Settings.GridY;
 
@@ -78,7 +78,7 @@ namespace ImageViewer.Content.Views
             var x0 = (-1.0f * TileCountX * tileSize) + posHalfTile - dx;
             var x1 = posHalfTile - dx;
             var y0 = (0.5f * TileCountY * tileSize) - posHalfTile + dy;
-            var z = Settings.DistanceFromUser;
+            var z = Constants.DistanceFromUser;
 
             var tx = (float)rx / (float)TileResolution;
             var ty = (float)ry / (float)TileResolution;

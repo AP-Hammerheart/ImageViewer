@@ -15,12 +15,6 @@ namespace ImageViewer.Content.Renderers
         internal DebugRenderer(
             BaseView view,
             DeviceResources deviceResources,
-            TextureLoader loader)
-            : base(deviceResources, loader) => this.view = view;
-
-        internal DebugRenderer(
-            BaseView view,
-            DeviceResources deviceResources,
             TextureLoader loader,
             Vector3 bottomLeft,
             Vector3 topLeft,

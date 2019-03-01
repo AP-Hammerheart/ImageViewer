@@ -15,13 +15,6 @@ namespace ImageViewer.Content.Renderers
         internal ScalerRenderer(
             BaseView view,
             DeviceResources deviceResources,
-            TextureLoader loader)
-            : base(deviceResources, loader) 
-            => this.view = view;
-
-        internal ScalerRenderer(
-            BaseView view,
-            DeviceResources deviceResources,
             TextureLoader loader,
             Vector3 bottomLeft,
             Vector3 topLeft,

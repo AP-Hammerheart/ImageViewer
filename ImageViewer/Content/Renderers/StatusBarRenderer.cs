@@ -17,18 +17,14 @@ namespace ImageViewer.Content.Renderers
 {
     internal class StatusBarRenderer : BasePlaneRenderer
     {
-        private readonly Vector3 bottomLeft = new Vector3(-0.5f, 0.25f, 0.0f);
-        private readonly Vector3 topLeft = new Vector3(-0.5f, 0.30f, 0.0f);
-        private readonly Vector3 bottomRight = new Vector3(0.5f, 0.25f, 0.0f);
-        private readonly Vector3 topRight = new Vector3(0.5f, 0.30f, 0.0f);
+        private readonly Vector3 bottomLeft;
+        private readonly Vector3 topLeft;
+        private readonly Vector3 bottomRight;
+        private readonly Vector3 topRight;
 
         protected readonly TextureLoader loader;
         protected readonly Texture2D[] texture = new Texture2D[2];
         protected readonly ShaderResourceView[] resourceView = new ShaderResourceView[2];
-
-        internal StatusBarRenderer(DeviceResources deviceResources, TextureLoader loader) 
-            : base(deviceResources: deviceResources) 
-            => this.loader = loader;
 
         internal StatusBarRenderer(
             DeviceResources deviceResources,
@@ -45,7 +41,7 @@ namespace ImageViewer.Content.Renderers
             this.bottomRight = bottomRight;
             this.topRight = topRight;
 
-            Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser);
+            Position = new Vector3(0.0f, 0.0f, Constants.DistanceFromUser);
         }
 
         internal override bool TextureReady => Active != -1;

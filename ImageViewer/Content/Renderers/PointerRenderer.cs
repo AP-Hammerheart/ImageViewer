@@ -246,8 +246,8 @@ namespace ImageViewer.Content.Renderers
             var pL = left ? pos1 : pos2;
             var pR = left ? pos2 : pos1;
 
-            var a = (pL.X - corners.orig_topLeft.X) / Settings.ViewSize;
-            var b = (pL.Y - corners.orig_bottomLeft.Y) / Settings.ViewSize;
+            var a = (pL.X - corners.orig_topLeft.X) / Constants.ViewSize;
+            var b = (pL.Y - corners.orig_bottomLeft.Y) / Constants.ViewSize;
 
             var X = (int)(view.BottomLeftX 
                 + a * (view.BottomRightX - view.BottomLeftX) 

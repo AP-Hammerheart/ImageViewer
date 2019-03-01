@@ -63,6 +63,7 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Content\Constants.cs" />
     <Compile Include="Content\Renderers\BaseCubeRenderer.cs" />
     <Compile Include="Content\Renderers\BasePlaneRenderer.cs" />
     <Compile Include="Content\Renderers\FpsRenderer.cs" />

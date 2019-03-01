@@ -13,8 +13,8 @@ namespace ImageViewer.Content.Views
 {
     internal class RotatorView : BaseView
     {
-        private static readonly double tileSize = 0.2;
         private readonly int maxTiles = 24;
+        private readonly double A45 = Math.PI / 4;
 
         protected override int LargeStep => 10;
 
@@ -56,8 +56,8 @@ namespace ImageViewer.Content.Views
             tileX = CenterX / step;
             tileY = CenterY / step;
 
-            dx = (double)((CenterX % step) - (step / 2)) / (double)(step) * tileSize;
-            dy = (double)((step / 2) - (CenterY % step)) / (double)(step) * tileSize;
+            dx = (double)((CenterX % step) - (step / 2)) / (double)(step) * Constants.TileSize;
+            dy = (double)((step / 2) - (CenterY % step)) / (double)(step) * Constants.TileSize;
         }
 
         private string Image(string file, int idx)
@@ -143,8 +143,8 @@ namespace ImageViewer.Content.Views
         {
             var d = diagonal * (double)(PixelSize(Level));
 
-            var beta1 = Angle - (Math.PI / 4);
-            var beta2 = (Math.PI / 4) - Angle;
+            var beta1 = Angle - A45;
+            var beta2 = A45 - Angle;
 
             var xx1 = (int)(Math.Round(d * Math.Cos(beta1)));
             var yy1 = (int)(Math.Round(d * Math.Sin(beta1)));
@@ -203,8 +203,8 @@ namespace ImageViewer.Content.Views
 
             var textures = new List<string>();
 
-            var tiles = Rotator.Tiles(Angle, dx, dy, tileSize);
-            var z = Settings.DistanceFromUser;
+            var tiles = Rotator.Tiles(Angle, dx, dy, Constants.TileSize);
+            var z = Constants.DistanceFromUser;
 
             if (tiles.Count > maxTiles)
             {
@@ -214,11 +214,11 @@ namespace ImageViewer.Content.Views
 
             var rotator1 = Matrix4x4.CreateRotationZ(
                 -1.0f * (float)(Angle),
-                new Vector3(Origo.X - 0.3f, Origo.Y, Origo.Z));
+                new Vector3(Origo.X - Constants.HalfViewSize, Origo.Y, Origo.Z));
 
             var rotator2 = Matrix4x4.CreateRotationZ(
                 -1.0f * (float)(Angle),
-                new Vector3(Origo.X + 0.3f, Origo.Y, Origo.Z));
+                new Vector3(Origo.X + Constants.HalfViewSize, Origo.Y, Origo.Z));
 
             for (var i = 0; i < tiles.Count; i++)
             {
@@ -232,7 +232,7 @@ namespace ImageViewer.Content.Views
                 Tiles[i].UpdateGeometry();
                 Tiles[i].ViewRotator = rotator1;
                 Tiles[i].Position = new Vector3(
-                    Origo.X - 0.3f - (float)dx,
+                    Origo.X - Constants.HalfViewSize - (float)dx,
                     Origo.Y - 1.0f * (float)dy,
                     Origo.Z + z);
 
@@ -246,7 +246,7 @@ namespace ImageViewer.Content.Views
                 Tiles[maxTiles + i].UpdateGeometry();
                 Tiles[maxTiles + i].ViewRotator = rotator2;
                 Tiles[maxTiles + i].Position = new Vector3(
-                    Origo.X + 0.3f - (float)dx,
+                    Origo.X + Constants.HalfViewSize - (float)dx,
                     Origo.Y - 1.0f * (float)dy,
                     Origo.Z + z);
             }

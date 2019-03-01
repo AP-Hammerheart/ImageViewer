@@ -8,11 +8,6 @@ namespace ImageViewer.Content.Renderers
     {
         internal NameRenderer(
             DeviceResources deviceResources,
-            TextureLoader loader)
-            : base(deviceResources, loader) {}
-
-        internal NameRenderer(
-            DeviceResources deviceResources,
             TextureLoader loader,
             Vector3 bottomLeft,
             Vector3 topLeft,

@@ -13,13 +13,6 @@ namespace ImageViewer.Content.Renderers
         private readonly BaseView view;
 
         internal FpsRenderer(
-            BaseView view, 
-            DeviceResources deviceResources, 
-            TextureLoader loader)
-            : base(deviceResources, loader) 
-            => this.view = view;
-
-        internal FpsRenderer(
             BaseView view,
             DeviceResources deviceResources,
             TextureLoader loader,

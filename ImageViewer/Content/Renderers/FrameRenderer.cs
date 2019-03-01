@@ -61,9 +61,9 @@ namespace ImageViewer.Content.Renderers
             this.h = h;
 
             multiplierX = (float)(view.TileCountX * view.TileResolution) 
-                / (float)w * Settings.ViewSize / 2.0f;
+                / (float)w * Constants.HalfViewSize;
             multiplierY = (float)(view.TileCountY * view.TileResolution) 
-                / (float)h * Settings.ViewSize / 2.0f;
+                / (float)h * Constants.HalfViewSize;
         }
 
         internal override bool TextureReady => textureReady;

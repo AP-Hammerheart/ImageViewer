@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net;
@@ -67,10 +70,6 @@ namespace ImageViewer.Content
         internal static int MaxResolutionX { get; set; } = 110000;
 
         internal static int MaxResolutionY { get; set; } = 110000;
-
-        internal static float ViewSize { get; } = 0.6f;
-
-        internal static float DistanceFromUser { get; } = -1.4f;
 
         internal static int MinScale { get; set; } = 8;
 
