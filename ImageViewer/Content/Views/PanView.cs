@@ -26,14 +26,14 @@ namespace ImageViewer.Content.Views
 
             Tiles = new PanRenderer[2];
 
-            Tiles[0] = new PanRenderer(deviceResources, loader, "", Settings.ViewSize, backBufferResolution: TileResolution)
+            Tiles[0] = new PanRenderer(deviceResources, loader, "", Constants.ViewSize, backBufferResolution: TileResolution)
             {
-                Position = new Vector3(-0.5f * Settings.ViewSize, 0, Settings.DistanceFromUser)
+                Position = new Vector3(-0.5f * Constants.ViewSize, 0, Constants.DistanceFromUser)
             };
 
-            Tiles[1] = new PanRenderer(deviceResources, loader, "", Settings.ViewSize, backBufferResolution: TileResolution)
+            Tiles[1] = new PanRenderer(deviceResources, loader, "", Constants.ViewSize, backBufferResolution: TileResolution)
             {
-                Position = new Vector3(0.5f * Settings.ViewSize, 0, Settings.DistanceFromUser)
+                Position = new Vector3(0.5f * Constants.ViewSize, 0, Constants.DistanceFromUser)
             };
 
             UpdateImages();

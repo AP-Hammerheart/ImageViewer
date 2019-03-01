@@ -10,11 +10,6 @@ namespace ImageViewer.Content.Renderers
     internal class TextRenderer : StatusBarRenderer
     {
         internal TextRenderer(
-            DeviceResources deviceResources, 
-            TextureLoader loader)
-            : base(deviceResources, loader) {}
-
-        internal TextRenderer(
             DeviceResources deviceResources,
             TextureLoader loader,
             Vector3 bottomLeft,
@@ -30,7 +25,6 @@ namespace ImageViewer.Content.Renderers
 
         internal string[] Lines { get; set; } = null;
         internal float LineHeight { get; set; } = 0.0f;
-
         internal int Index { get; set; } = -1;
 
         internal override void Update(StepTimer timer)

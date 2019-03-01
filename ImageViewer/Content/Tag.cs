@@ -93,8 +93,8 @@ namespace ImageViewer.Content
                     A = (xc - B * ec) / ac;
                 }
           
-                var xx = B * Settings.ViewSize;
-                var yy = A * Settings.ViewSize;
+                var xx = B * Constants.ViewSize;
+                var yy = A * Constants.ViewSize;
 
                 var pL = new Vector3(
                     corners.orig_bottomLeft.X + xx, 
@@ -102,7 +102,7 @@ namespace ImageViewer.Content
                     corners.orig_topLeft.Z);
 
                 var pR = new Vector3(
-                    corners.orig_bottomLeft.X + xx + Settings.ViewSize, 
+                    corners.orig_bottomLeft.X + xx + Constants.ViewSize, 
                     corners.orig_bottomLeft.Y + yy, 
                     corners.orig_topLeft.Z);
 

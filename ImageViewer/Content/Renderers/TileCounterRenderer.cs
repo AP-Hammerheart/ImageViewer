@@ -10,11 +10,6 @@ namespace ImageViewer.Content.Renderers
     internal class TileCounterRenderer : StatusBarRenderer
     {
         internal TileCounterRenderer(
-            DeviceResources deviceResources, 
-            TextureLoader loader)
-            : base(deviceResources, loader) {}
-
-        internal TileCounterRenderer(
             DeviceResources deviceResources,
             TextureLoader loader,
             Vector3 bottomLeft,

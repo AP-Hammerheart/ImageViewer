@@ -11,11 +11,6 @@ namespace ImageViewer.Content.Renderers
     {
         internal MemoryUseRenderer(
             DeviceResources deviceResources, 
-            TextureLoader loader)
-            : base(deviceResources, loader) {}
-
-        internal MemoryUseRenderer(
-            DeviceResources deviceResources, 
             TextureLoader loader, 
             Vector3 bottomLeft, 
             Vector3 topLeft, 

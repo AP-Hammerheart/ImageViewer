@@ -39,12 +39,11 @@ namespace ImageViewer.Content.Views
             settingItems[0] = new TextRenderer(
                     deviceResources: deviceResources,
                     loader: loader,
-                    bottomLeft: new Vector3(-0.6f, -0.3f, 0.0f),
-                    topLeft: new Vector3(-0.6f, 0.3f, 0.0f),
-                    bottomRight: new Vector3(-0.2f, -0.3f, 0.0f),
-                    topRight: new Vector3(-0.2f, 0.3f, 0.0f))
+                    bottomLeft: new Vector3(Constants.X01, Constants.Y1, Constants.Z0),
+                    topLeft: new Vector3(Constants.X01, Constants.Y2, Constants.Z0),
+                    bottomRight: new Vector3(Constants.X02, Constants.Y1, Constants.Z0),
+                    topRight: new Vector3(Constants.X02, Constants.Y2, Constants.Z0))
             {
-                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 TextPosition = new Vector2(20, 10),
                 Lines = texts,
                 LineHeight = 60,
@@ -57,12 +56,11 @@ namespace ImageViewer.Content.Views
             settingItems[1] = new TextRenderer(
                     deviceResources: deviceResources,
                     loader: loader,
-                    bottomLeft: new Vector3(-0.2f, -0.3f, 0.0f),
-                    topLeft: new Vector3(-0.2f, 0.3f, 0.0f),
-                    bottomRight: new Vector3(0.6f, -0.3f, 0.0f),
-                    topRight: new Vector3(0.6f, 0.3f, 0.0f))
+                    bottomLeft: new Vector3(Constants.X02, Constants.Y1, Constants.Z0),
+                    topLeft: new Vector3(Constants.X02, Constants.Y2, Constants.Z0),
+                    bottomRight: new Vector3(Constants.X09, Constants.Y1, Constants.Z0),
+                    topRight: new Vector3(Constants.X09, Constants.Y2, Constants.Z0))
             {
-                Position = new Vector3(0.0f, 0.0f, Settings.DistanceFromUser),
                 TextPosition = new Vector2(20, 10),
                 Lines = GetValues(),
                 LineHeight = 60,
