@@ -1,31 +1,25 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
-using ImageViewer.Content.Renderers;
-using System;
+using ImageViewer.Content.Renderers.Image;
+using ImageViewer.Content.Utils;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
-using static ImageViewer.ImageViewerMain;
 
 namespace ImageViewer.Content.Views
 {
-    internal class RotatorView : BaseView
+    class RotatorView : BaseView
     {
         private readonly int maxTiles = 24;
-        private readonly double A45 = Math.PI / 4;
 
         private int tileX = 1;
         private int tileY = 1;
 
         private double dx = 0.0;
         private double dy = 0.0;
-
-        private readonly double diagonal;
-
-        internal override int TileCountX { get; } = 3;
-        internal override int TileCountY { get; } = 3;
 
         protected readonly DeviceResources deviceResources;
 
@@ -35,7 +29,6 @@ namespace ImageViewer.Content.Views
             TextureLoader loader) : base(main, deviceResources, loader)
         {
             this.deviceResources = deviceResources;
-            diagonal = Math.Sqrt(2.0) * 1.5 * (double)(TileResolution);
 
             Tiles = new RotateRenderer[2 * maxTiles];
 
@@ -49,7 +42,7 @@ namespace ImageViewer.Content.Views
 
         private void Update()
         {
-            var step = PixelSize(Level) * TileResolution;
+            var step = PixelSize(Level) * Constants.TileResolution;
 
             tileX = CenterX / step;
             tileY = CenterY / step;
@@ -63,139 +56,14 @@ namespace ImageViewer.Content.Views
             var y = idx / 7;
             var x = idx % 7;
 
-            var step = PixelSize(Level) * TileResolution;
+            var step = PixelSize(Level) * Constants.TileResolution;
 
             return file
                         + "&x=" + ((tileX + (x - 3)) * step).ToString()
                         + "&y=" + ((tileY + (y - 3)) * step).ToString()
-                        + "&w=" + TileResolution.ToString()
-                        + "&h=" + TileResolution.ToString()
+                        + "&w=" + Constants.TileResolution.ToString()
+                        + "&h=" + Constants.TileResolution.ToString()
                         + "&level=" + Level.ToString();
-        }
-
-        private void Rotate(Direction direction)
-        {
-            switch (direction)
-            {
-                case Direction.LEFT:
-                    Angle -= Math.PI / 36;
-                    if (Angle < 0)
-                    {
-                        Angle += 2.0 * Math.PI;
-                    }
-                    break;
-                case Direction.RIGHT:
-                    Angle += Math.PI / 36;
-                    if (Angle >= 2.0 * Math.PI)
-                    {
-                        Angle -= 2.0 * Math.PI;
-                    }
-                    break;
-                case Direction.DOWN:
-                    if (Settings.Scaler > 1)
-                    {
-                        Settings.Scaler /= 2;
-                    }
-                    break;
-                case Direction.UP:
-                    if (Settings.Scaler < 1024)
-                    {
-                        Settings.Scaler *= 2;
-                    }
-                    break;
-            }
-
-            SetCorners();
-            UpdateImages();
-
-            navigationFrame.UpdateGeometry();
-        }
-
-        protected override void Move(Direction direction, int number)
-        {
-            var moveStep = PixelSize(Level) * Settings.Scaler;
-
-            switch (direction)
-            {
-                case Direction.LEFT:
-                    CenterX += (int)(Math.Cos(-1 * Angle) * moveStep);
-                    CenterY += (int)(Math.Sin(-1 * Angle) * moveStep);
-                    break;
-                case Direction.RIGHT:
-                    CenterX -= (int)(Math.Cos(-1 * Angle) * moveStep);
-                    CenterY -= (int)(Math.Sin(-1 * Angle) * moveStep);
-                    break;
-                case Direction.DOWN:
-                    CenterY -= (int)(Math.Cos(-1 * Angle) * moveStep);
-                    CenterX += (int)(Math.Sin(-1 * Angle) * moveStep);
-                    break;
-                case Direction.UP:
-                    CenterY += (int)(Math.Cos(-1 * Angle) * moveStep);
-                    CenterX -= (int)(Math.Sin(-1 * Angle) * moveStep);
-                    break;
-            }
-
-            SetCorners();
-            UpdateImages();
-
-            navigationFrame.UpdatePosition();
-        }
-
-        protected override void SetCorners()
-        {
-            var d = diagonal * (double)(PixelSize(Level));
-
-            var beta1 = Angle - A45;
-            var beta2 = A45 - Angle;
-
-            var xx1 = (int)(Math.Round(d * Math.Cos(beta1)));
-            var yy1 = (int)(Math.Round(d * Math.Sin(beta1)));
-
-            var xx2 = (int)(Math.Round(d * Math.Sin(beta2)));
-            var yy2 = (int)(Math.Round(d * Math.Cos(beta2)));
-
-            TopLeftX = CenterX - xx1;
-            TopLeftY = CenterY + yy1;
-
-            BottomRightX = CenterX + xx1;
-            BottomRightY = CenterY - yy1;
-
-            BottomLeftX = CenterX - xx2;
-            BottomLeftY = CenterY + yy2;
-
-            TopRightX = CenterX + xx2;
-            TopRightY = CenterY - yy2;
-        }
-
-        protected override void Zoom(Direction direction, int number)
-        {
-            var c = Pointer.Coordinates();
-
-            switch (direction)
-            {
-                case Direction.UP:
-                    Level -= number;
-                    if (Level < 0)
-                    {
-                        Level = 0;
-                    }
-                    break;
-                case Direction.DOWN:
-                    Level += number;
-                    if (Level > Settings.MinScale)
-                    {
-                        Level = Settings.MinScale;
-                    }
-                    break;
-            }
-
-            CenterX = c.X;
-            CenterY = c.Y;
-
-            SetCorners();
-            UpdateImages();
-
-            navigationFrame.UpdateGeometry();
         }
 
         protected override void UpdateImages()
@@ -265,46 +133,6 @@ namespace ImageViewer.Content.Views
             });
             task.Start();
             task.Wait();
-        }
-
-        internal override void OnKeyPressed(Windows.System.VirtualKey key)
-        {
-            VirtualKey = key;
-
-            if (Pointer.Locked)
-            {
-                base.OnKeyPressed(key);
-                return;
-            }
-
-            switch (key)
-            {
-                case Windows.System.VirtualKey.GamepadLeftThumbstickLeft:
-                    Rotate(Direction.LEFT);
-                    break;
-
-                case Windows.System.VirtualKey.GamepadLeftThumbstickRight:
-                    Rotate(Direction.RIGHT);
-                    break;
-
-                case Windows.System.VirtualKey.GamepadLeftThumbstickUp:
-                    Rotate(Direction.UP);
-                    break;
-
-                case Windows.System.VirtualKey.GamepadLeftThumbstickDown:
-                    Rotate(Direction.DOWN);
-                    break;
-
-                default:
-                    base.OnKeyPressed(key);
-                    break;
-            }
-        }
-
-        protected override void SetPosition(float dX, float dY, float dZ)
-        {
-            base.SetPosition(dX, dY, dZ);
-            UpdateImages();
-        }
+        }      
     }
 }

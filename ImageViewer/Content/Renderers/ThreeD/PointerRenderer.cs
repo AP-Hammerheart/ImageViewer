@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.Utils;
 using ImageViewer.Content.Views;
 using System;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Windows.UI.Input.Spatial;
 
-namespace ImageViewer.Content.Renderers
+namespace ImageViewer.Content.Renderers.ThreeD
 {
     internal class PointerRenderer : PyramidRenderer
     {

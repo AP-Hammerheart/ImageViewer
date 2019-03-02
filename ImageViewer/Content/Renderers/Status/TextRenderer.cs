@@ -1,11 +1,17 @@
-﻿using ImageViewer.Common;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+
+using ImageViewer.Common;
+using ImageViewer.Content.Renderers.Base;
+using ImageViewer.Content.Utils;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using System.Numerics;
 using System.Threading.Tasks;
 using Windows.UI.Text;
 
-namespace ImageViewer.Content.Renderers
+namespace ImageViewer.Content.Renderers.Status
 {
     internal class TextRenderer : StatusBarRenderer
     {

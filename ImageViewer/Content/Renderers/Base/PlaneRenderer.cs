@@ -1,10 +1,12 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.Utils;
 using SharpDX.Direct3D11;
 
-namespace ImageViewer.Content.Renderers
+namespace ImageViewer.Content.Renderers.Base
 {
     internal abstract class PlaneRenderer : BasePlaneRenderer
     {

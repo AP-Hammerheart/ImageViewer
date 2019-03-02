@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.Utils;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using SharpDX.Direct3D11;
@@ -13,7 +15,7 @@ using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using Windows.UI;
 
-namespace ImageViewer.Content.Renderers
+namespace ImageViewer.Content.Renderers.Base
 {
     internal class StatusBarRenderer : BasePlaneRenderer
     {

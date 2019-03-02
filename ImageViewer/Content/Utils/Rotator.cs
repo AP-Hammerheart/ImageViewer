@@ -1,12 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Utils
 {
     internal class D2
     {
@@ -82,7 +83,7 @@ namespace ImageViewer.Content
         }
     }
 
-    internal class Rotator
+    internal static class Rotator
     {
         private static D2 RotatePoint(D2 p, double angle)
         {

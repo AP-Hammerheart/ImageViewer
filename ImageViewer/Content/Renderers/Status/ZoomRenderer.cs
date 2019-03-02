@@ -1,20 +1,23 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.Renderers.Base;
+using ImageViewer.Content.Utils;
 using ImageViewer.Content.Views;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageViewer.Content.Renderers
+namespace ImageViewer.Content.Renderers.Status
 {
     internal class ZoomRenderer : StatusBarRenderer
     {
-        private readonly BaseView view;
+        private readonly NavigationView view;
 
         internal ZoomRenderer(
-            BaseView view,
+            NavigationView view,
             DeviceResources deviceResources,
             TextureLoader loader,
             Vector3 bottomLeft,

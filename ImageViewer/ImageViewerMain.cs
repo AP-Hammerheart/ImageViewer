@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
-using ImageViewer.Content;
+using ImageViewer.Content.Utils;
 using ImageViewer.Content.Views;
 using System;
 using System.Collections.Generic;
