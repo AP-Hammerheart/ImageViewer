@@ -61,7 +61,7 @@ namespace ImageViewer.Content.Utils
             right.ReleaseDeviceDependentResources();
         }
 
-        internal void Update(BaseView view, PointerRenderer.Corners corners, D2[] square)
+        internal void Update(NavigationView view, PointerRenderer.Corners corners, D2[] square)
         {       
             if (!Rotator.InsideSquare(square, new D2(X, Y)))
             {
@@ -128,15 +128,6 @@ namespace ImageViewer.Content.Utils
             }
         }
 
-        public void Dispose()
-        {
-            left?.Dispose();
-            left = null;
-
-            right?.Dispose();
-            right = null;
-        }
-
         internal void SetPosition(Vector3 dp)
         {
             left.Position += dp;
@@ -147,6 +138,21 @@ namespace ImageViewer.Content.Utils
         {
             left.GlobalRotator = rotator;
             right.GlobalRotator = rotator;
+        }
+
+        internal void Dispose()
+        {
+            left?.Dispose();
+            left = null;
+
+            right?.Dispose();
+            right = null;
+        }
+
+        void IDisposable.Dispose()
+        {
+            left?.Dispose();
+            right?.Dispose();
         }
     }
 }

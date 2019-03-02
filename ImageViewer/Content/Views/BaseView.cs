@@ -337,7 +337,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 ImageWidth = 1440,
             };
 
-            Pointer = new PointerRenderer(this, deviceResources, loader, 
+            Pointer = new PointerRenderer(this, navigationFrame, deviceResources, loader, 
                 new PointerRenderer.Corners(
                     origo: new Vector3(0.0f, 0.0f, Constants.DistanceFromUser), 
                     topLeft: new Vector3(Constants.X01, Constants.Y2, Constants.DistanceFromUser),

@@ -37,9 +37,9 @@ namespace ImageViewer.Content.Renderers.ThreeD
         {
             internal Corners(Vector3 origo, Vector3 topLeft, Vector3 bottomLeft)
             {
-                this.orig_origo = origo;
-                this.orig_topLeft = topLeft;
-                this.orig_bottomLeft = bottomLeft;
+                orig_origo = origo;
+                orig_topLeft = topLeft;
+                orig_bottomLeft = bottomLeft;
 
                 rotator = Matrix4x4.Identity;
                 position = Vector3.Zero;
@@ -47,7 +47,7 @@ namespace ImageViewer.Content.Renderers.ThreeD
                 this.origo = Vector3.Zero;
                 this.topLeft = Vector3.Zero;
                 this.bottomLeft = Vector3.Zero;
-                this.normal = Vector3.Zero;
+                normal = Vector3.Zero;
 
                 Update();
             }
@@ -102,7 +102,9 @@ namespace ImageViewer.Content.Renderers.ThreeD
             }
         }
 
-        private readonly BaseView view;
+        private readonly NavigationView view;
+        private FrameRenderer frame;
+
         private Corners corners;
 
         private List<Tag> tags = new List<Tag>();
@@ -111,13 +113,15 @@ namespace ImageViewer.Content.Renderers.ThreeD
         internal bool Visible { get; set; } = true;
 
         internal PointerRenderer(
-            BaseView view,
+            NavigationView view,
+            FrameRenderer frame,
             DeviceResources deviceResources, 
             TextureLoader loader, 
             Corners corners)
             : base(deviceResources, loader)
         {
             this.view = view;
+            this.frame = frame;
             this.corners = corners;
         }
 
@@ -141,6 +145,8 @@ namespace ImageViewer.Content.Renderers.ThreeD
             });
 
             task.Start();
+
+            frame.AddTag(c.X, c.Y);
         }
 
         internal void RemoveTag()
@@ -151,6 +157,8 @@ namespace ImageViewer.Content.Renderers.ThreeD
                 tags.RemoveAt(tags.Count - 1);
                 tag.ReleaseDeviceDependentResources();
             }
+
+            frame.RemoveTag();
         }
 
         internal override void Render()

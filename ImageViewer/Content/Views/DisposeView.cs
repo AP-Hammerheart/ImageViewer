@@ -75,31 +75,6 @@ namespace ImageViewer.Content.Views
             }           
         }
 
-        internal void Dispose()
-        {
-            if (statusItems != null)
-            {
-                foreach (var renderer in statusItems)
-                {
-                    renderer?.Dispose();
-                }
-                statusItems = null;
-            }
-
-            if (Tiles != null)
-            {
-                foreach (var renderer in Tiles)
-                {
-                    renderer?.Dispose();
-                }
-                Tiles = null;
-            }
-
-            settingViewer?.Dispose();
-            Pointer?.Dispose();
-            navigationFrame?.Dispose();
-        }
-
         internal async Task CreateDeviceDependentResourcesAsync()
         {
             foreach (var renderer in Tiles)
@@ -132,6 +107,31 @@ namespace ImageViewer.Content.Views
             settingViewer?.ReleaseDeviceDependentResources();
             Pointer?.ReleaseDeviceDependentResources();
             navigationFrame?.ReleaseDeviceDependentResources();
+        }
+
+        internal void Dispose()
+        {
+            if (statusItems != null)
+            {
+                foreach (var renderer in statusItems)
+                {
+                    renderer?.Dispose();
+                }
+                statusItems = null;
+            }
+
+            if (Tiles != null)
+            {
+                foreach (var renderer in Tiles)
+                {
+                    renderer?.Dispose();
+                }
+                Tiles = null;
+            }
+
+            settingViewer?.Dispose();
+            Pointer?.Dispose();
+            navigationFrame?.Dispose();
         }
 
         void IDisposable.Dispose()
