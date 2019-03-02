@@ -37,7 +37,7 @@ namespace ImageViewer.Content.Views
                 Tiles[i] = new RotateRenderer(deviceResources, loader, "", null, null);
             }
 
-            UpdateImages();
+            Refresh();
         }
 
         private void Update()

@@ -7,6 +7,7 @@ using ImageViewer.Content.Renderers.Base;
 using ImageViewer.Content.Utils;
 using ImageViewer.Content.Views;
 using SharpDX.Direct3D11;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -14,6 +15,8 @@ namespace ImageViewer.Content.Renderers.ThreeD
 {
     internal class FrameRenderer : BasePlaneRenderer
     {
+        private List<NavigationTag> tags = new List<NavigationTag>();
+
         private Texture2D texture = null;
         private ShaderResourceView resourceView = null;
 
@@ -76,6 +79,16 @@ namespace ImageViewer.Content.Renderers.ThreeD
         internal float Depth { get; set; }
         internal float Thickness { get; set; }
 
+        internal override void Render()
+        {
+            base.Render();
+
+            for (var i = 0; i < tags.Count; i++)
+            {
+                tags[i].Render();
+            }
+        }
+
         internal void SetPosition(Vector3 dp)
         {
             Position += dp;
@@ -83,6 +96,21 @@ namespace ImageViewer.Content.Renderers.ThreeD
             topLeft += dp;
             bottomLeft += dp;
             topRight += dp;
+
+            foreach (var tag in tags)
+            {
+                tag.SetPosition(dp);
+            }
+        }
+
+        internal void SetRotator(Matrix4x4 rotator)
+        {
+            GlobalRotator = rotator;
+
+            foreach (var tag in tags)
+            {
+                tag.SetRotator(rotator);
+            }
         }
 
         internal void UpdatePosition()
@@ -226,21 +254,68 @@ namespace ImageViewer.Content.Renderers.ThreeD
         }
 
         internal override void ReleaseDeviceDependentResources()
-        {            
+        {
             base.ReleaseDeviceDependentResources();
             FreeResources();
+
+            foreach (var tag in tags)
+            {
+                tag.ReleaseDeviceDependentResources();
+            }
         }
 
         protected override void Dispose(bool disposeManagedResources)
         {
             base.Dispose(disposeManagedResources);
             FreeResources();
+
+            foreach (var tag in tags)
+            {
+                tag.Dispose();
+            }
         }
 
         private void FreeResources()
         {
             RemoveAndDispose(ref texture);
             RemoveAndDispose(ref resourceView);
+        }
+
+        private Vector3 GetPosition(int xx, int yy)
+        {
+            var fx = (float)(xx - x) / (float)w;
+            var fy = (float)(yy - y) / (float)h;
+
+            return topLeft + fx * (topRight - topLeft) + fy * (bottomLeft - topLeft);
+        }
+
+        internal void AddTag(int xx, int yy)
+        {
+            var pos = GetPosition(xx, yy);
+
+            var task = new Task(async () =>
+            {
+                var tag = new NavigationTag(
+                    deviceResources,
+                    loader,
+                    GlobalRotator,
+                    pos);
+
+                await tag.CreateDeviceDependentResourcesAsync();
+                tags.Add(tag);
+            });
+
+            task.Start();
+        }
+
+        internal void RemoveTag()
+        {
+            if (tags.Count > 0)
+            {
+                var tag = tags[tags.Count - 1];
+                tags.RemoveAt(tags.Count - 1);
+                tag.ReleaseDeviceDependentResources();
+            }
         }
     }
 }

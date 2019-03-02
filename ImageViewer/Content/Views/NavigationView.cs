@@ -52,6 +52,12 @@ namespace ImageViewer.Content.Views
             Pointer.SetDeltaXY(x, y);
         }
 
+        protected void Refresh()
+        {
+            SetCorners();
+            UpdateImages();
+        }
+
         protected void SetPosition(float dX, float dY, float dZ)
         {
             var dp = new Vector3(dX, dY, dZ);
@@ -103,7 +109,7 @@ namespace ImageViewer.Content.Views
             Pointer.RotationY = RotationAngle;
             Pointer.SetRotator(rotator);
 
-            navigationFrame.GlobalRotator = rotator;
+            navigationFrame.SetRotator(rotator);
         }
 
         protected void Scale(Direction direction, int number)
@@ -126,9 +132,7 @@ namespace ImageViewer.Content.Views
                     break;
             }
 
-            SetCorners();
-            UpdateImages();
-
+            Refresh();
             navigationFrame.UpdateGeometry();
         }
 
@@ -156,9 +160,7 @@ namespace ImageViewer.Content.Views
                     break;
             }
 
-            SetCorners();
-            UpdateImages();
-
+            Refresh();
             navigationFrame.UpdatePosition();
         }
 
@@ -187,9 +189,7 @@ namespace ImageViewer.Content.Views
             CenterX = c.X;
             CenterY = c.Y;
 
-            SetCorners();
-            UpdateImages();
-
+            Refresh();
             navigationFrame.UpdateGeometry();
         }
 
@@ -213,9 +213,7 @@ namespace ImageViewer.Content.Views
                     break;
             }
 
-            SetCorners();
-            UpdateImages();
-
+            Refresh();
             navigationFrame.UpdateGeometry();
         }
 
@@ -248,9 +246,7 @@ namespace ImageViewer.Content.Views
             SetPosition(-1 * Origo.X, -1 * Origo.Y, -1 * Origo.Z);
             SetAngle(-1 * RotationAngle);
 
-            SetCorners();
-            UpdateImages();
-
+            Refresh();
             navigationFrame.UpdateGeometry();
         }
 

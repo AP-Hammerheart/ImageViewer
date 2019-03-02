@@ -73,6 +73,7 @@
     <Compile Include="Content\Renderers\Image\RotateRenderer.cs" />
     <Compile Include="Content\Renderers\Status\ScalerRenderer.cs" />
     <Compile Include="Content\Renderers\Status\TextRenderer.cs" />
+    <Compile Include="Content\Utils\NavigationTag.cs" />
     <Compile Include="Content\Utils\Rotator.cs" />
     <Compile Include="Content\Utils\Settings.cs" />
     <Compile Include="Content\Views\BaseView.cs" />

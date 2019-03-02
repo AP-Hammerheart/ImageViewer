@@ -17,14 +17,17 @@ namespace ImageViewer.Content.Renderers.ThreeD
             TextureLoader loader)
             : base(deviceResources, loader) {}
 
+        public float Width { get; set; } = 1.0f;
+        public float Length { get; set; } = 1.0f;
+
         internal override void LoadGeometry()
         {
             VertexCube[] vertices =
             {
-                new VertexCube(new Vector3(-0.005f, -0.005f, 0.03f)),
-                new VertexCube(new Vector3(-0.005f,  0.005f, 0.03f)),
-                new VertexCube(new Vector3( 0.005f, -0.005f, 0.03f)),
-                new VertexCube(new Vector3( 0.005f,  0.005f, 0.03f)),
+                new VertexCube(new Vector3(-0.005f * Width, -0.005f * Width, 0.03f * Length)),
+                new VertexCube(new Vector3(-0.005f * Width,  0.005f * Width, 0.03f * Length)),
+                new VertexCube(new Vector3( 0.005f * Width, -0.005f * Width, 0.03f * Length)),
+                new VertexCube(new Vector3( 0.005f * Width,  0.005f * Width, 0.03f * Length)),
                 new VertexCube(new Vector3( 0.0f,    0.0f,   0.0f))
             };
 
