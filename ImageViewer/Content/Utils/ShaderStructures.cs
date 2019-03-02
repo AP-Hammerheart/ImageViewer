@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System.Numerics;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Utils
 {
     internal struct ModelConstantBuffer
     {

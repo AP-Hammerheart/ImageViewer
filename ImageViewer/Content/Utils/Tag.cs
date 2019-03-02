@@ -1,14 +1,15 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
-using ImageViewer.Content.Renderers;
+using ImageViewer.Content.Renderers.ThreeD;
 using ImageViewer.Content.Views;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageViewer.Content
+namespace ImageViewer.Content.Utils
 {
     internal class Tag : IDisposable
     {

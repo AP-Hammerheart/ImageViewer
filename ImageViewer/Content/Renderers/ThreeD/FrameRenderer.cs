@@ -1,20 +1,23 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.Renderers.Base;
+using ImageViewer.Content.Utils;
 using ImageViewer.Content.Views;
 using SharpDX.Direct3D11;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageViewer.Content.Renderers
+namespace ImageViewer.Content.Renderers.ThreeD
 {
     internal class FrameRenderer : BasePlaneRenderer
     {
         private Texture2D texture = null;
         private ShaderResourceView resourceView = null;
 
-        private readonly BaseView view;
+        private readonly NavigationView view;
         protected readonly TextureLoader loader;
         private bool textureReady = false;
 
@@ -33,7 +36,7 @@ namespace ImageViewer.Content.Renderers
         internal FrameRenderer(
             DeviceResources deviceResources,
             TextureLoader loader,
-            BaseView view,
+            NavigationView view,
             float depth,
             float thickness, 
             Vector3 topLeft,
@@ -60,9 +63,9 @@ namespace ImageViewer.Content.Renderers
             this.w = w;
             this.h = h;
 
-            multiplierX = (float)(view.TileCountX * view.TileResolution) 
+            multiplierX = (float)(Constants.TileCountX * Constants.TileResolution) 
                 / (float)w * Constants.HalfViewSize;
-            multiplierY = (float)(view.TileCountY * view.TileResolution) 
+            multiplierY = (float)(Constants.TileCountY * Constants.TileResolution) 
                 / (float)h * Constants.HalfViewSize;
         }
 

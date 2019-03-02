@@ -1,20 +1,23 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.Renderers.Base;
+using ImageViewer.Content.Utils;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageViewer.Content.Renderers
+namespace ImageViewer.Content.Renderers.Status
 {
-    internal class ClockRenderer : StatusBarRenderer
+    internal class NameRenderer : StatusBarRenderer
     {
-        internal ClockRenderer(
-            DeviceResources deviceResources, 
-            TextureLoader loader, 
-            Vector3 bottomLeft, 
-            Vector3 topLeft, 
-            Vector3 bottomRight, 
+        internal NameRenderer(
+            DeviceResources deviceResources,
+            TextureLoader loader,
+            Vector3 bottomLeft,
+            Vector3 topLeft,
+            Vector3 bottomRight,
             Vector3 topRight)
             : base(deviceResources, 
                   loader, 
@@ -23,14 +26,15 @@ namespace ImageViewer.Content.Renderers
                   bottomRight, 
                   topRight) {}
 
+        internal int Index { get; set; } = 0;
+
         internal override void Update(StepTimer timer)
         {
-            var time = System.DateTime.Now.ToString("h:mm:ss");
-
-            if (!time.Equals(Text))
+            var txt = Index == 0 ? Settings.Image1 : Settings.Image2;
+            if (!txt.Equals(Text))
             {
                 Updating = true;
-                Text = time;
+                Text = txt;
 
                 Task task = new Task(async () =>
                 {

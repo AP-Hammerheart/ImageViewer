@@ -1,15 +1,18 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.Renderers.Base;
+using ImageViewer.Content.Utils;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageViewer.Content.Renderers
+namespace ImageViewer.Content.Renderers.Status
 {
-    internal class MemoryUseRenderer : StatusBarRenderer
+    internal class ClockRenderer : StatusBarRenderer
     {
-        internal MemoryUseRenderer(
+        internal ClockRenderer(
             DeviceResources deviceResources, 
             TextureLoader loader, 
             Vector3 bottomLeft, 
@@ -25,11 +28,12 @@ namespace ImageViewer.Content.Renderers
 
         internal override void Update(StepTimer timer)
         {
-            var mem = MemoryUseInMB().ToString() + " MB";
-            if (!mem.Equals(Text))
+            var time = System.DateTime.Now.ToString("h:mm:ss");
+
+            if (!time.Equals(Text))
             {
                 Updating = true;
-                Text = mem;
+                Text = time;
 
                 Task task = new Task(async () =>
                 {
@@ -37,14 +41,6 @@ namespace ImageViewer.Content.Renderers
                 });
                 task.Start();
             }
-        }
-
-        private int MemoryUseInMB()
-        {
-            var report = Windows.System.MemoryManager.GetAppMemoryReport();
-            var memoryUse = report.PrivateCommitUsage;
-
-            return (int)(memoryUse / 1000000);
         }
     }
 }

@@ -1,7 +1,10 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
-namespace ImageViewer.Content
+using System;
+
+namespace ImageViewer.Content.Utils
 {
     internal static class Constants
     {
@@ -34,5 +37,12 @@ namespace ImageViewer.Content
         internal static float Z0 { get; } = 0.0f * scale;
         internal static float Z1 { get; } = 0.424264f * scale;       
         internal static float Z2 { get; } = 1.324264f * scale;
+
+        internal static int TileResolution { get; } = 256;
+
+        internal static int TileCountX { get; } = 3;
+        internal static int TileCountY { get; } = 3;
+
+        internal static double Diagonal = Math.Sqrt(2.0) * 1.5 * (double)TileResolution;
     }
 }
