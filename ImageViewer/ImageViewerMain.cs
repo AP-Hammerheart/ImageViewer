@@ -67,8 +67,6 @@ namespace ImageViewer
         private BaseView                    mainView;
         private MediaSource                 mediaSource;
 
-        private readonly bool               tileView = false;
-
         #endregion
 
         #region Environment variables
@@ -142,16 +140,7 @@ namespace ImageViewer
             this.holographicSpace = holographicSpace;
 
             loader = new TextureLoader(deviceResources);
-
-            if (tileView)
-            {
-                mainView = new TileView(this, deviceResources, loader);
-                //mainView = new PanView(this, deviceResources, loader);
-            }
-            else
-            {
-                mainView = new RotatorView(this, deviceResources, loader);
-            }
+            mainView = new RotatorView(this, deviceResources, loader);
 
             spatialInputHandler = new SpatialInputHandler();
 

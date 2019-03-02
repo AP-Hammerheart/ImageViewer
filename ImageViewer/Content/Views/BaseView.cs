@@ -78,9 +78,10 @@ namespace ImageViewer.Content.Views
         internal Windows.System.VirtualKey VirtualKey { get; set; } = Windows.System.VirtualKey.None;
         internal Windows.System.VirtualKey LastKey { get; set; } = Windows.System.VirtualKey.None;
         internal int KeyCount { get; set; } = 0;
-        protected abstract int LargeStep { get; }
+
         internal int PixelSize(int level) => (int)Math.Pow(2, Settings.Multiplier * level);
         protected virtual int TileOffset(int level) => TileResolution * PixelSize(level);
+
         internal int Step => TileOffset(Level);
         internal PlaneRenderer[] Tiles { get; set; }
         internal int TileResolution { get; set; } = 256;
@@ -577,23 +578,23 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
             switch (key)
             {
                 case Windows.System.VirtualKey.NumberPad1:
-                    Move(Direction.LEFT, Settings.Scaler * 1);
-                    Move(Direction.DOWN, Settings.Scaler * 1);
+                    Move(Direction.LEFT, Settings.Scaler);
+                    Move(Direction.DOWN, Settings.Scaler);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad3:
-                    Move(Direction.RIGHT, Settings.Scaler * 1);
-                    Move(Direction.DOWN, Settings.Scaler * 1);
+                    Move(Direction.RIGHT, Settings.Scaler);
+                    Move(Direction.DOWN, Settings.Scaler);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad7:
-                    Move(Direction.LEFT, Settings.Scaler * 1);
-                    Move(Direction.UP, Settings.Scaler * 1);
+                    Move(Direction.LEFT, Settings.Scaler);
+                    Move(Direction.UP, Settings.Scaler);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad9:
-                    Move(Direction.RIGHT, Settings.Scaler * 1);
-                    Move(Direction.UP, Settings.Scaler * 1);
+                    Move(Direction.RIGHT, Settings.Scaler);
+                    Move(Direction.UP, Settings.Scaler);
                     break;
 
                 case Windows.System.VirtualKey.NumberPad4:
@@ -605,7 +606,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                     }
                     else
                     {
-                        Move(Direction.LEFT, Settings.Scaler * 1);
+                        Move(Direction.LEFT, Settings.Scaler);
                     }                
                     break;
 
@@ -618,7 +619,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                     }
                     else
                     {
-                        Move(Direction.RIGHT, Settings.Scaler * 1);
+                        Move(Direction.RIGHT, Settings.Scaler);
                     }               
                     break;
 
@@ -631,7 +632,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                     }
                     else
                     {
-                        Move(Direction.UP, Settings.Scaler * 1);
+                        Move(Direction.UP, Settings.Scaler);
                     }               
                     break;
 
@@ -644,56 +645,28 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                     }
                     else
                     {
-                        Move(Direction.DOWN, Settings.Scaler * 1);
+                        Move(Direction.DOWN, Settings.Scaler);
                     }             
                     break;
 
                 case Windows.System.VirtualKey.O:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickLeft:
-                    if (Pointer.Locked)
-                    {
-                        MovePointer(-0.01f, 0.0f);
-                    }
-                    else
-                    {
-                        Move(Direction.LEFT, Settings.Scaler * LargeStep);
-                    }         
+                    MovePointer(-0.01f, 0.0f);
                     break;
 
                 case Windows.System.VirtualKey.P:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickRight:
-                    if (Pointer.Locked)
-                    {
-                        MovePointer(0.01f, 0.0f);
-                    }
-                    else
-                    {
-                        Move(Direction.RIGHT, Settings.Scaler * LargeStep);
-                    }        
+                    MovePointer(0.01f, 0.0f);        
                     break;
 
                 case Windows.System.VirtualKey.I:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickUp:
-                    if (Pointer.Locked)
-                    {
-                        MovePointer(0.0f, 0.01f);
-                    }
-                    else
-                    {
-                        Move(Direction.UP, Settings.Scaler * LargeStep);
-                    }           
+                    MovePointer(0.0f, 0.01f);    
                     break;
 
                 case Windows.System.VirtualKey.L:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickDown:
-                    if (Pointer.Locked)
-                    {
-                        MovePointer(0.0f, -0.01f);
-                    }
-                    else
-                    {
-                        Move(Direction.DOWN, Settings.Scaler * LargeStep);
-                    } 
+                    MovePointer(0.0f, -0.01f);
                     break;
 
                 case Windows.System.VirtualKey.Q:
@@ -729,7 +702,6 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
 
                 case Windows.System.VirtualKey.Space:
                 case Windows.System.VirtualKey.GamepadView:
-                    //Reset();
                     if (Settings.Online)
                     {
                         settingViewer.NextSlide();
@@ -780,7 +752,6 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 case Windows.System.VirtualKey.F:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickButton:
                     Pointer.Locked = !Pointer.Locked;
-                    //Zoom(Direction.DOWN, 1);
                     break;
 
                 case Windows.System.VirtualKey.W:
@@ -851,20 +822,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
             navigationFrame.GlobalRotator = rotator;
         }
 
-        protected virtual void SetCorners()
-        {
-            var width = Step * TileCountX;
-            var height = Step * TileCountY;
-
-            TopRightX = TopLeftX + width;
-            TopRightY = TopLeftY;
-
-            BottomLeftX = TopLeftX;
-            BottomLeftY = TopLeftY + height;
-
-            BottomRightX = TopLeftX + width;
-            BottomRightY = TopLeftY + height;
-        }
+        protected abstract void SetCorners();
 
         protected void Scale(Direction direction, int number)
         {
@@ -887,77 +845,14 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
             }
 
             SetCorners();
-            UpdateImages();       
-        }
-
-        protected virtual void Move(Direction direction, int number)
-        {
-            var distance = number * PixelSize(Level);
-
-            switch (direction)
-            {
-                case Direction.LEFT:
-                    TopLeftX += distance;
-                    if (TopLeftX > Settings.MaxResolutionX)
-                    {
-                        TopLeftX = Settings.MaxResolutionX;
-                    }
-                    break;
-                case Direction.RIGHT:
-                    TopLeftX -= distance;
-                    if (TopLeftX < 0)
-                    {
-                        TopLeftX = 0;
-                    }
-                    break;
-                case Direction.DOWN:
-                    TopLeftY -= distance;
-                    if (TopLeftY < 0)
-                    {
-                        TopLeftY = 0;
-                    }
-                    break;
-                case Direction.UP:
-                    TopLeftY += distance;
-                    if (TopLeftY > Settings.MaxResolutionY)
-                    {
-                        TopLeftY = Settings.MaxResolutionY;
-                    }
-                    break;
-            }
-
-            SetCorners();
             UpdateImages();
+
+            navigationFrame.UpdateGeometry();
         }
 
-        protected virtual void Zoom(Direction direction, int number)
-        {
-            var c = Pointer.Coordinates();
+        protected abstract void Move(Direction direction, int number);
 
-            switch (direction)
-            {
-                case Direction.UP:
-                    Level -= number;
-                    if (Level < 0)
-                    {
-                        Level = 0;
-                    }
-                    break;
-                case Direction.DOWN:
-                    Level += number;
-                    if (Level > Settings.MinScale)
-                    {
-                        Level = Settings.MinScale;    
-                    }
-                    break;
-            }
-
-            TopLeftX = Math.Max(c.X - ((TileCountX * Step) / 2), 0);
-            TopLeftY = Math.Max(c.Y - ((TileCountY * Step) / 2), 0);
-
-            SetCorners();
-            UpdateImages();
-        }
+        protected abstract void Zoom(Direction direction, int number);
 
         protected abstract void UpdateImages();
 
