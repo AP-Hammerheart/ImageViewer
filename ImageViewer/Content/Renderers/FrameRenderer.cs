@@ -82,15 +82,20 @@ namespace ImageViewer.Content.Renderers
             topRight += dp;
         }
 
+        internal void UpdatePosition()
+        {
+            var fx = (float)(view.CenterX - x) / (float)w;
+            var fy = (float)(view.CenterY - y) / (float)h;
+
+            Position = topLeft + fx * (topRight - topLeft) + fy * (bottomLeft - topLeft);
+        }
+
         internal void UpdateGeometry()
         {
             var width = (float)(view.PixelSize(view.Level)) * multiplierX + Thickness;
             var height = (float)(view.PixelSize(view.Level)) * multiplierY + Thickness;
 
-            var fx = (float)(view.CenterX - x) / (float)w;
-            var fy = (float)(view.CenterY - y) / (float)h;
-
-            Position = topLeft + fx * (topRight - topLeft) + fy * (bottomLeft - topLeft);
+            UpdatePosition();
 
             if (vertexBuffer != null)
             {

@@ -16,8 +16,6 @@ namespace ImageViewer.Content.Views
         private readonly int maxTiles = 24;
         private readonly double A45 = Math.PI / 4;
 
-        protected override int LargeStep => 10;
-
         private int tileX = 1;
         private int tileY = 1;
 
@@ -109,6 +107,8 @@ namespace ImageViewer.Content.Views
 
             SetCorners();
             UpdateImages();
+
+            navigationFrame.UpdateGeometry();
         }
 
         protected override void Move(Direction direction, int number)
@@ -137,6 +137,8 @@ namespace ImageViewer.Content.Views
 
             SetCorners();
             UpdateImages();
+
+            navigationFrame.UpdatePosition();
         }
 
         protected override void SetCorners()
@@ -192,14 +194,14 @@ namespace ImageViewer.Content.Views
 
             SetCorners();
             UpdateImages();
+
+            navigationFrame.UpdateGeometry();
         }
 
         protected override void UpdateImages()
         {
             Update();
             Pointer.Update();
-
-            navigationFrame.UpdateGeometry();
 
             var textures = new List<string>();
 
