@@ -3,7 +3,6 @@
 // See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
-using ImageViewer.Content.Renderers;
 using ImageViewer.Content.Renderers.Base;
 using ImageViewer.Content.Renderers.ThreeD;
 using System;
@@ -20,8 +19,9 @@ namespace ImageViewer.Content.Views
         internal int FPS { get; set; } = 0;
 
         protected BasePlaneRenderer[] statusItems;
-        protected FrameRenderer navigationFrame;        
+        protected NavigationRenderer navigationFrame;        
         protected SettingViewer settingViewer;
+        protected MacroView macro;
         
         internal PlaneRenderer[] Tiles { get; set; }
         internal PointerRenderer Pointer { get; set; }
@@ -44,6 +44,7 @@ namespace ImageViewer.Content.Views
             settingViewer?.Update(timer);
             Pointer?.Update(timer);
             navigationFrame?.Update(timer);
+            macro?.Update(timer);
         }
 
         internal void Update(SpatialPointerPose pose)
@@ -54,6 +55,7 @@ namespace ImageViewer.Content.Views
         internal void Render()
         {
             navigationFrame?.Render();
+            macro?.Render();
 
             foreach (var renderer in statusItems)
             {
@@ -76,20 +78,22 @@ namespace ImageViewer.Content.Views
         }
 
         internal async Task CreateDeviceDependentResourcesAsync()
-        {
-            foreach (var renderer in Tiles)
-            {
-                await renderer?.CreateDeviceDependentResourcesAsync();
-            }
-
+        {          
             foreach (var renderer in statusItems)
             {
                 await renderer?.CreateDeviceDependentResourcesAsync();
             }
 
-            await settingViewer?.CreateDeviceDependentResourcesAsync();
-            await Pointer?.CreateDeviceDependentResourcesAsync();
+            await macro?.CreateDeviceDependentResourcesAsync();          
             await navigationFrame?.CreateDeviceDependentResourcesAsync();
+
+            foreach (var renderer in Tiles)
+            {
+                await renderer?.CreateDeviceDependentResourcesAsync();
+            }
+
+            await Pointer?.CreateDeviceDependentResourcesAsync();
+            await settingViewer?.CreateDeviceDependentResourcesAsync();
         }
 
         internal void ReleaseDeviceDependentResources()
@@ -107,6 +111,7 @@ namespace ImageViewer.Content.Views
             settingViewer?.ReleaseDeviceDependentResources();
             Pointer?.ReleaseDeviceDependentResources();
             navigationFrame?.ReleaseDeviceDependentResources();
+            macro?.ReleaseDeviceDependentResources();
         }
 
         internal void Dispose()
@@ -132,6 +137,7 @@ namespace ImageViewer.Content.Views
             settingViewer?.Dispose();
             Pointer?.Dispose();
             navigationFrame?.Dispose();
+            macro?.Dispose();
         }
 
         void IDisposable.Dispose()
@@ -149,6 +155,7 @@ namespace ImageViewer.Content.Views
             settingViewer?.Dispose();
             Pointer?.Dispose();
             navigationFrame?.Dispose();
+            macro?.Dispose();
         }
     }
 }

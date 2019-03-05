@@ -153,7 +153,7 @@ namespace ImageViewer.Content.Renderers.Base
         /// geometry, and vertex and pixel shaders. In some cases this will also 
         /// store a geometry shader.
         /// </summary>
-        internal async Task CreateDeviceDependentResourcesAsync()
+        internal virtual async Task CreateDeviceDependentResourcesAsync()
         {
             ReleaseDeviceDependentResources();
 

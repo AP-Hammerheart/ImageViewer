@@ -5,165 +5,64 @@
 using ImageViewer.Common;
 using ImageViewer.Content.Renderers.Base;
 using ImageViewer.Content.Utils;
-using ImageViewer.Content.Views;
+using Microsoft.Graphics.Canvas;
 using SharpDX.Direct3D11;
-using System.Collections.Generic;
+using System;
+using System.IO;
 using System.Numerics;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.Storage.Streams;
+using Windows.UI;
+
 
 namespace ImageViewer.Content.Renderers.ThreeD
 {
-    internal class FrameRenderer : BasePlaneRenderer
+    internal abstract class FrameRenderer : BasePlaneRenderer
     {
-        private List<NavigationTag> tags = new List<NavigationTag>();
-
         private Texture2D texture = null;
         private ShaderResourceView resourceView = null;
 
-        private readonly NavigationView view;
         protected readonly TextureLoader loader;
         private bool textureReady = false;
-
-        private Vector3 topLeft;
-        private Vector3 bottomLeft;
-        private Vector3 topRight;
-
-        private readonly int x;
-        private readonly int y;
-        private readonly int w;
-        private readonly int h;
-
-        private readonly float multiplierX;
-        private readonly float multiplierY;
 
         internal FrameRenderer(
             DeviceResources deviceResources,
             TextureLoader loader,
-            NavigationView view,
             float depth,
-            float thickness, 
-            Vector3 topLeft,
-            Vector3 bottomLeft,
-            Vector3 topRight,
-            int x = 0,
-            int y = 63000,
-            int w = 99840,
-            int h = 99840)
+            float thickness)
             : base(deviceResources)
         {
             this.loader = loader;
             Depth = depth;
             Thickness = thickness;
-
-            this.topLeft = topLeft;
-            this.bottomLeft = bottomLeft;
-            this.topRight = topRight;
-
-            this.view = view;
-
-            this.x = x;
-            this.y = y;
-            this.w = w;
-            this.h = h;
-
-            multiplierX = (float)(Constants.TileCountX * Constants.TileResolution) 
-                / (float)w * Constants.HalfViewSize;
-            multiplierY = (float)(Constants.TileCountY * Constants.TileResolution) 
-                / (float)h * Constants.HalfViewSize;
         }
 
         internal override bool TextureReady => textureReady;
 
-        internal string TextureFile { get; set; } = "Content\\Textures\\solid.png";
+        internal string TextureFile { get; set; } = null;
+
+        internal Color Color { get; set; } = Colors.Yellow;
+
+        internal int ImageHeight { get; set; } = 256;
+        internal int ImageWidth { get; set; } = 256;
+        internal int ImageDPI { get; set; } = 96;
 
         internal float Depth { get; set; }
         internal float Thickness { get; set; }
 
-        internal override void Render()
-        {
-            base.Render();
-
-            for (var i = 0; i < tags.Count; i++)
-            {
-                tags[i].Render();
-            }
-        }
-
-        internal void SetPosition(Vector3 dp)
+        internal virtual void SetPosition(Vector3 dp)
         {
             Position += dp;
-
-            topLeft += dp;
-            bottomLeft += dp;
-            topRight += dp;
-
-            foreach (var tag in tags)
-            {
-                tag.SetPosition(dp);
-            }
         }
 
-        internal void SetRotator(Matrix4x4 rotator)
+        internal virtual void SetRotator(Matrix4x4 rotator)
         {
             GlobalRotator = rotator;
-
-            foreach (var tag in tags)
-            {
-                tag.SetRotator(rotator);
-            }
         }
 
-        internal void UpdatePosition()
-        {
-            var fx = (float)(view.CenterX - x) / (float)w;
-            var fy = (float)(view.CenterY - y) / (float)h;
-
-            Position = topLeft + fx * (topRight - topLeft) + fy * (bottomLeft - topLeft);
-        }
-
-        internal void UpdateGeometry()
-        {
-            var width = (float)(view.PixelSize(view.Level)) * multiplierX + Thickness;
-            var height = (float)(view.PixelSize(view.Level)) * multiplierY + Thickness;
-
-            UpdatePosition();
-
-            if (vertexBuffer != null)
-            {
-                RemoveAndDispose(ref vertexBuffer);
-            }
-
-            var rot = Quaternion.CreateFromAxisAngle(new Vector3(0f, 0f, 1f), (float)view.Angle);
-
-            VertexPlane[] vertices =
-            {
-                new VertexPlane(Vector3.Transform(new Vector3(-1.0f * width, -1.0f * height, 0.0f), rot), new Vector2(0f,0f)),
-                new VertexPlane(Vector3.Transform(new Vector3(-1.0f * width, -1.0f * height, Depth), rot), new Vector2(1f,0f)),
-                new VertexPlane(Vector3.Transform(new Vector3(width, -1.0f * height, 0.0f), rot), new Vector2(0f,1f)),
-                new VertexPlane(Vector3.Transform(new Vector3(width, -1.0f * height, Depth), rot), new Vector2(1f,1f)),
-
-                new VertexPlane(Vector3.Transform(new Vector3(-1.0f * width, height, 0.0f), rot), new Vector2(0f,0f)),
-                new VertexPlane(Vector3.Transform(new Vector3(-1.0f * width, height, Depth), rot), new Vector2(1f,0f)),
-                new VertexPlane(Vector3.Transform(new Vector3(width, height, 0.0f), rot), new Vector2(0f,1f)),
-                new VertexPlane(Vector3.Transform(new Vector3(width, height, Depth), rot), new Vector2(1f,1f)),
-
-                new VertexPlane(Vector3.Transform(new Vector3(-1.0f * width + Thickness, -1.0f * height + Thickness, 0.0f), rot), new Vector2(0f,0f)),
-                new VertexPlane(Vector3.Transform(new Vector3(-1.0f * width + Thickness, -1.0f * height + Thickness, Depth), rot), new Vector2(1f,0f)),
-                new VertexPlane(Vector3.Transform(new Vector3(width - Thickness, -1.0f * height + Thickness, 0.0f), rot), new Vector2(0f,1f)),
-                new VertexPlane(Vector3.Transform(new Vector3(width - Thickness, -1.0f * height + Thickness, Depth), rot), new Vector2(1f,1f)),
-
-                new VertexPlane(Vector3.Transform(new Vector3(-1.0f * width + Thickness, height - Thickness, 0.0f), rot), new Vector2(0f,0f)),
-                new VertexPlane(Vector3.Transform(new Vector3(-1.0f * width + Thickness, height - Thickness, Depth), rot), new Vector2(1f,0f)),
-                new VertexPlane(Vector3.Transform(new Vector3(width - Thickness, height - Thickness, 0.0f), rot), new Vector2(0f,1f)),
-                new VertexPlane(Vector3.Transform(new Vector3(width - Thickness, height - Thickness, Depth), rot), new Vector2(1f,1f)),
-            };
-
-            vertexBuffer = ToDispose(Buffer.Create(
-                deviceResources.D3DDevice,
-                BindFlags.VertexBuffer,
-                vertices));
-        }
-
+        internal abstract void UpdateGeometry();
+        
         internal override void LoadGeometry()
         {
             UpdateGeometry();
@@ -220,12 +119,12 @@ namespace ImageViewer.Content.Renderers.ThreeD
             };
 
             indexCount = vertexIndices.Length;
-            indexBuffer = ToDispose(Buffer.Create(
+            indexBuffer = ToDispose(SharpDX.Direct3D11.Buffer.Create(
                 deviceResources.D3DDevice,
                 BindFlags.IndexBuffer,
                 vertexIndices));
 
-            modelConstantBuffer = ToDispose(Buffer.Create(
+            modelConstantBuffer = ToDispose(SharpDX.Direct3D11.Buffer.Create(
                 deviceResources.D3DDevice,
                 BindFlags.ConstantBuffer,
                 ref modelConstantBufferData));
@@ -244,7 +143,19 @@ namespace ImageViewer.Content.Renderers.ThreeD
             await base.LoadTextureAsync();
 
             var shaderResourceDesc = TextureLoader.ShaderDescription();
-            texture = ToDispose(loader.Texture2D(deviceResources, TextureFile));
+
+            if (TextureFile != null)
+            {
+                texture = ToDispose(loader.Texture2D(deviceResources, TextureFile));
+            }
+            else
+            {
+                using (var stream = await DrawImage())
+                {
+                    texture = ToDispose(loader.Texture2D(deviceResources, stream));
+                }
+            }
+
             resourceView = ToDispose(new ShaderResourceView(
                 deviceResources.D3DDevice,
                 texture,
@@ -257,22 +168,12 @@ namespace ImageViewer.Content.Renderers.ThreeD
         {
             base.ReleaseDeviceDependentResources();
             FreeResources();
-
-            foreach (var tag in tags)
-            {
-                tag.ReleaseDeviceDependentResources();
-            }
         }
 
         protected override void Dispose(bool disposeManagedResources)
         {
             base.Dispose(disposeManagedResources);
             FreeResources();
-
-            foreach (var tag in tags)
-            {
-                tag.Dispose();
-            }
         }
 
         private void FreeResources()
@@ -281,40 +182,31 @@ namespace ImageViewer.Content.Renderers.ThreeD
             RemoveAndDispose(ref resourceView);
         }
 
-        private Vector3 GetPosition(int xx, int yy)
+        private async Task<MemoryStream> DrawImage()
         {
-            var fx = (float)(xx - x) / (float)w;
-            var fy = (float)(yy - y) / (float)h;
-
-            return topLeft + fx * (topRight - topLeft) + fy * (bottomLeft - topLeft);
-        }
-
-        internal void AddTag(int xx, int yy)
-        {
-            var pos = GetPosition(xx, yy);
-
-            var task = new Task(async () =>
+            using (var device = new CanvasDevice())
             {
-                var tag = new NavigationTag(
-                    deviceResources,
-                    loader,
-                    GlobalRotator,
-                    pos);
+                using (var renderTarget = new CanvasRenderTarget(
+                    device,
+                    ImageWidth,
+                    ImageHeight,
+                    ImageDPI))
+                {
+                    using (var drawingSession = renderTarget.CreateDrawingSession())
+                    {
+                        drawingSession.Clear(Color);
+                    }
 
-                await tag.CreateDeviceDependentResourcesAsync();
-                tags.Add(tag);
-            });
+                    using (var stream = new InMemoryRandomAccessStream())
+                    {
+                        await renderTarget.SaveAsync(stream, CanvasBitmapFileFormat.Png, 1f);
 
-            task.Start();
-        }
+                        var memoryStream = new MemoryStream();
+                        await stream.AsStream().CopyToAsync(memoryStream);
 
-        internal void RemoveTag()
-        {
-            if (tags.Count > 0)
-            {
-                var tag = tags[tags.Count - 1];
-                tags.RemoveAt(tags.Count - 1);
-                tag.ReleaseDeviceDependentResources();
+                        return memoryStream;
+                    }
+                }
             }
         }
     }

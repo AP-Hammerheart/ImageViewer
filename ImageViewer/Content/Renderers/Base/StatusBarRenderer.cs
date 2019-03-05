@@ -31,6 +31,26 @@ namespace ImageViewer.Content.Renderers.Base
         internal StatusBarRenderer(
             DeviceResources deviceResources,
             TextureLoader loader,
+            Tuple<Vector3, Vector3, Vector3, Vector3> corners,
+            float offset)
+            : base(deviceResources: deviceResources)
+        {
+            this.loader = loader;
+
+            var plane = Plane.CreateFromVertices(corners.Item2, corners.Item1, corners.Item4);
+            var normal = plane.Normal;
+          
+            bottomLeft = corners.Item1 + offset * normal;
+            topLeft = corners.Item2 + offset * normal;
+            bottomRight = corners.Item3 + offset * normal;
+            topRight = corners.Item4 + offset * normal;
+
+            Position = new Vector3(0.0f, 0.0f, Constants.DistanceFromUser);
+        }
+
+        internal StatusBarRenderer(
+            DeviceResources deviceResources,
+            TextureLoader loader,
             Vector3 bottomLeft,
             Vector3 topLeft,
             Vector3 bottomRight,
@@ -58,14 +78,24 @@ namespace ImageViewer.Content.Renderers.Base
         protected int Active { get; set; } = -1;
         protected bool Updating { get; set; } = false;
 
+        internal float UBL { get; set; } = 0.0f;
+        internal float VBL { get; set; } = 1.0f;
+        internal float UBR { get; set; } = 1.0f;
+        internal float VTL { get; set; } = 0.0f;
+
+        internal float UTL { get; set; } = 0.0f;
+        internal float VBR { get; set; } = 1.0f;
+        internal float UTR { get; set; } = 1.0f;
+        internal float VTR { get; set; } = 0.0f;
+
         internal override void LoadGeometry()
         {
             VertexPlane[] planeVertices =
             {
-                new VertexPlane(bottomLeft, new Vector2(0.0f, 1.0f)),
-                new VertexPlane(topLeft, new Vector2(0.0f, 0.0f)),
-                new VertexPlane(bottomRight, new Vector2(1.0f, 1.0f)),
-                new VertexPlane(topRight, new Vector2(1.0f, 0.0f))
+                new VertexPlane(bottomLeft, new Vector2(UBL, VBL)),
+                new VertexPlane(topLeft, new Vector2(UTL, VTL)),
+                new VertexPlane(bottomRight, new Vector2(UBR, VBR)),
+                new VertexPlane(topRight, new Vector2(UTR, VTR))
             };
 
             vertexBuffer = ToDispose(SharpDX.Direct3D11.Buffer.Create(

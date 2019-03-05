@@ -149,7 +149,8 @@ namespace ImageViewer.Content.Views
 
                 case Windows.System.VirtualKey.Q:
                 case Windows.System.VirtualKey.GamepadY:
-                    Scale(Direction.UP, 1);
+                    //Scale(Direction.UP, 1);
+                    macro.ChangeType();
                     break;
 
                 case Windows.System.VirtualKey.M:

@@ -63,6 +63,9 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Content\Renderers\Image\Label.cs" />
+    <Compile Include="Content\Renderers\ThreeD\NavigationRenderer.cs" />
+    <Compile Include="Content\Renderers\ThreeD\SlideFrameRenderer.cs" />
     <Compile Include="Content\Utils\Constants.cs" />
     <Compile Include="Content\Renderers\Base\BaseCubeRenderer.cs" />
     <Compile Include="Content\Renderers\Base\BasePlaneRenderer.cs" />
@@ -91,6 +94,7 @@
     <Compile Include="Content\Utils\TextureLoader.cs" />
     <Compile Include="Content\Views\DisposeView.cs" />
     <Compile Include="Content\Views\KeyEventView.cs" />
+    <Compile Include="Content\Views\MacroView.cs" />
     <Compile Include="Content\Views\NavigationView.cs" />
     <Compile Include="Content\Views\RotatorView.cs" />
     <Compile Include="Content\Views\SettingViewer.cs" />

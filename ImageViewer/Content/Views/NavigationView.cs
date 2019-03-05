@@ -76,6 +76,7 @@ namespace ImageViewer.Content.Views
             settingViewer.SetPosition(dp);
             Pointer.SetPosition(dp);
             navigationFrame.SetPosition(dp);
+            macro.SetPosition(dp);
 
             UpdateImages();
         }
@@ -110,6 +111,7 @@ namespace ImageViewer.Content.Views
             Pointer.SetRotator(rotator);
 
             navigationFrame.SetRotator(rotator);
+            macro.SetRotator(rotator);
         }
 
         protected void Scale(Direction direction, int number)

@@ -8,7 +8,7 @@ namespace ImageViewer.Content.Utils
 {
     internal static class Constants
     {
-        private static readonly float scale = 0.5f;
+        private static readonly float scale = 1.0f;
 
         internal static float DistanceFromUser { get; } = -1.4f;
 
@@ -43,6 +43,6 @@ namespace ImageViewer.Content.Utils
         internal static int TileCountX { get; } = 3;
         internal static int TileCountY { get; } = 3;
 
-        internal static double Diagonal = Math.Sqrt(2.0) * 1.5 * (double)TileResolution;
+        internal static double Diagonal { get; } = Math.Sqrt(2.0) * 1.5 * TileResolution;
     }
 }
