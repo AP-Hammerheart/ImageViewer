@@ -21,12 +21,15 @@ namespace ImageViewer.Content.Views
             DeviceResources deviceResources,
             TextureLoader loader) : base(main, loader)
         {
-            navigationFrame = new FrameRenderer(
+
+            model = new ObjRenderer(deviceResources, loader);
+
+            navigationFrame = new NavigationRenderer(
                 deviceResources: deviceResources,
-                loader: loader, 
-                view: this, 
+                loader: loader,
+                view: this,
                 depth: 0.005f,
-                thickness: 0.002f,       
+                thickness: 0.002f,
                 topLeft: new Vector3(Constants.X00, Constants.Y2, Constants.Z1 + Constants.DistanceFromUser),
                 bottomLeft: new Vector3(Constants.X00, Constants.Y1, Constants.Z1 + Constants.DistanceFromUser),
                 topRight: new Vector3(Constants.X01, Constants.Y2, Constants.Z0 + Constants.DistanceFromUser))
@@ -36,7 +39,7 @@ namespace ImageViewer.Content.Views
 
             settingViewer = new SettingViewer(main, deviceResources, loader);
 
-            statusItems = new BasePlaneRenderer[22];
+            statusItems = new BasePlaneRenderer[21];
 
             statusItems[0] = new StatusBarRenderer(
                 deviceResources: deviceResources,
@@ -185,7 +188,7 @@ namespace ImageViewer.Content.Views
                 topRight: new Vector3(Constants.X01, Constants.Y4, Constants.Z0))
             {
                 TextPosition = new Vector2(20, 10),
-                Text = "Navigation guide",
+                Text = "Z4",
                 FontSize = 40.0f,
                 ImageWidth = 960,
                 ImageHeight = 80,
@@ -313,19 +316,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 BackgroundColor = Colors.LightGray,
             };
 
-            statusItems[20] = new ImageRenderer(
-                deviceResources: deviceResources,
-                loader: loader,
-                bottomLeft: new Vector3(Constants.X00, Constants.Y1, Constants.Z2),
-                topLeft: new Vector3(Constants.X00, Constants.Y2, Constants.Z2),
-                bottomRight: new Vector3(Constants.X00, Constants.Y1, Constants.Z1),
-                topRight: new Vector3(Constants.X00, Constants.Y2, Constants.Z1))
-            {
-                Position = new Vector3(0.0f, 0.0f, Constants.DistanceFromUser),
-                TextureFile = "Content\\Textures\\macro.jpg",
-            };
-
-            statusItems[21] = new StatusBarRenderer(
+            statusItems[20] = new StatusBarRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(Constants.X00, Constants.Y0, Constants.Z2),
@@ -336,6 +327,8 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                 ImageWidth = 1440,
             };
+
+            macro = new MacroView(deviceResources: deviceResources, loader: loader);
 
             Pointer = new PointerRenderer(this, navigationFrame, deviceResources, loader, 
                 new PointerRenderer.Corners(

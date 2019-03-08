@@ -15,6 +15,8 @@ namespace ImageViewer.Content.Views
 
         protected KeyEventView() {}
 
+        private readonly int modes = 2;
+
         internal void OnKeyPressed(Windows.System.VirtualKey key)
         {
             VirtualKey = key;
@@ -44,147 +46,247 @@ namespace ImageViewer.Content.Views
                 case Windows.System.VirtualKey.NumberPad4:
                 case Windows.System.VirtualKey.Left:
                 case Windows.System.VirtualKey.GamepadRightThumbstickLeft:
-                    if (ShowSettings)
+                    if (Settings.Mode == 0)
                     {
-                        settingViewer.SetItem(2);
+                        if (ShowSettings)
+                        {
+                            settingViewer.SetItem(2);
+                        }
+                        else
+                        {
+                            Move(Direction.LEFT, Settings.Scaler);
+                        }
                     }
                     else
                     {
-                        Move(Direction.LEFT, Settings.Scaler);
+                        model.Position = model.Position + new System.Numerics.Vector3(-0.1f, 0.0f, 0.0f);
                     }
                     break;
 
                 case Windows.System.VirtualKey.NumberPad6:
                 case Windows.System.VirtualKey.Right:
                 case Windows.System.VirtualKey.GamepadRightThumbstickRight:
-                    if (ShowSettings)
+                    if (Settings.Mode == 0)
                     {
-                        settingViewer.SetItem(3);
+                        if (ShowSettings)
+                        {
+                            settingViewer.SetItem(3);
+                        }
+                        else
+                        {
+                            Move(Direction.RIGHT, Settings.Scaler);
+                        }
                     }
                     else
                     {
-                        Move(Direction.RIGHT, Settings.Scaler);
+                        model.Position = model.Position + new System.Numerics.Vector3(0.1f, 0.0f, 0.0f);
                     }
                     break;
 
                 case Windows.System.VirtualKey.NumberPad8:
                 case Windows.System.VirtualKey.Up:
                 case Windows.System.VirtualKey.GamepadRightThumbstickUp:
-                    if (ShowSettings)
+                    if (Settings.Mode == 0)
                     {
-                        settingViewer.SetItem(0);
+                        if (ShowSettings)
+                        {
+                            settingViewer.SetItem(0);
+                        }
+                        else
+                        {
+                            Move(Direction.UP, Settings.Scaler);
+                        }
                     }
                     else
                     {
-                        Move(Direction.UP, Settings.Scaler);
+                        model.Position = model.Position + new System.Numerics.Vector3(0.0f, 0.1f, 0.0f);
                     }
                     break;
 
                 case Windows.System.VirtualKey.NumberPad2:
                 case Windows.System.VirtualKey.Down:
                 case Windows.System.VirtualKey.GamepadRightThumbstickDown:
-                    if (ShowSettings)
+                    if (Settings.Mode == 0)
                     {
-                        settingViewer.SetItem(1);
+                        if (ShowSettings)
+                        {
+                            settingViewer.SetItem(1);
+                        }
+                        else
+                        {
+                            Move(Direction.DOWN, Settings.Scaler);
+                        }
                     }
                     else
                     {
-                        Move(Direction.DOWN, Settings.Scaler);
+                        model.Position = model.Position + new System.Numerics.Vector3(0.0f, -0.1f, 0.0f);
                     }
                     break;
 
                 case Windows.System.VirtualKey.O:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickLeft:
-                    if (Pointer.Locked)
+                    if (Settings.Mode == 0)
                     {
-                        MovePointer(-0.01f, 0.0f);
+                        if (Pointer.Locked)
+                        {
+                            MovePointer(-0.01f, 0.0f);  
+                        }
+                        else
+                        {
+                            Rotate(Direction.LEFT);
+                        }
                     }
                     else
                     {
-                        Rotate(Direction.LEFT);
+                        model.RotationY -= 0.1f;
                     }
+                   
                     break;
 
                 case Windows.System.VirtualKey.P:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickRight:
-                    if (Pointer.Locked)
+                    if (Settings.Mode == 0)
                     {
-                        MovePointer(0.01f, 0.0f);
+                        if (Pointer.Locked)
+                        {
+                            MovePointer(0.01f, 0.0f);  
+                        }
+                        else
+                        {
+                            Rotate(Direction.RIGHT);
+                        }
                     }
                     else
                     {
-                        Rotate(Direction.RIGHT);
+                        model.RotationY += 0.1f;
                     }
+                    
                     break;
 
                 case Windows.System.VirtualKey.I:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickUp:
-                    if (Pointer.Locked)
+                    if (Settings.Mode == 0)
                     {
-                        MovePointer(0.0f, 0.01f);
+                        if (Pointer.Locked)
+                        {
+                            MovePointer(0.0f, 0.01f);    
+                        }
+                        else
+                        {
+                            if (Settings.Scaler < 4096)
+                            {
+                                Settings.Scaler *= 2;
+                            }
+                        }
                     }
                     else
                     {
-                        if (Settings.Scaler < 4096)
-                        {
-                            Settings.Scaler *= 2;
-                        }
-                    }
+                        model.RotationX += 0.1f;
+                    }     
                     break;
 
                 case Windows.System.VirtualKey.L:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickDown:
-                    if (Pointer.Locked)
+                    if (Settings.Mode == 0)
                     {
-                        MovePointer(0.0f, -0.01f);
+                        if (Pointer.Locked)
+                        {
+                            MovePointer(0.0f, -0.01f);     
+                        }
+                        else
+                        {
+                            if (Settings.Scaler > 1)
+                            {
+                                Settings.Scaler /= 2;
+                            }
+                        }
                     }
                     else
                     {
-                        if (Settings.Scaler > 1)
-                        {
-                            Settings.Scaler /= 2;
-                        }
+                        model.RotationX -= 0.1f;
                     }
                     break;
 
                 case Windows.System.VirtualKey.Q:
                 case Windows.System.VirtualKey.GamepadY:
-                    Scale(Direction.UP, 1);
+                    //Scale(Direction.UP, 1);
+                    if (Settings.Mode == 0)
+                    {
+                        macro.ChangeType();
+                    }
+                    else
+                    {
+                        model.Scale += 0.1f;
+                    }
                     break;
 
                 case Windows.System.VirtualKey.M:
                 case Windows.System.VirtualKey.GamepadMenu:
-                    if (Settings.Online)
-                    {
-                        ShowSettings = !ShowSettings;
-                        if (!ShowSettings)
-                        {
-                            Scale(Direction.DOWN, 0);
-                        }
-                    }
+                    Settings.Mode = (Settings.Mode + 1) % modes;
                     break;
 
                 case Windows.System.VirtualKey.A:
                 case Windows.System.VirtualKey.GamepadA:
-                    Scale(Direction.DOWN, 1);
+                    if (Settings.Mode == 0)
+                    {
+                        Scale(Direction.DOWN, 1);
+                    }
+                    else
+                    {
+                        model.Scale -= 0.1f;
+                        if (model.Scale < 0.5f)
+                        {
+                            model.Scale = 0.5f;
+                        }
+                    }
                     break;
 
                 case Windows.System.VirtualKey.T:
                 case Windows.System.VirtualKey.GamepadRightTrigger:
-                    Pointer.AddTag();
+                    if (Settings.Mode == 0)
+                    {
+                        Pointer.AddTag();
+                    }
+                    else
+                    {
+                        model.Position = model.Position + new System.Numerics.Vector3(0.0f, 0.0f, 0.1f);
+                    }
+                    
                     break;
                 case Windows.System.VirtualKey.R:
                 case Windows.System.VirtualKey.GamepadRightShoulder:
-                    Pointer.RemoveTag();
+                    if (Settings.Mode == 0)
+                    {
+                        Pointer.RemoveTag();
+                    }
+                    else
+                    {
+                        model.Position = model.Position + new System.Numerics.Vector3(0.0f, 0.0f, -0.1f);
+                    }
                     break;
 
                 case Windows.System.VirtualKey.Space:
                 case Windows.System.VirtualKey.GamepadView:
-                    if (Settings.Online)
+                    if (Settings.Mode == 0)
                     {
-                        settingViewer.NextSlide();
-                        UpdateImages();
+                        if (Settings.Online)
+                        {
+                            settingViewer.NextSlide();
+                            UpdateImages();
+                        }
                     }
+                    else
+                    {
+                        if (Settings.Online)
+                        {
+                            ShowSettings = !ShowSettings;
+                            if (!ShowSettings)
+                            {
+                                Scale(Direction.DOWN, 0);
+                            }
+                        }
+                    }
+
                     break;
 
                 case Windows.System.VirtualKey.Z:

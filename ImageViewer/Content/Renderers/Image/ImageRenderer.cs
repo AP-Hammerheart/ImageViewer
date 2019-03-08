@@ -19,10 +19,7 @@ namespace ImageViewer.Content.Renderers.Image
         private readonly TextureLoader loader;
         private bool textureReady = false;
 
-        private readonly Vector3 bottomLeft;
-        private readonly Vector3 topLeft;
-        private readonly Vector3 bottomRight;
-        private readonly Vector3 topRight;
+
 
         internal ImageRenderer(
             DeviceResources deviceResources,
@@ -30,27 +27,45 @@ namespace ImageViewer.Content.Renderers.Image
             Vector3 bottomLeft,
             Vector3 topLeft,
             Vector3 bottomRight,
-            Vector3 topRight)
+            Vector3 topRight,
+            int width = 0,
+            int height = 0)
             : base(deviceResources: deviceResources)
         {
             this.loader = loader;
-            this.bottomLeft = bottomLeft;
-            this.topLeft = topLeft;
-            this.bottomRight = bottomRight;
-            this.topRight = topRight;
+
+            BottomLeft = bottomLeft;
+            TopLeft = topLeft;
+            BottomRight = bottomRight;
+            TopRight = topRight;
+
+            Width = width;
+            Height = height;
         }
 
         internal override bool TextureReady => textureReady;
         internal string TextureFile { get; set; } = "Content\\Textures\\macro.jpg";
 
+        public Vector3 BottomLeft { get; }
+
+        public Vector3 TopLeft { get; }
+
+        public Vector3 BottomRight { get; }
+
+        public Vector3 TopRight { get; }
+
+        public int Width { get; }
+
+        public int Height { get; }
+
         internal override void LoadGeometry()
         {
             VertexPlane[] planeVertices =
             {
-                new VertexPlane(bottomLeft, new Vector2(0.0f, 1.0f)),
-                new VertexPlane(topLeft, new Vector2(0.0f, 0.0f)),
-                new VertexPlane(bottomRight, new Vector2(1.0f, 1.0f)),
-                new VertexPlane(topRight, new Vector2(1.0f, 0.0f))
+                new VertexPlane(BottomLeft, new Vector2(0.0f, 1.0f)),
+                new VertexPlane(TopLeft, new Vector2(0.0f, 0.0f)),
+                new VertexPlane(BottomRight, new Vector2(1.0f, 1.0f)),
+                new VertexPlane(TopRight, new Vector2(1.0f, 0.0f))
             };
 
             vertexBuffer = ToDispose(SharpDX.Direct3D11.Buffer.Create(

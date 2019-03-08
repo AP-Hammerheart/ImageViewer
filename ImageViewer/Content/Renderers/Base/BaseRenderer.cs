@@ -37,6 +37,8 @@ namespace ImageViewer.Content.Renderers.Base
         protected SharpDX.Direct3D11.Buffer indexBuffer;
         protected SharpDX.Direct3D11.Buffer modelConstantBuffer;
 
+        protected SharpDX.DXGI.Format indexBufferFormat = SharpDX.DXGI.Format.R16_UInt;
+
         private InputLayout inputLayout;
         private VertexShader vertexShader;
         private GeometryShader geometryShader;
@@ -49,7 +51,7 @@ namespace ImageViewer.Content.Renderers.Base
 
         // Variables used with the rendering loop.
         private bool loadingComplete = false;
-        private bool refreshNeeded = true;
+        protected bool refreshNeeded = true;
 
         // If the current D3D Device supports VPRT, 
         // we can avoid using a geometry
@@ -75,7 +77,7 @@ namespace ImageViewer.Content.Renderers.Base
             this.deviceResources = deviceResources;
         }
 
-        private void UpdateTransform()
+        protected virtual void UpdateTransform()
         {
             var modelRotationX = Matrix4x4.CreateRotationX(rotationX);
             var modelRotationY = Matrix4x4.CreateRotationY(rotationY);
@@ -127,7 +129,7 @@ namespace ImageViewer.Content.Renderers.Base
             var bufferBinding = new VertexBufferBinding(vertexBuffer, VertexSize, 0);
 
             context.InputAssembler.SetVertexBuffers(0, bufferBinding);
-            context.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
+            context.InputAssembler.SetIndexBuffer(indexBuffer, indexBufferFormat, 0);
 
             context.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
             context.InputAssembler.InputLayout = inputLayout;
@@ -153,7 +155,7 @@ namespace ImageViewer.Content.Renderers.Base
         /// geometry, and vertex and pixel shaders. In some cases this will also 
         /// store a geometry shader.
         /// </summary>
-        internal async Task CreateDeviceDependentResourcesAsync()
+        internal virtual async Task CreateDeviceDependentResourcesAsync()
         {
             ReleaseDeviceDependentResources();
 

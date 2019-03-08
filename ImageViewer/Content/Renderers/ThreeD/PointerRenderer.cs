@@ -103,7 +103,7 @@ namespace ImageViewer.Content.Renderers.ThreeD
         }
 
         private readonly NavigationView view;
-        private FrameRenderer frame;
+        private NavigationRenderer frame;
 
         private Corners corners;
 
@@ -114,7 +114,7 @@ namespace ImageViewer.Content.Renderers.ThreeD
 
         internal PointerRenderer(
             NavigationView view,
-            FrameRenderer frame,
+            NavigationRenderer frame,
             DeviceResources deviceResources, 
             TextureLoader loader, 
             Corners corners)

@@ -63,6 +63,10 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Content\Renderers\Base\ObjRenderer.cs" />
+    <Compile Include="Content\Renderers\Image\Label.cs" />
+    <Compile Include="Content\Renderers\ThreeD\NavigationRenderer.cs" />
+    <Compile Include="Content\Renderers\ThreeD\SlideFrameRenderer.cs" />
     <Compile Include="Content\Utils\Constants.cs" />
     <Compile Include="Content\Renderers\Base\BaseCubeRenderer.cs" />
     <Compile Include="Content\Renderers\Base\BasePlaneRenderer.cs" />
@@ -91,6 +95,7 @@
     <Compile Include="Content\Utils\TextureLoader.cs" />
     <Compile Include="Content\Views\DisposeView.cs" />
     <Compile Include="Content\Views\KeyEventView.cs" />
+    <Compile Include="Content\Views\MacroView.cs" />
     <Compile Include="Content\Views\NavigationView.cs" />
     <Compile Include="Content\Views\RotatorView.cs" />
     <Compile Include="Content\Views\SettingViewer.cs" />
@@ -114,6 +119,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="Content\Models\pancreas.obj" />
     <None Include="ImageViewer_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -131,6 +137,7 @@
     <Content Include="Content\Textures\base.png" />
     <Content Include="Content\Textures\green.png" />
     <Content Include="Content\Textures\macro.jpg" />
+    <Content Include="Content\Textures\pancreas.jpg" />
     <Content Include="Content\Textures\red.png" />
     <Content Include="Content\Textures\solid.png" />
     <Content Include="Content\Textures\test.png" />
