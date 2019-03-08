@@ -28,7 +28,7 @@ namespace ImageViewer.Content.Renderers.Status
 
         internal override void Update(StepTimer timer)
         {
-            var txt = Settings.Scaler.ToString();
+            var txt = (Settings.Mode == 0 ? "2D  " : "3D  ") + Settings.Scaler.ToString();
             if (!txt.Equals(Text))
             {
                 Updating = true;

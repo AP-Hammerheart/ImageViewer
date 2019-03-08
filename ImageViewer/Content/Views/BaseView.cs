@@ -21,6 +21,9 @@ namespace ImageViewer.Content.Views
             DeviceResources deviceResources,
             TextureLoader loader) : base(main, loader)
         {
+
+            model = new ObjRenderer(deviceResources, loader);
+
             navigationFrame = new NavigationRenderer(
                 deviceResources: deviceResources,
                 loader: loader,

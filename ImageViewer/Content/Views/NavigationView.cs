@@ -77,6 +77,7 @@ namespace ImageViewer.Content.Views
             Pointer.SetPosition(dp);
             navigationFrame.SetPosition(dp);
             macro.SetPosition(dp);
+            model.Position = model.Position + dp;
 
             UpdateImages();
         }
@@ -112,6 +113,8 @@ namespace ImageViewer.Content.Views
 
             navigationFrame.SetRotator(rotator);
             macro.SetRotator(rotator);
+
+            model.GlobalRotator = rotator;
         }
 
         protected void Scale(Direction direction, int number)
@@ -254,6 +257,11 @@ namespace ImageViewer.Content.Views
 
         private void SetCorners()
         {
+            if (CenterX < -200000) CenterX = -200000;
+            if (CenterY < -200000) CenterY = -200000;
+            if (CenterX > 200000) CenterX = 200000;
+            if (CenterY > 200000) CenterY = 200000;
+
             var d = Constants.Diagonal * (double)(PixelSize(Level));
 
             var beta1 = Angle - A45;

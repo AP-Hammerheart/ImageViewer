@@ -52,6 +52,8 @@ namespace ImageViewer.Content.Utils
             }
         }
 
+        internal static int Mode { get; set; } = 0;
+
         internal static string URL { get; set; } = NetworkServerUrl;
 
         internal static string CaseID { get; set; } = "T3461-18";
@@ -72,7 +74,7 @@ namespace ImageViewer.Content.Utils
 
         internal static int MaxResolutionY { get; set; } = 110000;
 
-        internal static int MinScale { get; set; } = 8;
+        internal static int MinScale { get; set; } = 5;
 
         internal static int GridX { get; set; } = 4;
 

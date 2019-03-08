@@ -22,6 +22,7 @@ namespace ImageViewer.Content.Views
         protected NavigationRenderer navigationFrame;        
         protected SettingViewer settingViewer;
         protected MacroView macro;
+        protected ObjRenderer model;
         
         internal PlaneRenderer[] Tiles { get; set; }
         internal PointerRenderer Pointer { get; set; }
@@ -45,6 +46,7 @@ namespace ImageViewer.Content.Views
             Pointer?.Update(timer);
             navigationFrame?.Update(timer);
             macro?.Update(timer);
+            model?.Update(timer);
         }
 
         internal void Update(SpatialPointerPose pose)
@@ -74,7 +76,9 @@ namespace ImageViewer.Content.Views
                 }
 
                 Pointer?.Render();
-            }           
+            }
+
+            model?.Render();
         }
 
         internal async Task CreateDeviceDependentResourcesAsync()
@@ -94,6 +98,8 @@ namespace ImageViewer.Content.Views
 
             await Pointer?.CreateDeviceDependentResourcesAsync();
             await settingViewer?.CreateDeviceDependentResourcesAsync();
+
+            await model?.CreateDeviceDependentResourcesAsync();
         }
 
         internal void ReleaseDeviceDependentResources()
@@ -112,6 +118,7 @@ namespace ImageViewer.Content.Views
             Pointer?.ReleaseDeviceDependentResources();
             navigationFrame?.ReleaseDeviceDependentResources();
             macro?.ReleaseDeviceDependentResources();
+            model?.ReleaseDeviceDependentResources();
         }
 
         internal void Dispose()
@@ -138,6 +145,7 @@ namespace ImageViewer.Content.Views
             Pointer?.Dispose();
             navigationFrame?.Dispose();
             macro?.Dispose();
+            model?.Dispose();
         }
 
         void IDisposable.Dispose()
