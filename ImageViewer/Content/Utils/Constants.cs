@@ -44,5 +44,9 @@ namespace ImageViewer.Content.Utils
         internal static int TileCountY { get; } = 3;
 
         internal static double Diagonal { get; } = Math.Sqrt(2.0) * 1.5 * TileResolution;
+
+        internal static float MX { get; } = 0.8f * scale;
+        internal static float MY { get; } = 0.0f * scale;
+        internal static float MZ { get; } = -0.5f * scale;
     }
 }

@@ -94,7 +94,7 @@ namespace ImageViewer.Content.Views
 
         private void Help()
         {
-            main.Speak(Text);
+            //main.Speak(Text);
         }
     }
 }
