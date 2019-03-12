@@ -209,14 +209,13 @@ namespace ImageViewer.Content.Views
 
                 case Windows.System.VirtualKey.Q:
                 case Windows.System.VirtualKey.GamepadY:
-                    //Scale(Direction.UP, 1);
                     if (Settings.Mode == 0)
                     {
                         macro.ChangeType();
                     }
                     else
                     {
-                        model.Scale += 0.1f;
+                        model.RotationZ += 0.1f;
                     }
                     break;
 
@@ -233,11 +232,7 @@ namespace ImageViewer.Content.Views
                     }
                     else
                     {
-                        model.Scale -= 0.1f;
-                        if (model.Scale < 0.5f)
-                        {
-                            model.Scale = 0.5f;
-                        }
+                        model.RotationZ -= 0.1f;
                     }
                     break;
 
@@ -286,7 +281,6 @@ namespace ImageViewer.Content.Views
                             }
                         }
                     }
-
                     break;
 
                 case Windows.System.VirtualKey.Z:
@@ -331,12 +325,30 @@ namespace ImageViewer.Content.Views
 
                 case Windows.System.VirtualKey.F:
                 case Windows.System.VirtualKey.GamepadLeftThumbstickButton:
-                    Pointer.Locked = !Pointer.Locked;
+                    if (Settings.Mode == 0)
+                    {
+                        Pointer.Locked = !Pointer.Locked;
+                    }
+                    else
+                    {
+                        model.Scale -= 0.1f;
+                        if (model.Scale < 0.5f)
+                        {
+                            model.Scale = 0.5f;
+                        }
+                    }                  
                     break;
 
                 case Windows.System.VirtualKey.W:
                 case Windows.System.VirtualKey.GamepadRightThumbstickButton:
-                    Zoom(Direction.UP, 1);
+                    if (Settings.Mode == 0)
+                    {
+                        Zoom(Direction.UP, 1);
+                    }
+                    else
+                    {
+                        model.Scale += 0.1f;
+                    }                    
                     break;
             }
 

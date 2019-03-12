@@ -29,7 +29,6 @@ namespace ImageViewer.Content.Renderers.Base
         {
             this.loader = loader;
             indexBufferFormat = SharpDX.DXGI.Format.R32_UInt;
-            Position = new Vector3(0.8f, 0.0f, -0.5f);
         }
 
         internal string TextureFile { get; } = "Content\\Textures\\pancreas.jpg";
@@ -59,11 +58,11 @@ namespace ImageViewer.Content.Renderers.Base
             var lines = File.ReadAllLines(ModelFile, Encoding.UTF8);
 
             var vertices = new List<Vector3>();
-            var normals = new List<Vector3>();
+            //var normals = new List<Vector3>();
             var uv = new List<Vector2>();
             var faces = new List<int[]>();
 
-            var dic = new Dictionary<Tuple<int, int>, int>();
+            var dictionary = new Dictionary<Tuple<int, int>, int>();
 
             foreach (var line in lines)
             {
@@ -72,11 +71,11 @@ namespace ImageViewer.Content.Renderers.Base
                     var s = line.Split(' ');
                     vertices.Add(new Vector3(float.Parse(s[1]), float.Parse(s[2]), float.Parse(s[3])));
                 }
-                else if (line.StartsWith("vn "))
-                {
-                    var s = line.Split(' ');
-                    normals.Add(new Vector3(float.Parse(s[1]), float.Parse(s[2]), float.Parse(s[3])));
-                }
+                //else if (line.StartsWith("vn "))
+                //{
+                //    var s = line.Split(' ');
+                //    normals.Add(new Vector3(float.Parse(s[1]), float.Parse(s[2]), float.Parse(s[3])));
+                //}
                 else if (line.StartsWith("vt "))
                 {
                     var s = line.Split(' ');
@@ -100,63 +99,65 @@ namespace ImageViewer.Content.Renderers.Base
             }
 
             var modFaces = new List<int[]>();
-
-            var vertices2 = new List<Vector3>();
+            var uvVertices = new List<Vector3>();
 
             foreach (var face in faces)
             {
                 var f = face;
 
-                if (dic.TryGetValue(new Tuple<int, int>(f[0], f[1]), out int index0))
+                if (dictionary.TryGetValue(new Tuple<int, int>(f[0], f[1]), out int index0))
                 {
                     f[0] = index0;
                 }
                 else
                 {
-                    var idx = vertices2.Count;
-                    vertices2.Add(vertices[f[0] - 1]);
+                    var idx = uvVertices.Count;
+                    uvVertices.Add(vertices[f[0] - 1]);
                     f[0] = idx;
+                    dictionary.Add(new Tuple<int, int>(f[0], f[1]), idx);
                 }
 
-                if (dic.TryGetValue(new Tuple<int, int>(f[3], f[4]), out int index1))
+                if (dictionary.TryGetValue(new Tuple<int, int>(f[3], f[4]), out int index1))
                 {
                     f[3] = index1;
                 }
                 else
                 {
-                    var idx = vertices2.Count;
-                    vertices2.Add(vertices[f[3] - 1]);
+                    var idx = uvVertices.Count;
+                    uvVertices.Add(vertices[f[3] - 1]);
                     f[3] = idx;
+                    dictionary.Add(new Tuple<int, int>(f[3], f[4]), idx);
                 }
 
-                if (dic.TryGetValue(new Tuple<int, int>(f[6], f[7]), out int index2))
+                if (dictionary.TryGetValue(new Tuple<int, int>(f[6], f[7]), out int index2))
                 {
                     f[6] = index2;
                 }
                 else
                 {
-                    var idx = vertices2.Count;
-                    vertices2.Add(vertices[f[6] - 1]);
+                    var idx = uvVertices.Count;
+                    uvVertices.Add(vertices[f[6] - 1]);
                     f[6] = idx;
+                    dictionary.Add(new Tuple<int, int>(f[6], f[7]), idx);
                 }
 
                 modFaces.Add(f);
             }
 
-            var planeVertices = new VertexPlane[vertices2.Count];
+            var planeVertices = new VertexPlane[uvVertices.Count];
             var planeIndices = new uint[3 * modFaces.Count];
             
             for (var i = 0; i < modFaces.Count; i++ )
             {
                 var face = modFaces[i];
                   
-                planeVertices[face[0]] = new VertexPlane(vertices2[face[0]], uv[face[1] - 1]);
-                planeVertices[face[3]] = new VertexPlane(vertices2[face[3]], uv[face[4] - 1]);
-                planeVertices[face[6]] = new VertexPlane(vertices2[face[6]], uv[face[7] - 1]);
+                planeVertices[face[0]] = new VertexPlane(uvVertices[face[0]], uv[face[1] - 1]);
+                planeVertices[face[3]] = new VertexPlane(uvVertices[face[3]], uv[face[4] - 1]);
+                planeVertices[face[6]] = new VertexPlane(uvVertices[face[6]], uv[face[7] - 1]);
 
-                planeIndices[i * 3] = (uint)(face[0] - 1);
-                planeIndices[i * 3 + 2] = (uint)(face[3] - 1);
-                planeIndices[i * 3 + 1] = (uint)(face[6] - 1);
+                planeIndices[i * 3] = (uint)face[0];
+                planeIndices[i * 3 + 2] = (uint)face[3];
+                planeIndices[i * 3 + 1] = (uint)face[6];
             }
 
             vertexBuffer = ToDispose(SharpDX.Direct3D11.Buffer.Create(
@@ -232,7 +233,6 @@ namespace ImageViewer.Content.Renderers.Base
                 * modelRotationZ
                 * modelTranslation
                 * scale
-                * ViewRotator
                 * GlobalRotator;
 
             modelConstantBufferData.model = Matrix4x4.Transpose(modelTransform);

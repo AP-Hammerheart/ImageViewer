@@ -143,7 +143,7 @@ namespace ImageViewer.Content.Views
 
         protected void Move(Direction direction, int number)
         {
-            var moveStep = PixelSize(Level) * Settings.Scaler;
+            var moveStep = PixelSize(Level) * number;
 
             switch (direction)
             {
@@ -257,10 +257,11 @@ namespace ImageViewer.Content.Views
 
         private void SetCorners()
         {
-            if (CenterX < -200000) CenterX = -200000;
-            if (CenterY < -200000) CenterY = -200000;
-            if (CenterX > 200000) CenterX = 200000;
-            if (CenterY > 200000) CenterY = 200000;
+            if (CenterX < -1 * Settings.MaxResolutionX) CenterX = -1 * Settings.MaxResolutionX;
+            if (CenterY < -1 * Settings.MaxResolutionY) CenterY = -1 * Settings.MaxResolutionY;
+
+            if (CenterX > Settings.MaxResolutionX) CenterX = Settings.MaxResolutionX;
+            if (CenterY > Settings.MaxResolutionY) CenterY = Settings.MaxResolutionY;
 
             var d = Constants.Diagonal * (double)(PixelSize(Level));
 

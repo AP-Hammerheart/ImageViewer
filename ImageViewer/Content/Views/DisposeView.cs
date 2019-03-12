@@ -4,6 +4,7 @@
 
 using ImageViewer.Common;
 using ImageViewer.Content.Renderers.Base;
+using ImageViewer.Content.Renderers.Image;
 using ImageViewer.Content.Renderers.ThreeD;
 using System;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace ImageViewer.Content.Views
         protected MacroView macro;
         protected ObjRenderer model;
         
-        internal PlaneRenderer[] Tiles { get; set; }
+        internal RotateRenderer[] Tiles { get; set; }
         internal PointerRenderer Pointer { get; set; }
 
         protected bool ShowSettings { get; set; } = false;

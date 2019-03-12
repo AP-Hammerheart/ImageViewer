@@ -21,9 +21,6 @@ namespace ImageViewer.Content.Views
             DeviceResources deviceResources,
             TextureLoader loader) : base(main, loader)
         {
-
-            model = new ObjRenderer(deviceResources, loader);
-
             navigationFrame = new NavigationRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
@@ -337,7 +334,12 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                     bottomLeft: new Vector3(Constants.X01, Constants.Y1, Constants.DistanceFromUser)))
             {
                 Position = new Vector3(0, 0, Constants.DistanceFromUser)
-            };        
+            };
+
+            model = new ObjRenderer(deviceResources, loader)
+            {
+                Position = new Vector3(Constants.MX, Constants.MY, Constants.MZ)
+            };
         }
     }
 }
