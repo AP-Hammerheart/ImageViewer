@@ -33,7 +33,7 @@ namespace ImageViewer.Content.Renderers.Base
 
         internal string TextureFile { get; } = "Content\\Textures\\pancreas.jpg";
         
-        internal string ModelFile { get; } = "Content\\Models\\pancreas.obj";
+        internal string ModelFile { get; } = "Content\\Models\\pancreas.model";
 
         internal override bool TextureReady => textureReady;
 
