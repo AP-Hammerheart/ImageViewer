@@ -70,7 +70,7 @@
     <Compile Include="Content\Utils\Constants.cs" />
     <Compile Include="Content\Renderers\Base\BaseCubeRenderer.cs" />
     <Compile Include="Content\Renderers\Base\BasePlaneRenderer.cs" />
-    <Compile Include="Content\Renderers\Debug\FpsRenderer.cs" />
+    <Compile Include="Content\Renderers\Dev\FpsRenderer.cs" />
     <Compile Include="Content\Renderers\ThreeD\FrameRenderer.cs" />
     <Compile Include="Content\Renderers\Image\ImageRenderer.cs" />
     <Compile Include="Content\Renderers\Status\NameRenderer.cs" />
@@ -82,16 +82,16 @@
     <Compile Include="Content\Utils\Settings.cs" />
     <Compile Include="Content\Views\BaseView.cs" />
     <Compile Include="Content\Renderers\Status\ClockRenderer.cs" />
-    <Compile Include="Content\Renderers\Debug\DebugRenderer.cs" />
-    <Compile Include="Content\Renderers\Debug\KeyRenderer.cs" />
-    <Compile Include="Content\Renderers\Debug\MemoryUseRenderer.cs" />
+    <Compile Include="Content\Renderers\Dev\DebugRenderer.cs" />
+    <Compile Include="Content\Renderers\Dev\KeyRenderer.cs" />
+    <Compile Include="Content\Renderers\Dev\MemoryUseRenderer.cs" />
     <Compile Include="Content\Renderers\Base\PlaneRenderer.cs" />
     <Compile Include="Content\Renderers\Base\BaseRenderer.cs" />
     <Compile Include="Content\Renderers\ThreeD\PointerRenderer.cs" />
     <Compile Include="Content\Renderers\ThreeD\PyramidRenderer.cs" />
     <Compile Include="Content\Renderers\Base\StatusBarRenderer.cs" />
     <Compile Include="Content\Utils\Tag.cs" />
-    <Compile Include="Content\Renderers\Debug\TileCounterRenderer.cs" />
+    <Compile Include="Content\Renderers\Dev\TileCounterRenderer.cs" />
     <Compile Include="Content\Utils\TextureLoader.cs" />
     <Compile Include="Content\Views\DisposeView.cs" />
     <Compile Include="Content\Views\KeyEventView.cs" />
@@ -119,7 +119,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <Content Include="Content\Models\pancreas.obj" />
+    <Content Include="Content\Models\pancreas.model" />
     <None Include="ImageViewer_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

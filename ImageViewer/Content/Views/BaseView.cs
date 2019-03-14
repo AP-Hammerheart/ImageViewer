@@ -4,7 +4,7 @@
 
 using ImageViewer.Common;
 using ImageViewer.Content.Renderers.Base;
-using ImageViewer.Content.Renderers.Debug;
+using ImageViewer.Content.Renderers.Dev;
 using ImageViewer.Content.Renderers.Image;
 using ImageViewer.Content.Renderers.Status;
 using ImageViewer.Content.Renderers.ThreeD;
