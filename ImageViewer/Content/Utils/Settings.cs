@@ -4,9 +4,6 @@
 
 using Newtonsoft.Json.Linq;
 using System;
-using System.IO;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using static ImageViewer.ImageViewerMain;
 
@@ -28,22 +25,25 @@ namespace ImageViewer.Content.Utils
         private JObject imageDetails = new JObject();
         private static bool s_localServer = false;
 
+        protected readonly TextureLoader loader;
+
+        internal Settings(TextureLoader loader) => this.loader = loader;
+
         internal async Task InitializeAsync()
         {
-            cases = await GetJsonAsync("?command=cases");
+            cases = await loader.GetJsonAsync(URL, "?command=cases");
 
             if (cases != null && cases.TryGetValue("Cases", out JToken ids))
             {
-                Online = true;
                 foreach (var id in (ids as JArray))
                 {
-                    var images = await GetJsonAsync("?command=list&caseID=" + id.Value<string>());
+                    var images = await loader.GetJsonAsync(URL, "?command=list&caseID=" + id.Value<string>());
                     imageList.Add(id.Value<string>(), images);
                     if (images.TryGetValue("Images", out JToken names))
                     {
                         foreach (var name in (names as JArray))
                         {
-                            var details = await GetJsonAsync("?command=details&caseID=" + id.Value<string>() + "&name="
+                            var details = await loader.GetJsonAsync(URL, "?command=details&caseID=" + id.Value<string>() + "&name="
                                 + name.Value<string>());
                             imageDetails.Add(name.Value<string>(), details);
                         }
@@ -70,9 +70,9 @@ namespace ImageViewer.Content.Utils
 
         internal static int Multiplier { get; set; } = 2;
 
-        internal static int MaxResolutionX { get; set; } = 110000;
+        internal static int MaxResolutionX { get; set; } = 100000;
 
-        internal static int MaxResolutionY { get; set; } = 110000;
+        internal static int MaxResolutionY { get; set; } = 210000;
 
         internal static int MinScale { get; set; } = 5;
 
@@ -80,7 +80,7 @@ namespace ImageViewer.Content.Utils
 
         internal static int GridY { get; set; } = 4;
 
-        internal static bool SaveTexture { get; set; } = false;
+        internal static bool SaveTexture { get; set; } = true;
 
         internal static bool UseJpeg { get; set; } = true;
 
@@ -234,32 +234,6 @@ namespace ImageViewer.Content.Utils
                 }
             }
             return 0;
-        }
-
-        internal async Task<JObject> GetJsonAsync(string url)
-        {
-            var baseUrl = URL + url;
-            var request = (HttpWebRequest)WebRequest.Create(baseUrl);
-            try
-            {
-                using (var response = (HttpWebResponse)await request.GetResponseAsync())
-                {
-                    if (response.StatusCode == HttpStatusCode.OK)
-                    {
-                        var encoding = ASCIIEncoding.ASCII;
-                        using (var reader = new StreamReader(response.GetResponseStream(), encoding))
-                        {
-                            string responseText = reader.ReadToEnd();
-                            return JObject.Parse(responseText);
-                        }
-                    }
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
         }
     }
 }

@@ -16,8 +16,11 @@ namespace ImageViewer.Content.Renderers.Base
 {
     internal class ObjRenderer : BasePlaneRenderer
     {
-        private Texture2D texture = null;
-        private ShaderResourceView resourceView = null;
+        private Texture2D texture1 = null;
+        private Texture2D texture2 = null;
+
+        private ShaderResourceView resourceView1 = null;
+        private ShaderResourceView resourceView2 = null;
 
         protected readonly TextureLoader loader;
         private bool textureReady = false;
@@ -31,9 +34,13 @@ namespace ImageViewer.Content.Renderers.Base
             indexBufferFormat = SharpDX.DXGI.Format.R32_UInt;
         }
 
-        internal string TextureFile { get; } = "Content\\Textures\\pancreas.jpg";
+        internal bool Colored { get; set; } = false;
+
+        internal string TextureFile1 { get; } = "Content\\Textures\\pancreas_head.jpg";
+
+        internal string TextureFile2 { get; } = "Content\\Textures\\pancreas_head_colored.jpg";
         
-        internal string ModelFile { get; } = "Content\\Models\\pancreas.model";
+        internal string ModelFile { get; } = "Content\\Models\\pancreas_head.model";
 
         internal override bool TextureReady => textureReady;
 
@@ -182,11 +189,18 @@ namespace ImageViewer.Content.Renderers.Base
             await base.LoadTextureAsync();
 
             var shaderResourceDesc = TextureLoader.ShaderDescription();
-            texture = ToDispose(loader.Texture2D(deviceResources, TextureFile));
+            texture1 = ToDispose(loader.Texture2D(deviceResources, TextureFile1));
 
-            resourceView = ToDispose(new ShaderResourceView(
+            resourceView1 = ToDispose(new ShaderResourceView(
                 deviceResources.D3DDevice,
-                texture,
+                texture1,
+                shaderResourceDesc));
+
+            texture2 = ToDispose(loader.Texture2D(deviceResources, TextureFile2));
+
+            resourceView2 = ToDispose(new ShaderResourceView(
+                deviceResources.D3DDevice,
+                texture2,
                 shaderResourceDesc));
 
             textureReady = true;
@@ -196,7 +210,14 @@ namespace ImageViewer.Content.Renderers.Base
         {
             if (textureReady)
             {
-                pixelShader.SetShaderResource(0, resourceView);
+                if (Colored)
+                {
+                    pixelShader.SetShaderResource(0, resourceView2);
+                }
+                else
+                {
+                    pixelShader.SetShaderResource(0, resourceView1);
+                }  
             }
         }
 
@@ -214,8 +235,11 @@ namespace ImageViewer.Content.Renderers.Base
 
         private void FreeResources()
         {
-            RemoveAndDispose(ref texture);
-            RemoveAndDispose(ref resourceView);
+            RemoveAndDispose(ref texture1);
+            RemoveAndDispose(ref texture2);
+
+            RemoveAndDispose(ref resourceView1);
+            RemoveAndDispose(ref resourceView2);
         }
 
         protected override void UpdateTransform()

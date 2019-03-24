@@ -296,9 +296,9 @@ namespace ImageViewer
                 // You can also set the relative velocity and facing of that content; the sample
                 // hologram is at a fixed point so we only need to indicate its position.
 
-                if (mainView.Pointer != null)
+                if (mainView.Pointers[0] != null)
                 {
-                    renderingParameters.SetFocusPoint(currentCoordinateSystem, mainView.Pointer.Position);
+                    renderingParameters.SetFocusPoint(currentCoordinateSystem, mainView.Pointers[0].Position);
                 }              
             }
 

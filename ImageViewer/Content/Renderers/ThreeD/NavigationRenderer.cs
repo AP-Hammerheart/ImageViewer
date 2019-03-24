@@ -138,7 +138,7 @@ namespace ImageViewer.Content.Renderers.ThreeD
                 new VertexPlane(Vector3.Transform(new Vector3(width - Thickness, height - Thickness, Depth), rot), new Vector2(1f,1f)),
             };
 
-            vertexBuffer = ToDispose(Buffer.Create(
+            vertexBuffer = ToDispose(SharpDX.Direct3D11.Buffer.Create(
                 deviceResources.D3DDevice,
                 BindFlags.VertexBuffer,
                 vertices));
@@ -200,5 +200,12 @@ namespace ImageViewer.Content.Renderers.ThreeD
                 tag.ReleaseDeviceDependentResources();
             }
         }
+
+        internal BasePointerRenderer.Coordinate XY(D2 xy) => 
+            new BasePointerRenderer.Coordinate(
+                x + (int)(xy.X * w), 
+                y + (int)(xy.Y * h), 
+                Vector3.Zero, 
+                Vector3.Zero);
     }
 }

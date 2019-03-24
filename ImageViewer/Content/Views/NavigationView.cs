@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using ImageViewer.Content.Renderers.ThreeD;
 using ImageViewer.Content.Utils;
 using System;
 using System.Numerics;
@@ -49,7 +50,7 @@ namespace ImageViewer.Content.Views
 
         protected void MovePointer(float x, float y)
         {
-            Pointer.SetDeltaXY(x, y);
+            ((PointerRenderer)Pointers[0]).SetDeltaXY(x, y);
         }
 
         protected void Refresh()
@@ -74,7 +75,11 @@ namespace ImageViewer.Content.Views
             }
 
             settingViewer.SetPosition(dp);
-            Pointer.SetPosition(dp);
+
+
+            ((PointerRenderer)Pointers[0]).SetPosition(dp);
+            Pointers[1].SetPosition(dp);
+
             navigationFrame.SetPosition(dp);
             macro.SetPosition(dp);
             model.Position = model.Position + dp;
@@ -94,7 +99,7 @@ namespace ImageViewer.Content.Views
                 RotationAngle += 360.0f;
             }
 
-            var rotator = Matrix4x4.CreateRotationY((float)(Math.PI * RotationAngle / 180.0f), Pointer.Origo());
+            var rotator = Matrix4x4.CreateRotationY((float)(Math.PI * RotationAngle / 180.0f), Pointers[0].Origo());
 
             foreach (var renderer in Tiles)
             {
@@ -108,8 +113,11 @@ namespace ImageViewer.Content.Views
 
             settingViewer.SetRotator(rotator);
 
-            Pointer.RotationY = RotationAngle;
-            Pointer.SetRotator(rotator);
+            Pointers[0].RotationY = RotationAngle;
+            ((PointerRenderer)Pointers[0]).SetRotator(rotator);
+
+            Pointers[1].RotationY = 45.0f + RotationAngle;
+            Pointers[1].SetRotator(rotator);
 
             navigationFrame.SetRotator(rotator);
             macro.SetRotator(rotator);
@@ -147,19 +155,19 @@ namespace ImageViewer.Content.Views
 
             switch (direction)
             {
-                case Direction.LEFT:
+                case Direction.RIGHT:
                     CenterX += (int)(Math.Cos(-1 * Angle) * moveStep);
                     CenterY += (int)(Math.Sin(-1 * Angle) * moveStep);
                     break;
-                case Direction.RIGHT:
+                case Direction.LEFT:
                     CenterX -= (int)(Math.Cos(-1 * Angle) * moveStep);
                     CenterY -= (int)(Math.Sin(-1 * Angle) * moveStep);
                     break;
-                case Direction.DOWN:
+                case Direction.UP:
                     CenterY -= (int)(Math.Cos(-1 * Angle) * moveStep);
                     CenterX += (int)(Math.Sin(-1 * Angle) * moveStep);
                     break;
-                case Direction.UP:
+                case Direction.DOWN:
                     CenterY += (int)(Math.Cos(-1 * Angle) * moveStep);
                     CenterX -= (int)(Math.Sin(-1 * Angle) * moveStep);
                     break;
@@ -171,8 +179,21 @@ namespace ImageViewer.Content.Views
 
         protected void Zoom(Direction direction, int number)
         {
-            var c = Pointer.Coordinates();
+            BasePointerRenderer.Coordinate c;
 
+            if (Pointers[0].Inside)
+            {
+                c = ((PointerRenderer)Pointers[0]).Coordinates();
+            }
+            else if (Pointers[1].Inside)
+            {
+                c = Pointers[1].XY();
+            }
+            else
+            {
+                return;
+            }
+            
             switch (direction)
             {
                 case Direction.UP:
@@ -228,15 +249,15 @@ namespace ImageViewer.Content.Views
             {
                 switch (number)
                 {
-                    case 0: Pointer.Visible = false; break;
-                    case 1: Pointer.Visible = true; break;
+                    case 0: Pointers[0].Visible = false; break;
+                    case 1: Pointers[0].Visible = true; break;
                     case 2:
-                        Pointer.Locked = false;
-                        Pointer.GlobalRotator = Matrix4x4.Identity;
+                        Pointers[0].Locked = false;
+                        Pointers[0].GlobalRotator = Matrix4x4.Identity;
                         break;
-                    case 3: Pointer.Locked = true; break;
-                    case 4: Pointer.AddTag(); break;
-                    case 5: Pointer.RemoveTag(); break;
+                    case 3: Pointers[0].Locked = true; break;
+                    case 4: ((PointerRenderer)Pointers[0]).AddTag(); break;
+                    case 5: ((PointerRenderer)Pointers[0]).RemoveTag(); break;
                 }
             }
         }

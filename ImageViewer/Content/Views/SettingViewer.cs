@@ -24,7 +24,7 @@ namespace ImageViewer.Content.Views
             DeviceResources deviceResources,
             TextureLoader loader)
         {
-            settings = new Settings();
+            settings = new Settings(loader);
             settingItems = new TextRenderer[2];
 
             string[] texts = {
@@ -246,13 +246,13 @@ namespace ImageViewer.Content.Views
         {
             await settings?.InitializeAsync();
 
-            if (Settings.Online)
-            {
+            //if (Settings.Online)
+            //{
                 foreach (var renderer in settingItems)
                 {
                     await renderer?.CreateDeviceDependentResourcesAsync();
                 }
-            }       
+            //}       
         }
 
         internal void ReleaseDeviceDependentResources()

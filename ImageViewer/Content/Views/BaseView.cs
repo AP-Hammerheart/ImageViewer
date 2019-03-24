@@ -36,7 +36,7 @@ namespace ImageViewer.Content.Views
 
             settingViewer = new SettingViewer(main, deviceResources, loader);
 
-            statusItems = new BasePlaneRenderer[21];
+            statusItems = new BasePlaneRenderer[22];
 
             statusItems[0] = new StatusBarRenderer(
                 deviceResources: deviceResources,
@@ -200,7 +200,7 @@ namespace ImageViewer.Content.Views
                 topRight: new Vector3(Constants.X01, Constants.Y3, Constants.Z0))
             {
                 TextPosition = new Vector2(10, 10),
-                Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                Text = "", //"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                 FontSize = 25.0f,
                 ImageWidth = 960,
                 ImageHeight = 48,
@@ -228,7 +228,7 @@ namespace ImageViewer.Content.Views
                 topRight: new Vector3(Constants.X01, Constants.Y1, Constants.Z0))
             {
                 TextPosition = new Vector2(20, 10),
-                Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                Text = "", //"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                 ImageWidth = 960,
             };
 
@@ -293,7 +293,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 bottomRight: new Vector3(Constants.X00, Constants.Y3, Constants.Z1),
                 topRight: new Vector3(Constants.X00, Constants.Y4, Constants.Z1))
             {
-                Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                Text = "", //"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                 FontSize = 40.0f,
                 ImageWidth = 1440,
             };
@@ -306,7 +306,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 bottomRight: new Vector3(Constants.X00, Constants.Y2, Constants.Z1),
                 topRight: new Vector3(Constants.X00, Constants.Y3, Constants.Z1))
             {
-                Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                Text = "", //"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                 FontSize = 25.0f,
                 ImageWidth = 1440,
                 ImageHeight = 48,
@@ -321,18 +321,44 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 bottomRight: new Vector3(Constants.X00, Constants.Y0, Constants.Z1),
                 topRight: new Vector3(Constants.X00, Constants.Y1, Constants.Z1))
             {
-                Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                Text = "", //"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                 ImageWidth = 1440,
+            };
+
+            statusItems[21] = new ImageRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3(Constants.X00, Constants.Y0, Constants.Z3),
+                topLeft: new Vector3(Constants.X00, Constants.Y4, Constants.Z3),
+                bottomRight: new Vector3(Constants.X00, Constants.Y0, Constants.Z2),
+                topRight: new Vector3(Constants.X00, Constants.Y4, Constants.Z2))
+            {
+                Position = new Vector3(0.0f, 0.0f, Constants.DistanceFromUser),
+                TextureFile = "Content\\Textures\\help.jpg",
             };
 
             macro = new MacroView(deviceResources: deviceResources, loader: loader);
 
-            Pointer = new PointerRenderer(this, navigationFrame, deviceResources, loader, 
-                new PointerRenderer.Corners(
-                    origo: new Vector3(0.0f, 0.0f, Constants.DistanceFromUser), 
+            Pointers = new BasePointerRenderer[2];
+
+            Pointers[0] = new PointerRenderer(this, navigationFrame, deviceResources, loader, 
+                new BasePointerRenderer.Corners(
                     topLeft: new Vector3(Constants.X01, Constants.Y2, Constants.DistanceFromUser),
-                    bottomLeft: new Vector3(Constants.X01, Constants.Y1, Constants.DistanceFromUser)))
+                    bottomLeft: new Vector3(Constants.X01, Constants.Y1, Constants.DistanceFromUser),
+                    topRight: new Vector3(Constants.X09, Constants.Y2, Constants.DistanceFromUser),
+                    bottomRight: new Vector3(Constants.X09, Constants.Y1, Constants.DistanceFromUser)))
             {
+                Position = new Vector3(0, 0, Constants.DistanceFromUser)
+            };
+
+            Pointers[1] = new BasePointerRenderer(navigationFrame, deviceResources, loader,
+                new BasePointerRenderer.Corners(
+                    topLeft: new Vector3(Constants.X00, Constants.Y2, Constants.Z1 + Constants.DistanceFromUser),
+                    bottomLeft: new Vector3(Constants.X00, Constants.Y1, Constants.Z1 + Constants.DistanceFromUser),
+                    topRight: new Vector3(Constants.X01, Constants.Y2, Constants.Z0 + Constants.DistanceFromUser),
+                    bottomRight: new Vector3(Constants.X01, Constants.Y1, Constants.Z0 + Constants.DistanceFromUser)))              
+            {
+                RotationY = 45.0f,
                 Position = new Vector3(0, 0, Constants.DistanceFromUser)
             };
 

@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using ImageViewer.Content.Renderers.ThreeD;
 using ImageViewer.Content.Utils;
 using static ImageViewer.ImageViewerMain;
 
@@ -127,7 +128,7 @@ namespace ImageViewer.Content.Views
                 case Windows.System.VirtualKey.GamepadLeftThumbstickLeft:
                     if (Settings.Mode == 0)
                     {
-                        if (Pointer.Locked)
+                        if (Pointers[0].Locked)
                         {
                             MovePointer(-0.01f, 0.0f);  
                         }
@@ -147,7 +148,7 @@ namespace ImageViewer.Content.Views
                 case Windows.System.VirtualKey.GamepadLeftThumbstickRight:
                     if (Settings.Mode == 0)
                     {
-                        if (Pointer.Locked)
+                        if (Pointers[0].Locked)
                         {
                             MovePointer(0.01f, 0.0f);  
                         }
@@ -167,7 +168,7 @@ namespace ImageViewer.Content.Views
                 case Windows.System.VirtualKey.GamepadLeftThumbstickUp:
                     if (Settings.Mode == 0)
                     {
-                        if (Pointer.Locked)
+                        if (Pointers[0].Locked)
                         {
                             MovePointer(0.0f, 0.01f);    
                         }
@@ -189,7 +190,7 @@ namespace ImageViewer.Content.Views
                 case Windows.System.VirtualKey.GamepadLeftThumbstickDown:
                     if (Settings.Mode == 0)
                     {
-                        if (Pointer.Locked)
+                        if (Pointers[0].Locked)
                         {
                             MovePointer(0.0f, -0.01f);     
                         }
@@ -240,7 +241,7 @@ namespace ImageViewer.Content.Views
                 case Windows.System.VirtualKey.GamepadRightTrigger:
                     if (Settings.Mode == 0)
                     {
-                        Pointer.AddTag();
+                        ((PointerRenderer)Pointers[0]).AddTag();
                     }
                     else
                     {
@@ -252,7 +253,7 @@ namespace ImageViewer.Content.Views
                 case Windows.System.VirtualKey.GamepadRightShoulder:
                     if (Settings.Mode == 0)
                     {
-                        Pointer.RemoveTag();
+                        ((PointerRenderer)Pointers[0]).RemoveTag();
                     }
                     else
                     {
@@ -264,22 +265,24 @@ namespace ImageViewer.Content.Views
                 case Windows.System.VirtualKey.GamepadView:
                     if (Settings.Mode == 0)
                     {
-                        if (Settings.Online)
-                        {
+                        //if (Settings.Online)
+                        //{
                             settingViewer.NextSlide();
                             UpdateImages();
-                        }
+                        //}
                     }
                     else
                     {
-                        if (Settings.Online)
-                        {
-                            ShowSettings = !ShowSettings;
-                            if (!ShowSettings)
-                            {
-                                Scale(Direction.DOWN, 0);
-                            }
-                        }
+                        model.Colored = !model.Colored;
+
+                        //if (Settings.Online)
+                        //{
+                        //ShowSettings = !ShowSettings;
+                        //if (!ShowSettings)
+                        //{
+                        //    Scale(Direction.DOWN, 0);
+                        //}
+                        //}
                     }
                     break;
 
@@ -327,7 +330,7 @@ namespace ImageViewer.Content.Views
                 case Windows.System.VirtualKey.GamepadLeftThumbstickButton:
                     if (Settings.Mode == 0)
                     {
-                        Pointer.Locked = !Pointer.Locked;
+                        Pointers[0].Locked = !Pointers[0].Locked;
                     }
                     else
                     {
@@ -354,7 +357,7 @@ namespace ImageViewer.Content.Views
 
             DebugString = Origo.ToString("0.00") + " "
                 + RotationAngle.ToString() + "° "
-                + Pointer.Position.ToString("0.00");
+                + Pointers[0].Position.ToString("0.00");
         }
     }
 }

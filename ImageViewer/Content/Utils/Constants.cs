@@ -37,6 +37,7 @@ namespace ImageViewer.Content.Utils
         internal static float Z0 { get; } = 0.0f * scale;
         internal static float Z1 { get; } = 0.424264f * scale;       
         internal static float Z2 { get; } = 1.324264f * scale;
+        internal static float Z3 { get; } = 1.754203f * scale;
 
         internal static int TileResolution { get; } = 256;
 

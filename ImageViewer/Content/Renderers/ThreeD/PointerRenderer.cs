@@ -13,104 +13,10 @@ using Windows.UI.Input.Spatial;
 
 namespace ImageViewer.Content.Renderers.ThreeD
 {
-    internal class PointerRenderer : PyramidRenderer
+    internal class PointerRenderer : BasePointerRenderer
     {
-        internal struct Coordinate
-        {
-            internal Coordinate(int X, int Y, Vector3 pL, Vector3 pR)
-            {
-                this.X = X;
-                this.Y = Y;
-
-                this.pL = pL;
-                this.pR = pR;
-            }
-
-            internal int X;
-            internal int Y;
-
-            internal Vector3 pL;
-            internal Vector3 pR;
-        }
-
-        internal struct Corners
-        {
-            internal Corners(Vector3 origo, Vector3 topLeft, Vector3 bottomLeft)
-            {
-                orig_origo = origo;
-                orig_topLeft = topLeft;
-                orig_bottomLeft = bottomLeft;
-
-                rotator = Matrix4x4.Identity;
-                position = Vector3.Zero;
-
-                this.origo = Vector3.Zero;
-                this.topLeft = Vector3.Zero;
-                this.bottomLeft = Vector3.Zero;
-                normal = Vector3.Zero;
-
-                Update();
-            }
-
-            private void Update()
-            {
-                var translation = Matrix4x4.CreateTranslation(position);
-                var transform = translation * rotator;
-
-                var vo = Vector4.Transform(this.orig_origo, transform);
-                origo = new Vector3(vo.X, vo.Y, vo.Z);
-
-                var vtl = Vector4.Transform(this.orig_topLeft, transform);
-                topLeft = new Vector3(vtl.X, vtl.Y, vtl.Z);
-
-                var vbl = Vector4.Transform(this.orig_bottomLeft, transform);
-                bottomLeft = new Vector3(vbl.X, vbl.Y, vbl.Z);
-
-                var plane = Plane.CreateFromVertices(origo, topLeft, bottomLeft);
-                normal = plane.Normal;
-            }
-
-            internal Vector3 origo;
-            internal Vector3 topLeft;
-            internal Vector3 bottomLeft;
-            internal Vector3 normal;
-
-            internal Vector3 orig_origo;
-            internal Vector3 orig_topLeft;
-            internal Vector3 orig_bottomLeft;
-
-            private Matrix4x4 rotator;
-            private Vector3 position;
-
-            internal Matrix4x4 Rotator
-            {
-                get => rotator;
-                set
-                {
-                    rotator = value;
-                    Update();
-                }
-            }
-            internal Vector3 Position
-            {
-                get => position;
-                set
-                {
-                    position = value;
-                    Update();
-                }
-            }
-        }
-
         private readonly NavigationView view;
-        private NavigationRenderer frame;
-
-        private Corners corners;
-
         private List<Tag> tags = new List<Tag>();
-
-        internal bool Locked { get; set; } = false;
-        internal bool Visible { get; set; } = true;
 
         internal PointerRenderer(
             NavigationView view,
@@ -118,11 +24,9 @@ namespace ImageViewer.Content.Renderers.ThreeD
             DeviceResources deviceResources, 
             TextureLoader loader, 
             Corners corners)
-            : base(deviceResources, loader)
+            : base(frame, deviceResources, loader, corners)
         {
             this.view = view;
-            this.frame = frame;
-            this.corners = corners;
         }
 
         internal void AddTag()
@@ -163,10 +67,7 @@ namespace ImageViewer.Content.Renderers.ThreeD
 
         internal override void Render()
         {
-            if (Visible)
-            {
-                base.Render();
-            }
+            base.Render();
 
             for (var i=0; i < tags.Count; i++)
             {
@@ -174,7 +75,7 @@ namespace ImageViewer.Content.Renderers.ThreeD
             }
         }
 
-        internal void Update()
+        internal override void Update()
         {
             D2[] square =
             {
@@ -190,20 +91,12 @@ namespace ImageViewer.Content.Renderers.ThreeD
             }
         }
 
-        internal void Update(SpatialPointerPose pose)
+        internal override void Update(SpatialPointerPose pose)
         {
+            base.Update(pose);
+
             if (!Locked && pose != null)
             {
-                var p0 = pose.Head.Position;
-                var p1 = pose.Head.ForwardDirection;
-
-                var s = Vector3.Dot(corners.normal, corners.origo - p0) /
-                    Vector3.Dot(corners.normal, p1);
-
-                var ps = p0 + s * p1;
-
-                Position = ps;
-
                 view.DebugString =
                     view.Origo.ToString("0.00") + " "
                     + view.RotationAngle.ToString() + "° "
@@ -228,8 +121,6 @@ namespace ImageViewer.Content.Renderers.ThreeD
                 tag.Dispose();
             }
         }
-
-        internal Vector3 Origo() => corners.origo;
 
         internal Coordinate Coordinates()
         {
@@ -326,17 +217,17 @@ namespace ImageViewer.Content.Renderers.ThreeD
             return new Tuple<float, float>(x, y);
         }
 
-        internal void SetPosition(Vector3 dp)
+        internal override void SetPosition(Vector3 dp)
         {
             if (Locked)
             {
                 var pos = GetXY();
-                corners.Position += dp;
+                base.SetPosition(dp);
                 SetXY(pos.Item1, pos.Item2);
             }
             else
             {
-                corners.Position += dp;
+                base.SetPosition(dp);
             }
 
             foreach (var tag in tags)
@@ -345,17 +236,17 @@ namespace ImageViewer.Content.Renderers.ThreeD
             }
         }
 
-        internal void SetRotator(Matrix4x4 rotator)
+        internal override void SetRotator(Matrix4x4 rotator)
         {
             if (Locked)
             {
                 var pos = GetXY();
-                corners.Rotator = rotator;
+                base.SetRotator(rotator);
                 SetXY(pos.Item1, pos.Item2);
             }
             else
             {
-                corners.Rotator = rotator;
+                base.SetRotator(rotator);
             }
 
             foreach (var tag in tags)
