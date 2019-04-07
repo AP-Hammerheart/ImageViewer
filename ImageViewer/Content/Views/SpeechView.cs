@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using ImageViewer.Content.Renderers.ThreeD;
 using ImageViewer.Content.Utils;
 using System.Threading.Tasks;
 using static ImageViewer.ImageViewerMain;
@@ -73,8 +74,8 @@ namespace ImageViewer.Content.Views
                 case Command.PRELOAD: break;
                 case Command.CANCEL: break;
                 case Command.CLEAR_CACHE: ClearCache(); break;
-                case Command.ADD_TAG: Pointer.AddTag(); break;
-                case Command.REMOVE_TAG: Pointer.RemoveTag(); break;
+                case Command.ADD_TAG: ((PointerRenderer)Pointers[0]).AddTag(); break;
+                case Command.REMOVE_TAG: ((PointerRenderer)Pointers[0]).RemoveTag(); break;
                 case Command.RESET_POSITION: Reset(); break;
                 case Command.HELP: Help(); break;
                 case Command.ZOOM: Zoom(direction, number); break;

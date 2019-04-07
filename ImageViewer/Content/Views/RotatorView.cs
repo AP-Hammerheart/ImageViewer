@@ -69,7 +69,11 @@ namespace ImageViewer.Content.Views
         protected override void UpdateImages()
         {
             Update();
-            Pointer.Update();
+
+            foreach (var pointer in Pointers)
+            {
+                pointer.Update();
+            }
 
             var textures = new List<string>();
 

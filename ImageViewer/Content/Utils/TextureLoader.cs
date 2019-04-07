@@ -3,6 +3,7 @@
 // See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using Newtonsoft.Json.Linq;
 using SharpDX.Direct3D11;
 using SharpDX.WIC;
 using System;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -24,7 +26,6 @@ namespace ImageViewer.Content.Utils
 
         private Dictionary<string, Tuple<ShaderResourceView, Texture2D>> textures; 
         private Queue<string> loadQueue = new Queue<string>();
-        private Queue<string> preloadQueue = new Queue<string>();
         private List<string> lastUse = new List<string>();
 
         private readonly ImagingFactory2 factory;
@@ -238,6 +239,62 @@ namespace ImageViewer.Content.Utils
             return url;
         }
 
+        internal async Task<JObject> GetJsonAsync(string URL, string url)
+        {
+            IStorageItem file = null;
+            var baseUrl = URL + url;
+
+            if (Settings.SaveTexture)
+            {
+                file = await localCacheFolder.TryGetItemAsync(url.Substring(1));
+            }
+
+            if (file == null)
+            {
+                var request = (HttpWebRequest)WebRequest.Create(baseUrl);
+                try
+                {
+                    using (var response = (HttpWebResponse)await request.GetResponseAsync())
+                    {
+                        if (response.StatusCode == HttpStatusCode.OK)
+                        {
+                            Settings.Online = true;
+
+                            var encoding = ASCIIEncoding.ASCII;
+                            using (var reader = new StreamReader(response.GetResponseStream(), encoding))
+                            {
+                                string responseText = reader.ReadToEnd();
+
+                                if (Settings.SaveTexture)
+                                {
+                                    await SaveDataAsync(url.Substring(1), responseText);
+                                }
+
+                                return JObject.Parse(responseText);
+                            }
+                        }
+                        else
+                        {
+                            Settings.Online = false;
+                            return null;
+                        }                      
+                    }
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                var stream = await ((StorageFile)file).OpenAsync(FileAccessMode.Read);
+                var buffer = new Windows.Storage.Streams.Buffer((uint)stream.Size);
+                await stream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.None);
+
+                return JObject.Parse(DataReader.FromBuffer(buffer).ReadString(buffer.Length));
+            }
+        }
+
         private async Task<MemoryStream> GetImageAsync(string id)
         {
             var fileName = FileName(id);
@@ -258,6 +315,8 @@ namespace ImageViewer.Content.Utils
                     {
                         if (response.StatusCode == HttpStatusCode.OK)
                         {
+                            Settings.Online = true;
+
                             using (var stream = response.GetResponseStream())
                             {
                                 var memoryStream = new MemoryStream((int)response.ContentLength);
@@ -274,6 +333,7 @@ namespace ImageViewer.Content.Utils
                         }
                         else
                         {
+                            Settings.Online = false;
                             return null;
                         }
                     }
@@ -289,6 +349,22 @@ namespace ImageViewer.Content.Utils
                 var memoryStream = new MemoryStream(bytes);
                 return memoryStream;
             }          
+        }
+
+        private async Task SaveDataAsync(string fileName, string data)
+        {
+            var newFile = await localCacheFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+
+            using (var fileStream = await newFile.OpenAsync(FileAccessMode.ReadWrite))
+            {
+                using (var dataWriter = new DataWriter(fileStream))
+                {
+                    dataWriter.WriteString(data);
+
+                    await dataWriter.StoreAsync();
+                    await fileStream.FlushAsync();
+                }
+            }
         }
 
         private async Task SaveTextureAsync(string fileName, MemoryStream memoryStream)

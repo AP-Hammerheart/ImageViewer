@@ -20,13 +20,13 @@ namespace ImageViewer.Content.Views
         internal int FPS { get; set; } = 0;
 
         protected BasePlaneRenderer[] statusItems;
-        protected NavigationRenderer navigationFrame;        
+        protected NavigationRenderer navigationFrame;
         protected SettingViewer settingViewer;
         protected MacroView macro;
         protected ObjRenderer model;
-        
+
         internal RotateRenderer[] Tiles { get; set; }
-        internal PointerRenderer Pointer { get; set; }
+        internal BasePointerRenderer[] Pointers { get; set; }
 
         protected bool ShowSettings { get; set; } = false;
 
@@ -44,7 +44,12 @@ namespace ImageViewer.Content.Views
             }
 
             settingViewer?.Update(timer);
-            Pointer?.Update(timer);
+
+            foreach (var pointer in Pointers)
+            {
+                pointer?.Update(timer);
+            }
+
             navigationFrame?.Update(timer);
             macro?.Update(timer);
             model?.Update(timer);
@@ -52,7 +57,10 @@ namespace ImageViewer.Content.Views
 
         internal void Update(SpatialPointerPose pose)
         {
-            Pointer?.Update(pose);
+            foreach (var pointer in Pointers)
+            {
+                pointer?.Update(pose);
+            }       
         }
 
         internal void Render()
@@ -76,7 +84,10 @@ namespace ImageViewer.Content.Views
                     renderer?.Render();
                 }
 
-                Pointer?.Render();
+                foreach (var pointer in Pointers)
+                {
+                    pointer?.Render();
+                }
             }
 
             model?.Render();
@@ -97,7 +108,11 @@ namespace ImageViewer.Content.Views
                 await renderer?.CreateDeviceDependentResourcesAsync();
             }
 
-            await Pointer?.CreateDeviceDependentResourcesAsync();
+            foreach (var pointer in Pointers)
+            {
+                await pointer?.CreateDeviceDependentResourcesAsync();
+            }
+          
             await settingViewer?.CreateDeviceDependentResourcesAsync();
 
             await model?.CreateDeviceDependentResourcesAsync();
@@ -116,7 +131,12 @@ namespace ImageViewer.Content.Views
             }
 
             settingViewer?.ReleaseDeviceDependentResources();
-            Pointer?.ReleaseDeviceDependentResources();
+
+            foreach (var pointer in Pointers)
+            {
+                pointer?.ReleaseDeviceDependentResources();
+            }
+
             navigationFrame?.ReleaseDeviceDependentResources();
             macro?.ReleaseDeviceDependentResources();
             model?.ReleaseDeviceDependentResources();
@@ -143,7 +163,12 @@ namespace ImageViewer.Content.Views
             }
 
             settingViewer?.Dispose();
-            Pointer?.Dispose();
+
+            foreach (var pointer in Pointers)
+            {
+                pointer?.Dispose();
+            }
+          
             navigationFrame?.Dispose();
             macro?.Dispose();
             model?.Dispose();
@@ -162,7 +187,12 @@ namespace ImageViewer.Content.Views
             }
 
             settingViewer?.Dispose();
-            Pointer?.Dispose();
+
+            foreach (var pointer in Pointers)
+            {
+                pointer?.Dispose();
+            }
+         
             navigationFrame?.Dispose();
             macro?.Dispose();
         }
