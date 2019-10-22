@@ -269,9 +269,9 @@ namespace ImageViewer
                 mainView.OnKeyPressed(key);                
             }
 
-            timer1.Tick(() => 
+            timer1.Tick(() =>
             {
-                mainView.Update(timer1);         
+                mainView.Update(timer1);
             });
 
             timer2.Tick(() =>
@@ -456,7 +456,7 @@ namespace ImageViewer
         #region Handlers
 
         public void OnKeyPressed(Windows.System.VirtualKey key)
-        {      
+        {
             mutex.WaitOne();
             if (mainView.VirtualKey == key)
             {
@@ -467,7 +467,7 @@ namespace ImageViewer
                 mainView.VirtualKey = key;
                 mainView.KeyCount = 1;
             }
-            mutex.ReleaseMutex();   
+            mutex.ReleaseMutex();
         }
 
         public void OnPointerPressed()
@@ -651,7 +651,7 @@ namespace ImageViewer
                 return source;
             }
         }
-    
+
         private static float Angle(Vector3 v1, Vector3 v2, Vector3 up)
         {
             var cross = Vector3.Cross(v1, v2);

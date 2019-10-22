@@ -86,7 +86,7 @@ namespace ImageViewer.Content.Utils
 
         internal static bool DownloadRaw { get; set; } = false;
 
-        internal static bool Online { get; set; } = false;
+        internal static bool Online { get; set; } = true;
 
         internal static void SetIP(Direction direction, int value)
         {
