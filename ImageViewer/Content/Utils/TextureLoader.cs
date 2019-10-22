@@ -282,6 +282,7 @@ namespace ImageViewer.Content.Utils
                 }
                 catch (Exception)
                 {
+                    Settings.Online = false;
                     return null;
                 }
             }

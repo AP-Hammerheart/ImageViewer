@@ -24,26 +24,31 @@ namespace ImageViewer.Content.Views
 
             switch (key)
             {
+                case Windows.System.VirtualKey.Number1:
                 case Windows.System.VirtualKey.NumberPad1:
                     Move(Direction.LEFT, Settings.Scaler);
                     Move(Direction.DOWN, Settings.Scaler);
                     break;
 
+                case Windows.System.VirtualKey.Number3:
                 case Windows.System.VirtualKey.NumberPad3:
                     Move(Direction.RIGHT, Settings.Scaler);
                     Move(Direction.DOWN, Settings.Scaler);
                     break;
 
+                case Windows.System.VirtualKey.Number7:
                 case Windows.System.VirtualKey.NumberPad7:
                     Move(Direction.LEFT, Settings.Scaler);
                     Move(Direction.UP, Settings.Scaler);
                     break;
 
+                case Windows.System.VirtualKey.Number9:
                 case Windows.System.VirtualKey.NumberPad9:
                     Move(Direction.RIGHT, Settings.Scaler);
                     Move(Direction.UP, Settings.Scaler);
                     break;
 
+                case Windows.System.VirtualKey.Number4:
                 case Windows.System.VirtualKey.NumberPad4:
                 case Windows.System.VirtualKey.Left:
                 case Windows.System.VirtualKey.GamepadRightThumbstickLeft:
@@ -60,10 +65,11 @@ namespace ImageViewer.Content.Views
                     }
                     else
                     {
-                        model.Position = model.Position + new System.Numerics.Vector3(-0.1f, 0.0f, 0.0f);
+                        model.Position += new System.Numerics.Vector3(-0.1f, 0.0f, 0.0f);
                     }
                     break;
 
+                case Windows.System.VirtualKey.Number6:
                 case Windows.System.VirtualKey.NumberPad6:
                 case Windows.System.VirtualKey.Right:
                 case Windows.System.VirtualKey.GamepadRightThumbstickRight:
@@ -80,10 +86,11 @@ namespace ImageViewer.Content.Views
                     }
                     else
                     {
-                        model.Position = model.Position + new System.Numerics.Vector3(0.1f, 0.0f, 0.0f);
+                        model.Position += new System.Numerics.Vector3(0.1f, 0.0f, 0.0f);
                     }
                     break;
 
+                case Windows.System.VirtualKey.Number8:
                 case Windows.System.VirtualKey.NumberPad8:
                 case Windows.System.VirtualKey.Up:
                 case Windows.System.VirtualKey.GamepadRightThumbstickUp:
@@ -100,10 +107,11 @@ namespace ImageViewer.Content.Views
                     }
                     else
                     {
-                        model.Position = model.Position + new System.Numerics.Vector3(0.0f, 0.1f, 0.0f);
+                        model.Position += new System.Numerics.Vector3(0.0f, 0.1f, 0.0f);
                     }
                     break;
 
+                case Windows.System.VirtualKey.Number2:
                 case Windows.System.VirtualKey.NumberPad2:
                 case Windows.System.VirtualKey.Down:
                 case Windows.System.VirtualKey.GamepadRightThumbstickDown:
@@ -120,7 +128,7 @@ namespace ImageViewer.Content.Views
                     }
                     else
                     {
-                        model.Position = model.Position + new System.Numerics.Vector3(0.0f, -0.1f, 0.0f);
+                        model.Position += new System.Numerics.Vector3(0.0f, -0.1f, 0.0f);
                     }
                     break;
 
@@ -245,7 +253,7 @@ namespace ImageViewer.Content.Views
                     }
                     else
                     {
-                        model.Position = model.Position + new System.Numerics.Vector3(0.0f, 0.0f, 0.1f);
+                        model.Position += new System.Numerics.Vector3(0.0f, 0.0f, 0.1f);
                     }
                     
                     break;
@@ -257,7 +265,7 @@ namespace ImageViewer.Content.Views
                     }
                     else
                     {
-                        model.Position = model.Position + new System.Numerics.Vector3(0.0f, 0.0f, -0.1f);
+                        model.Position += new System.Numerics.Vector3(0.0f, 0.0f, -0.1f);
                     }
                     break;
 
@@ -265,24 +273,24 @@ namespace ImageViewer.Content.Views
                 case Windows.System.VirtualKey.GamepadView:
                     if (Settings.Mode == 0)
                     {
-                        //if (Settings.Online)
-                        //{
+                        if (Settings.Online)
+                        {
                             settingViewer.NextSlide();
                             UpdateImages();
-                        //}
+                        }
                     }
                     else
                     {
                         model.Colored = !model.Colored;
 
-                        //if (Settings.Online)
-                        //{
-                        //ShowSettings = !ShowSettings;
-                        //if (!ShowSettings)
-                        //{
-                        //    Scale(Direction.DOWN, 0);
-                        //}
-                        //}
+                        if (Settings.Online)
+                        {
+                            ShowSettings = !ShowSettings;
+                            if (!ShowSettings)
+                            {
+                                Scale(Direction.DOWN, 0);
+                            }
+                        }
                     }
                     break;
 

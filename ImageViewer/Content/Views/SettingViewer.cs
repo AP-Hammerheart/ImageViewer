@@ -246,13 +246,13 @@ namespace ImageViewer.Content.Views
         {
             await settings?.InitializeAsync();
 
-            //if (Settings.Online)
-            //{
+            if (Settings.Online)
+            {
                 foreach (var renderer in settingItems)
                 {
                     await renderer?.CreateDeviceDependentResourcesAsync();
                 }
-            //}       
+            }       
         }
 
         internal void ReleaseDeviceDependentResources()
