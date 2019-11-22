@@ -23,6 +23,7 @@ namespace ImageViewer.Content.Views
         protected NavigationRenderer navigationFrame;
         protected SettingViewer settingViewer;
         protected MacroView macro;
+        protected RadiologyView radiology;
         protected ObjRenderer model;
 
         internal RotateRenderer[] Tiles { get; set; }
@@ -52,6 +53,7 @@ namespace ImageViewer.Content.Views
 
             navigationFrame?.Update(timer);
             macro?.Update(timer);
+            radiology?.Update( timer );
             model?.Update(timer);
         }
 
@@ -67,6 +69,7 @@ namespace ImageViewer.Content.Views
         {
             navigationFrame?.Render();
             macro?.Render();
+            radiology?.Render();
 
             foreach (var renderer in statusItems)
             {
@@ -100,7 +103,8 @@ namespace ImageViewer.Content.Views
                 await renderer?.CreateDeviceDependentResourcesAsync();
             }
 
-            await macro?.CreateDeviceDependentResourcesAsync();          
+            await macro?.CreateDeviceDependentResourcesAsync();
+            await radiology?.CreateDeviceDependentResourcesAsync();
             await navigationFrame?.CreateDeviceDependentResourcesAsync();
 
             foreach (var renderer in Tiles)
@@ -139,6 +143,7 @@ namespace ImageViewer.Content.Views
 
             navigationFrame?.ReleaseDeviceDependentResources();
             macro?.ReleaseDeviceDependentResources();
+            radiology?.ReleaseDeviceDependentResources();
             model?.ReleaseDeviceDependentResources();
         }
 
@@ -172,6 +177,7 @@ namespace ImageViewer.Content.Views
             navigationFrame?.Dispose();
             macro?.Dispose();
             model?.Dispose();
+            radiology?.Dispose();
         }
 
         void IDisposable.Dispose()
@@ -195,6 +201,7 @@ namespace ImageViewer.Content.Views
          
             navigationFrame?.Dispose();
             macro?.Dispose();
+            radiology?.Dispose();
         }
     }
 }

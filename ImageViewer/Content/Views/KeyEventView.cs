@@ -16,7 +16,7 @@ namespace ImageViewer.Content.Views
 
         protected KeyEventView() {}
 
-        private readonly int modes = 2;
+        private readonly int modes = 3;
 
         internal void OnKeyPressed(Windows.System.VirtualKey key)
         {
@@ -247,25 +247,23 @@ namespace ImageViewer.Content.Views
 
                 case Windows.System.VirtualKey.T:
                 case Windows.System.VirtualKey.GamepadRightTrigger:
-                    if (Settings.Mode == 0)
-                    {
+                    if( Settings.Mode == 0 ) {
                         ((PointerRenderer)Pointers[0]).AddTag();
-                    }
-                    else
-                    {
-                        model.Position += new System.Numerics.Vector3(0.0f, 0.0f, 0.1f);
+                    } else if( Settings.Mode == 1 ) {
+                        model.Position += new System.Numerics.Vector3( 0.0f, 0.0f, 0.1f );
+                    } else if( Settings.Mode == 2 ) {
+                        PrevRadiologyImage();
                     }
                     
                     break;
                 case Windows.System.VirtualKey.R:
                 case Windows.System.VirtualKey.GamepadRightShoulder:
-                    if (Settings.Mode == 0)
-                    {
+                    if( Settings.Mode == 0 ) {
                         ((PointerRenderer)Pointers[0]).RemoveTag();
-                    }
-                    else
-                    {
-                        model.Position += new System.Numerics.Vector3(0.0f, 0.0f, -0.1f);
+                    } else if( Settings.Mode == 1 ) {
+                        model.Position += new System.Numerics.Vector3( 0.0f, 0.0f, -0.1f );
+                    } else if( Settings.Mode == 2 ) {
+                        NextRadiologyImage();
                     }
                     break;
 

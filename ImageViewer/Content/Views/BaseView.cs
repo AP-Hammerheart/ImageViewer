@@ -36,7 +36,7 @@ namespace ImageViewer.Content.Views
 
             settingViewer = new SettingViewer(main, deviceResources, loader);
 
-            statusItems = new BasePlaneRenderer[22];
+            statusItems = new BasePlaneRenderer[25];
 
             statusItems[0] = new StatusBarRenderer(
                 deviceResources: deviceResources,
@@ -328,16 +328,67 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
             statusItems[21] = new ImageRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(Constants.X00, Constants.Y0, Constants.Z3),
-                topLeft: new Vector3(Constants.X00, Constants.Y4, Constants.Z3),
-                bottomRight: new Vector3(Constants.X00, Constants.Y0, Constants.Z2),
-                topRight: new Vector3(Constants.X00, Constants.Y4, Constants.Z2))
+                bottomLeft: new Vector3(Constants.X10, Constants.Y0, Constants.Z3),
+                topLeft: new Vector3(Constants.X10, Constants.Y4, Constants.Z3),
+                bottomRight: new Vector3(Constants.X10, Constants.Y0, Constants.Z2),
+                topRight: new Vector3(Constants.X10, Constants.Y4, Constants.Z2))
             {
                 Position = new Vector3(0.0f, 0.0f, Constants.DistanceFromUser),
                 TextureFile = "Content\\Textures\\help.jpg",
             };
 
             macro = new MacroView(deviceResources: deviceResources, loader: loader);
+
+            ///Radiology Top bar
+            statusItems[22] = new StatusBarRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3( Constants.X00, Constants.Y3, Constants.Z3 ),
+                topLeft: new Vector3( Constants.X00, Constants.Y4, Constants.Z3 ),
+                bottomRight: new Vector3( Constants.X00, Constants.Y3, Constants.Z2 ),
+                topRight: new Vector3( Constants.X00, Constants.Y4, Constants.Z2 ) )
+                //bottomLeft: new Vector3( Constants.X00, Constants.Y0, Constants.Z3 ),
+                //topLeft: new Vector3( Constants.X00, Constants.Y4, Constants.Z3 ),
+                //bottomRight: new Vector3( Constants.X00, Constants.Y0, Constants.Z2 ),
+                //topRight: new Vector3( Constants.X00, Constants.Y4, Constants.Z2 ),
+            {
+                TextPosition = new Vector2( 20, 10 ),
+                Text = "RADIOLOGY HEADER",
+                FontSize = 40.0f,
+                ImageWidth = 960,
+                ImageHeight = 80,
+            };
+
+            //Radiology Top LightGray bar
+            statusItems[23] = new StatusBarRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3( Constants.X00, Constants.Y2, Constants.Z3 ),
+                topLeft: new Vector3( Constants.X00, Constants.Y3, Constants.Z3 ),
+                bottomRight: new Vector3( Constants.X00, Constants.Y2, Constants.Z2 ),
+                topRight: new Vector3( Constants.X00, Constants.Y3, Constants.Z2 ) )
+            {
+                Text = "", //"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                FontSize = 25.0f,
+                ImageWidth = 1440,
+                ImageHeight = 48,
+                BackgroundColor = Colors.LightGray,
+            };
+
+            //Radiology Bottom bar
+            statusItems[24] = new StatusBarRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3( Constants.X00, Constants.Y0, Constants.Z3 ),
+                topLeft: new Vector3( Constants.X00, Constants.Y1, Constants.Z3 ),
+                bottomRight: new Vector3( Constants.X00, Constants.Y0, Constants.Z2 ),
+                topRight: new Vector3( Constants.X00, Constants.Y1, Constants.Z2 ) )
+            {
+                Text = "", //"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                ImageWidth = 1440,
+            };
+
+            radiology = new RadiologyView( deviceResources: deviceResources, loader: loader );
 
             Pointers = new BasePointerRenderer[2];
 

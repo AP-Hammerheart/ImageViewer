@@ -105,6 +105,7 @@
     <Compile Include="Content\Views\KeyEventView.cs" />
     <Compile Include="Content\Views\MacroView.cs" />
     <Compile Include="Content\Views\NavigationView.cs" />
+    <Compile Include="Content\Views\RadiologyView.cs" />
     <Compile Include="Content\Views\RotatorView.cs" />
     <Compile Include="Content\Views\SettingViewer.cs" />
     <Compile Include="Content\Renderers\Status\ZoomRenderer.cs" />

@@ -82,6 +82,7 @@ namespace ImageViewer.Content.Views
 
             navigationFrame.SetPosition(dp);
             macro.SetPosition(dp);
+            radiology.SetPosition( dp );
             model.Position = model.Position + dp;
 
             UpdateImages();
@@ -121,7 +122,7 @@ namespace ImageViewer.Content.Views
 
             navigationFrame.SetRotator(rotator);
             macro.SetRotator(rotator);
-
+            radiology.SetRotator( rotator );
             model.GlobalRotator = rotator;
         }
 
@@ -307,5 +308,16 @@ namespace ImageViewer.Content.Views
             TopRightX = CenterX + xx2;
             TopRightY = CenterY - yy2;
         }
+
+        protected void NextRadiologyImage() {
+            radiology.NextImage();
+            Refresh();
+        }
+
+        protected void PrevRadiologyImage() {
+            radiology.PrevImage();
+            Refresh();
+        }
+
     }
 }
