@@ -12,7 +12,7 @@ namespace ImageViewer.Content.Views {
         private Label[] labels;
         private ImageRenderer image;
         private int Type = 0;
-        private int Level = 5;
+        private int Level = 265;
         readonly TextureLoader loader;
 
         RadiologyRenderer dicom;
@@ -100,7 +100,7 @@ namespace ImageViewer.Content.Views {
         }
 
         private string Image( int index ) {
-            return @"https://localhost:44399/imageapi/T2747-19/dicom/" + index + ".png";
+            return @"-dicom-" + index;
         }
 
         internal void Update( StepTimer timer ) {

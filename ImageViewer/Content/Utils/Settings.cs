@@ -12,7 +12,8 @@ namespace ImageViewer.Content.Utils
     internal class Settings
     {
         //private readonly static string LocalServerUrl = "http://10.10.10.4:8081/";
-        private readonly static string NetworkServerUrl = "http://137.135.167.62:8080/";
+        //private readonly static string NetworkServerUrl = "http://137.135.167.62:8080/";
+        private readonly static string NetworkServerUrl = "http://localhost:44399/imageapi/";
 
         private static int ip1 = 10;
         private static int ip2 = 10;
@@ -56,7 +57,8 @@ namespace ImageViewer.Content.Utils
 
         internal static string URL { get; set; } = NetworkServerUrl;
 
-        internal static string CaseID { get; set; } = "T3461-18";
+        //internal static string CaseID { get; set; } = "T3461-18";
+        internal static string CaseID { get; set; } = "T2747-19";
 
         internal static string Image1 { get; set; } = "aligned_41.14x_01_aligned__41.14x_01_1_T3502-18_Z4.svs";
 
@@ -122,7 +124,8 @@ namespace ImageViewer.Content.Utils
         }
         internal static string BaseUrl()
         {
-            return URL + "?command=image&caseID=" + CaseID + "&name=";
+            //return URL + "?command=image&caseID=" + CaseID + "&name=";
+            return URL + "case/" + CaseID;
         }
 
         internal string NextCase(string caseID, bool next)

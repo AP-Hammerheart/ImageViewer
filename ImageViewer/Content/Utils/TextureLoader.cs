@@ -308,7 +308,11 @@ namespace ImageViewer.Content.Utils
                  
             if (file == null)
             {
-                var request = (HttpWebRequest)WebRequest.Create(Url(id));
+
+
+                string urlID = id.Replace( "-", "/" );
+
+                var request = (HttpWebRequest)WebRequest.Create(Url( urlID ) );
 
                 try
                 {
