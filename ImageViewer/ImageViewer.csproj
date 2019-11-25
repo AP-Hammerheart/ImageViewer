@@ -74,6 +74,7 @@
     <Compile Include="Content\Renderers\Image\Label.cs" />
     <Compile Include="Content\Renderers\ThreeD\BasePointerRenderer.cs" />
     <Compile Include="Content\Renderers\ThreeD\NavigationRenderer.cs" />
+    <Compile Include="Content\Renderers\ThreeD\RadiologyRenderer.cs" />
     <Compile Include="Content\Renderers\ThreeD\SlideFrameRenderer.cs" />
     <Compile Include="Content\Utils\Constants.cs" />
     <Compile Include="Content\Renderers\Base\BaseCubeRenderer.cs" />

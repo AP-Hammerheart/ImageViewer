@@ -15,9 +15,23 @@ namespace ImageViewer.Content.Views {
         private int Level = 5;
         readonly TextureLoader loader;
 
+        RadiologyRenderer dicom;
+
         internal RadiologyView( DeviceResources deviceResources, TextureLoader loader ) {
             this.loader = loader;
-            image = new ImageRenderer( deviceResources: deviceResources,
+            //image = new ImageRenderer( deviceResources: deviceResources,
+            //                           loader: loader,
+            //                           bottomLeft: new Vector3( Constants.X00, Constants.Y1, Constants.Z3 ),
+            //                           topLeft: new Vector3( Constants.X00, Constants.Y2, Constants.Z3 ),
+            //                           bottomRight: new Vector3( Constants.X00, Constants.Y1, Constants.Z2 ),
+            //                           topRight: new Vector3( Constants.X00, Constants.Y2, Constants.Z2 ),
+            //                           width: 3456,
+            //                           height: 2304 ) {
+            //    Position = new Vector3( 0.0f, 0.0f, Constants.DistanceFromUser ),
+            //    TextureFile = "Content\\Textures\\test.png"
+            //};
+
+            dicom = new RadiologyRenderer( deviceResources: deviceResources,
                                        loader: loader,
                                        bottomLeft: new Vector3( Constants.X00, Constants.Y1, Constants.Z3 ),
                                        topLeft: new Vector3( Constants.X00, Constants.Y2, Constants.Z3 ),
@@ -26,12 +40,14 @@ namespace ImageViewer.Content.Views {
                                        width: 3456,
                                        height: 2304 ) {
                 Position = new Vector3( 0.0f, 0.0f, Constants.DistanceFromUser ),
-                TextureFile = "Content\\Textures\\test.png"
             };
+            UpdateImage( 5 );
             var labelTexts = new string[]
             {
 
             };
+
+            
 
             var coords = new int[][]
             {
@@ -55,9 +71,10 @@ namespace ImageViewer.Content.Views {
         }
 
         protected void UpdateImage( int level) {
-            var ims = Image( Settings.Image1, Level );
+            var ims = Image( Level );
             var textures = new List<string>();
             textures.Add( ims );
+            dicom.TextureID = ims;
             var task = new Task( async () => {
                 await loader.LoadTexturesAsync( textures );
             } );
@@ -82,16 +99,20 @@ namespace ImageViewer.Content.Views {
                         + "&level=" + Level.ToString();
         }
 
+        private string Image( int index ) {
+            return @"https://localhost:44399/imageapi/T2747-19/dicom/" + index + ".png";
+        }
+
         internal void Update( StepTimer timer ) {
             foreach( var renderer in labels ) {
                 renderer?.Update( timer );
             }
 
-            image?.Update( timer );
+            dicom?.Update( timer );
         }
 
         internal void Render() {
-            image?.Render();
+            dicom?.Render();
 
             foreach( var renderer in labels ) {
                 renderer?.Render();
@@ -106,7 +127,7 @@ namespace ImageViewer.Content.Views {
         }
 
         internal void SetPosition( Vector3 dp ) {
-            image.Position += dp;
+            dicom.Position += dp;
 
             foreach( var label in labels ) {
                 label?.SetPosition( dp );
@@ -114,7 +135,7 @@ namespace ImageViewer.Content.Views {
         }
 
         internal void SetRotator( Matrix4x4 rotator ) {
-            image.GlobalRotator = rotator;
+            dicom.GlobalRotator = rotator;
 
             foreach( var label in labels ) {
                 label?.SetRotator( rotator );
@@ -126,7 +147,7 @@ namespace ImageViewer.Content.Views {
                 await renderer?.CreateDeviceDependentResourcesAsync();
             }
 
-            await image?.CreateDeviceDependentResourcesAsync();
+            await dicom?.CreateDeviceDependentResourcesAsync();
         }
 
         internal void ReleaseDeviceDependentResources() {
@@ -134,7 +155,7 @@ namespace ImageViewer.Content.Views {
                 renderer?.ReleaseDeviceDependentResources();
             }
 
-            image?.ReleaseDeviceDependentResources();
+            dicom?.ReleaseDeviceDependentResources();
         }
 
         internal void Dispose() {
@@ -145,7 +166,7 @@ namespace ImageViewer.Content.Views {
                 labels = null;
             }
 
-            image?.Dispose();
+            dicom?.Dispose();
         }
 
         void IDisposable.Dispose() {
@@ -153,7 +174,7 @@ namespace ImageViewer.Content.Views {
                 renderer?.Dispose();
             }
 
-            image?.Dispose();
+            dicom?.Dispose();
         }
 
     }
