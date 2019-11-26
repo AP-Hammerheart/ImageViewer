@@ -12,7 +12,7 @@ namespace ImageViewer.Content.Views {
         private Label[] labels;
         private ImageRenderer image;
         private int Type = 0;
-        private int Level = 265;
+        private int Level = 300;
         readonly TextureLoader loader;
 
         RadiologyRenderer dicom;

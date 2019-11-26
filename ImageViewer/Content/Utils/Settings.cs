@@ -13,7 +13,7 @@ namespace ImageViewer.Content.Utils
     {
         //private readonly static string LocalServerUrl = "http://10.10.10.4:8081/";
         //private readonly static string NetworkServerUrl = "http://137.135.167.62:8080/";
-        private readonly static string NetworkServerUrl = "http://localhost:44399/imageapi/";
+        private readonly static string NetworkServerUrl = "https://ks-hololens-api.azurewebsites.net/imageapi/";
 
         private static int ip1 = 10;
         private static int ip2 = 10;
@@ -125,7 +125,7 @@ namespace ImageViewer.Content.Utils
         internal static string BaseUrl()
         {
             //return URL + "?command=image&caseID=" + CaseID + "&name=";
-            return URL + "case/" + CaseID;
+            return URL + CaseID;
         }
 
         internal string NextCase(string caseID, bool next)

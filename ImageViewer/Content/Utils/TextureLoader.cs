@@ -233,7 +233,8 @@ namespace ImageViewer.Content.Utils
             }
             else if (Settings.UseJpeg)
             {
-                url += "&format=JPG";
+                //check if url contains ?
+                url += "?format=JPG";
             }
 
             return url;
@@ -298,7 +299,7 @@ namespace ImageViewer.Content.Utils
 
         private async Task<MemoryStream> GetImageAsync(string id)
         {
-            var fileName = FileName(id);
+            var fileName = FileName(Settings.CaseID + id);
             IStorageItem file = null;
 
             if (Settings.SaveTexture)
@@ -310,9 +311,9 @@ namespace ImageViewer.Content.Utils
             {
 
 
-                string urlID = id.Replace( "-", "/" );
+                string urlID = Url( id.Replace( "-", "/" ));
 
-                var request = (HttpWebRequest)WebRequest.Create(Url( urlID ) );
+                var request = (HttpWebRequest)WebRequest.Create( urlID  );
 
                 try
                 {
@@ -521,6 +522,8 @@ namespace ImageViewer.Content.Utils
             {
                 using (var decoder = new JpegBitmapDecoder(factory))
                 {
+                    istream.Seek( 0, SeekOrigin.Begin );
+
                     decoder.Initialize(istream, DecodeOptions.CacheOnDemand);
 
                     using (var formatConverter = new FormatConverter(factory))
