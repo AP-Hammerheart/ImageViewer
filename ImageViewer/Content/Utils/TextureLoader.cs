@@ -225,16 +225,20 @@ namespace ImageViewer.Content.Utils
 
         private string Url(string id)
         {
+            if( id.Contains( "&" ) ) {
+                id = id.Insert( id.IndexOf( "&" ), "?" );
+            } else {
+                id = id + "?";
+            }
+
             var url = Settings.BaseUrl() + id;
 
-            if (Settings.DownloadRaw)
-            {
+            if( Settings.DownloadRaw ) {
                 url += "&format=RAW";
-            }
-            else if (Settings.UseJpeg)
-            {
-                //check if url contains ?
-                url += "?format=JPG";
+            } else if( Settings.UseJpeg ) {
+                url += "&format=JPG";
+            } else if( Settings.UsePNG ) {
+                url += "&format=PNG";
             }
 
             return url;
@@ -311,7 +315,7 @@ namespace ImageViewer.Content.Utils
             {
 
 
-                string urlID = Url( id.Replace( "-", "/" ));
+                string urlID = Url( id.Replace( ";", "/" ));
 
                 var request = (HttpWebRequest)WebRequest.Create( urlID  );
 
@@ -520,10 +524,8 @@ namespace ImageViewer.Content.Utils
         {
             using (var istream = new WICStream(factory, stream))
             {
-                using (var decoder = new JpegBitmapDecoder(factory))
+                using (var decoder = new PngBitmapDecoder(factory))
                 {
-                    istream.Seek( 0, SeekOrigin.Begin );
-
                     decoder.Initialize(istream, DecodeOptions.CacheOnDemand);
 
                     using (var formatConverter = new FormatConverter(factory))

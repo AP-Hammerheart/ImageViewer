@@ -36,7 +36,7 @@ namespace ImageViewer.Content.Views
 
             settingViewer = new SettingViewer(main, deviceResources, loader);
 
-            statusItems = new BasePlaneRenderer[25];
+            statusItems = new BasePlaneRenderer[24];
 
             statusItems[0] = new StatusBarRenderer(
                 deviceResources: deviceResources,
@@ -207,19 +207,21 @@ namespace ImageViewer.Content.Views
                 BackgroundColor = Colors.LightGray
             };
 
-            statusItems[13] = new ImageRenderer(
-                deviceResources: deviceResources,
-                loader: loader,
-                bottomLeft: new Vector3(Constants.X00, Constants.Y1, Constants.Z1),
-                topLeft: new Vector3(Constants.X00, Constants.Y2, Constants.Z1),
-                bottomRight: new Vector3(Constants.X01, Constants.Y1, Constants.Z0),
-                topRight: new Vector3(Constants.X01, Constants.Y2, Constants.Z0))
-            {
-                Position = new Vector3(0.0f, 0.0f, Constants.DistanceFromUser),
-                TextureFile = "Content\\Textures\\base.png",
-            };
+            //statusItems[13] = new ImageRenderer(
+            //    deviceResources: deviceResources,
+            //    loader: loader,
+            //    bottomLeft: new Vector3(Constants.X00, Constants.Y1, Constants.Z1),
+            //    topLeft: new Vector3(Constants.X00, Constants.Y2, Constants.Z1),
+            //    bottomRight: new Vector3(Constants.X01, Constants.Y1, Constants.Z0),
+            //    topRight: new Vector3(Constants.X01, Constants.Y2, Constants.Z0))
+            //{
+            //    Position = new Vector3(0.0f, 0.0f, Constants.DistanceFromUser),
+            //    TextureFile = "Content\\Textures\\base.png",
+            //};
 
-            statusItems[14] = new StatusBarRenderer(
+            histo = new HistologyView(deviceResources: deviceResources, loader: loader);
+
+            statusItems[13] = new StatusBarRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(Constants.X00, Constants.Y0, Constants.Z1),
@@ -232,7 +234,7 @@ namespace ImageViewer.Content.Views
                 ImageWidth = 960,
             };
 
-            statusItems[15] = new StatusBarRenderer(
+            statusItems[14] = new StatusBarRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(Constants.X09, Constants.Y3, Constants.Z0),
@@ -246,7 +248,7 @@ namespace ImageViewer.Content.Views
                 ImageWidth = 960,
             };
 
-            statusItems[16] = new StatusBarRenderer(
+            statusItems[15] = new StatusBarRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(Constants.X09, Constants.Y1, Constants.Z0),
@@ -272,7 +274,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 BackgroundColor = Colors.LightGray,
             };
 
-            statusItems[17] = new StatusBarRenderer(
+            statusItems[16] = new StatusBarRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(Constants.X09, Constants.Y0, Constants.Z0),
@@ -285,7 +287,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 ImageWidth = 960,
             };
 
-            statusItems[18] = new StatusBarRenderer(
+            statusItems[17] = new StatusBarRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(Constants.X00, Constants.Y3, Constants.Z2),
@@ -298,7 +300,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 ImageWidth = 1440,
             };
 
-            statusItems[19] = new StatusBarRenderer(
+            statusItems[18] = new StatusBarRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(Constants.X00, Constants.Y2, Constants.Z2),
@@ -313,7 +315,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 BackgroundColor = Colors.LightGray,
             };
 
-            statusItems[20] = new StatusBarRenderer(
+            statusItems[19] = new StatusBarRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(Constants.X00, Constants.Y0, Constants.Z2),
@@ -325,7 +327,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 ImageWidth = 1440,
             };
 
-            statusItems[21] = new ImageRenderer(
+            statusItems[20] = new ImageRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3(Constants.X10, Constants.Y0, Constants.Z3),
@@ -340,7 +342,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
             macro = new MacroView(deviceResources: deviceResources, loader: loader);
 
             ///Radiology Top bar
-            statusItems[22] = new StatusBarRenderer(
+            statusItems[21] = new StatusBarRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3( Constants.X00, Constants.Y3, Constants.Z3 ),
@@ -360,7 +362,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
             };
 
             //Radiology Top LightGray bar
-            statusItems[23] = new StatusBarRenderer(
+            statusItems[22] = new StatusBarRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3( Constants.X00, Constants.Y2, Constants.Z3 ),
@@ -376,7 +378,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
             };
 
             //Radiology Bottom bar
-            statusItems[24] = new StatusBarRenderer(
+            statusItems[23] = new StatusBarRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3( Constants.X00, Constants.Y0, Constants.Z3 ),

@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 namespace ImageViewer.Content.Views {
     internal class RadiologyView : IDisposable {
 
-        private Label[] labels;
-        private ImageRenderer image;
+        //private ImageRenderer image;
         private int Type = 0;
-        private int Level = 300;
+        private int Level = 265;
+        private int maxLevel = 515;
+        private int minLevel = 1;
         readonly TextureLoader loader;
 
         RadiologyRenderer dicom;
@@ -41,37 +42,27 @@ namespace ImageViewer.Content.Views {
                                        height: 2304 ) {
                 Position = new Vector3( 0.0f, 0.0f, Constants.DistanceFromUser ),
             };
-            UpdateImage( 5 );
-            var labelTexts = new string[]
-            {
-
-            };
-
-            
-
-            var coords = new int[][]
-            {
-
-            };
-
-            labels = new Label[labelTexts.Length];
-
-            for( var i = 0; i < labelTexts.Length; i++ ) {
-            }
+            UpdateImage( Level );
         }
 
         internal void NextImage() {
             Level++;
+            if( Level > maxLevel ) {
+                Level = maxLevel;
+            }
             UpdateImage( Level );
         }
 
         internal void PrevImage() {
             Level--;
+            if( Level < minLevel ) {
+                Level = minLevel;
+            }
             UpdateImage( Level );
         }
 
         protected void UpdateImage( int level) {
-            var ims = Image( Level );
+            var ims = Image( level );
             var textures = new List<string>();
             textures.Add( ims );
             dicom.TextureID = ims;
@@ -85,28 +76,12 @@ namespace ImageViewer.Content.Views {
         internal int PixelSize( int level )
             => (int)Math.Pow( 2, Settings.Multiplier * level );
 
-        private string Image( string file, int idx ) {
-            var y = idx / 7;
-            var x = idx % 7;
-
-            var step = PixelSize( Level ) * Constants.TileResolution;
-
-            return file
-                        + "&x=" + 10000.ToString()
-                        + "&y=" + 10000.ToString()
-                        + "&w=" + 500.ToString()
-                        + "&h=" + 500.ToString()
-                        + "&level=" + Level.ToString();
-        }
-
         private string Image( int index ) {
-            return @"-dicom-" + index;
+            return @";dicom;" + index;
         }
 
         internal void Update( StepTimer timer ) {
-            foreach( var renderer in labels ) {
-                renderer?.Update( timer );
-            }
+
 
             dicom?.Update( timer );
         }
@@ -114,65 +89,42 @@ namespace ImageViewer.Content.Views {
         internal void Render() {
             dicom?.Render();
 
-            foreach( var renderer in labels ) {
-                renderer?.Render();
-            }
+
         }
 
         internal void ChangeType() {
             Type = (Type + 1) % 3;
-            foreach( var renderer in labels ) {
-                renderer.Type = Type;
-            }
+
         }
 
         internal void SetPosition( Vector3 dp ) {
             dicom.Position += dp;
 
-            foreach( var label in labels ) {
-                label?.SetPosition( dp );
-            }
         }
 
         internal void SetRotator( Matrix4x4 rotator ) {
             dicom.GlobalRotator = rotator;
 
-            foreach( var label in labels ) {
-                label?.SetRotator( rotator );
-            }
         }
 
         internal async Task CreateDeviceDependentResourcesAsync() {
-            foreach( var renderer in labels ) {
-                await renderer?.CreateDeviceDependentResourcesAsync();
-            }
+
 
             await dicom?.CreateDeviceDependentResourcesAsync();
         }
 
         internal void ReleaseDeviceDependentResources() {
-            foreach( var renderer in labels ) {
-                renderer?.ReleaseDeviceDependentResources();
-            }
+
 
             dicom?.ReleaseDeviceDependentResources();
         }
 
         internal void Dispose() {
-            if( labels != null ) {
-                foreach( var renderer in labels ) {
-                    renderer?.Dispose();
-                }
-                labels = null;
-            }
 
             dicom?.Dispose();
         }
 
         void IDisposable.Dispose() {
-            foreach( var renderer in labels ) {
-                renderer?.Dispose();
-            }
 
             dicom?.Dispose();
         }

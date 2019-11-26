@@ -73,6 +73,7 @@
     <Compile Include="Content\Renderers\Base\ObjRenderer.cs" />
     <Compile Include="Content\Renderers\Image\Label.cs" />
     <Compile Include="Content\Renderers\ThreeD\BasePointerRenderer.cs" />
+    <Compile Include="Content\Renderers\ThreeD\HistologyRenderer.cs" />
     <Compile Include="Content\Renderers\ThreeD\MacroRenderer.cs" />
     <Compile Include="Content\Renderers\ThreeD\NavigationRenderer.cs" />
     <Compile Include="Content\Renderers\ThreeD\RadiologyRenderer.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Content\Renderers\Dev\TileCounterRenderer.cs" />
     <Compile Include="Content\Utils\TextureLoader.cs" />
     <Compile Include="Content\Views\DisposeView.cs" />
+    <Compile Include="Content\Views\HistologyView.cs" />
     <Compile Include="Content\Views\KeyEventView.cs" />
     <Compile Include="Content\Views\MacroView.cs" />
     <Compile Include="Content\Views\NavigationView.cs" />

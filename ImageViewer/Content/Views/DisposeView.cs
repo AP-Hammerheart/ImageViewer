@@ -23,6 +23,7 @@ namespace ImageViewer.Content.Views
         protected NavigationRenderer navigationFrame;
         protected SettingViewer settingViewer;
         protected MacroView macro;
+        protected HistologyView histo;
         protected RadiologyView radiology;
         protected ObjRenderer model;
 
@@ -54,6 +55,7 @@ namespace ImageViewer.Content.Views
             navigationFrame?.Update(timer);
             macro?.Update(timer);
             radiology?.Update( timer );
+            histo?.Update( timer );
             model?.Update(timer);
         }
 
@@ -69,6 +71,7 @@ namespace ImageViewer.Content.Views
         {
             navigationFrame?.Render();
             macro?.Render();
+            histo?.Render();
             radiology?.Render();
 
             foreach (var renderer in statusItems)
@@ -105,6 +108,7 @@ namespace ImageViewer.Content.Views
 
             await macro?.CreateDeviceDependentResourcesAsync();
             await radiology?.CreateDeviceDependentResourcesAsync();
+            await histo?.CreateDeviceDependentResourcesAsync();
             await navigationFrame?.CreateDeviceDependentResourcesAsync();
 
             foreach (var renderer in Tiles)
@@ -144,6 +148,7 @@ namespace ImageViewer.Content.Views
             navigationFrame?.ReleaseDeviceDependentResources();
             macro?.ReleaseDeviceDependentResources();
             radiology?.ReleaseDeviceDependentResources();
+            histo?.ReleaseDeviceDependentResources();
             model?.ReleaseDeviceDependentResources();
         }
 
@@ -177,6 +182,7 @@ namespace ImageViewer.Content.Views
             navigationFrame?.Dispose();
             macro?.Dispose();
             model?.Dispose();
+            histo?.Dispose();
             radiology?.Dispose();
         }
 
@@ -201,6 +207,7 @@ namespace ImageViewer.Content.Views
          
             navigationFrame?.Dispose();
             macro?.Dispose();
+            histo?.Dispose();
             radiology?.Dispose();
         }
     }

@@ -131,10 +131,9 @@ namespace ImageViewer.Content.Views
                 Tiles[maxTiles + i].TextureID = "";
             }
 
-            var task = new Task(async () =>
-            {
-                await loader.LoadTexturesAsync(textures);
-            });
+            var task = new Task( async () => {
+                await loader.LoadTexturesAsync( textures );
+            } );
             task.Start();
             task.Wait();
         }      

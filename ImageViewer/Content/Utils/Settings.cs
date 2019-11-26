@@ -60,9 +60,13 @@ namespace ImageViewer.Content.Utils
         //internal static string CaseID { get; set; } = "T3461-18";
         internal static string CaseID { get; set; } = "T2747-19";
 
-        internal static string Image1 { get; set; } = "aligned_41.14x_01_aligned__41.14x_01_1_T3502-18_Z4.svs";
+        //internal static string Image1 { get; set; } = "aligned_41.14x_01_aligned__41.14x_01_1_T3502-18_Z4.svs";
 
-        internal static string Image2 { get; set; } = "aligned_41.14x_01_aligned__41.14x_01_1_T3502-18_Z4.svs";
+        internal static string Image1 { get; set; } = ";histology;T2747-19-Z18.ndpi";
+
+        //internal static string Image2 { get; set; } = "aligned_41.14x_01_aligned__41.14x_01_1_T3502-18_Z4.svs";
+
+        internal static string Image2 { get; set; } = ";histology;T2747-19-Z18.ndpi";
 
         internal static int Image2offsetX { get; set; } = 0;
 
@@ -84,7 +88,9 @@ namespace ImageViewer.Content.Utils
 
         internal static bool SaveTexture { get; set; } = true;
 
-        internal static bool UseJpeg { get; set; } = true;
+        internal static bool UseJpeg { get; set; } = false;
+
+        internal static bool UsePNG { get; set; } = true;
 
         internal static bool DownloadRaw { get; set; } = false;
 
