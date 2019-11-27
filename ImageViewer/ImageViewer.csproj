@@ -76,6 +76,7 @@
     <Compile Include="Content\Renderers\ThreeD\HistologyRenderer.cs" />
     <Compile Include="Content\Renderers\ThreeD\MacroRenderer.cs" />
     <Compile Include="Content\Renderers\ThreeD\NavigationRenderer.cs" />
+    <Compile Include="Content\Renderers\ThreeD\RadiologyIndexRenderer.cs" />
     <Compile Include="Content\Renderers\ThreeD\RadiologyRenderer.cs" />
     <Compile Include="Content\Renderers\ThreeD\SlideFrameRenderer.cs" />
     <Compile Include="Content\Utils\Constants.cs" />

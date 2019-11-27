@@ -18,6 +18,10 @@ namespace ImageViewer.Content.Views {
 
         RadiologyRenderer dicom;
 
+        public int level {
+            get => Level;
+        }
+
         internal RadiologyView( DeviceResources deviceResources, TextureLoader loader ) {
             this.loader = loader;
             //image = new ImageRenderer( deviceResources: deviceResources,

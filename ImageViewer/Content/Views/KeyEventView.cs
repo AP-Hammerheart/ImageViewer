@@ -273,8 +273,8 @@ namespace ImageViewer.Content.Views
                     {
                         if (Settings.Online)
                         {
-                            settingViewer.NextSlide();
-                            UpdateImages();
+                            //settingViewer.NextSlide();
+                            //UpdateImages();
                         }
                     }
                     else

@@ -74,13 +74,13 @@ namespace ImageViewer.Content.Utils
 
         internal static int Scaler { get; set; } = 32;
 
-        internal static int Multiplier { get; set; } = 2;
+        internal static int Multiplier { get; set; } = 1;
 
-        internal static int MaxResolutionX { get; set; } = 100000;
+        internal static int MaxResolutionX { get; set; } = 125440; //100000;
 
-        internal static int MaxResolutionY { get; set; } = 210000;
+        internal static int MaxResolutionY { get; set; } = 107520; //210000;
 
-        internal static int MinScale { get; set; } = 5;
+        internal static int MinScale { get; set; } = 7;
 
         internal static int GridX { get; set; } = 4;
 

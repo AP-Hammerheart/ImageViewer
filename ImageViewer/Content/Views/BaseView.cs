@@ -330,10 +330,10 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
             statusItems[20] = new ImageRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(Constants.X10, Constants.Y0, Constants.Z3),
-                topLeft: new Vector3(Constants.X10, Constants.Y4, Constants.Z3),
-                bottomRight: new Vector3(Constants.X10, Constants.Y0, Constants.Z2),
-                topRight: new Vector3(Constants.X10, Constants.Y4, Constants.Z2))
+                bottomLeft: new Vector3(Constants.X00, Constants.Y0, Constants.Z3+Constants.Z1),
+                topLeft: new Vector3(Constants.X00, Constants.Y4, Constants.Z3 + Constants.Z1 ),
+                bottomRight: new Vector3(Constants.X00, Constants.Y0, Constants.Z3),
+                topRight: new Vector3(Constants.X00, Constants.Y4, Constants.Z3))
             {
                 Position = new Vector3(0.0f, 0.0f, Constants.DistanceFromUser),
                 TextureFile = "Content\\Textures\\help.jpg",
@@ -355,11 +355,13 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 //topRight: new Vector3( Constants.X00, Constants.Y4, Constants.Z2 ),
             {
                 TextPosition = new Vector2( 20, 10 ),
-                Text = "RADIOLOGY HEADER",
+                Text = "MRI",
                 FontSize = 40.0f,
                 ImageWidth = 960,
                 ImageHeight = 80,
             };
+
+            radiology = new RadiologyView( deviceResources: deviceResources, loader: loader );
 
             //Radiology Top LightGray bar
             statusItems[22] = new StatusBarRenderer(
@@ -378,7 +380,8 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
             };
 
             //Radiology Bottom bar
-            statusItems[23] = new StatusBarRenderer(
+            statusItems[23] = new RadiologyIndexRenderer(
+                rv: radiology,
                 deviceResources: deviceResources,
                 loader: loader,
                 bottomLeft: new Vector3( Constants.X00, Constants.Y0, Constants.Z3 ),
@@ -386,11 +389,10 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 bottomRight: new Vector3( Constants.X00, Constants.Y0, Constants.Z2 ),
                 topRight: new Vector3( Constants.X00, Constants.Y1, Constants.Z2 ) )
             {
-                Text = "", //"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                Text = "Image: 265", //"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                 ImageWidth = 1440,
+                FontSize = 40.0f,
             };
-
-            radiology = new RadiologyView( deviceResources: deviceResources, loader: loader );
 
             Pointers = new BasePointerRenderer[2];
 

@@ -39,10 +39,14 @@ namespace ImageViewer.Content.Renderers.ThreeD
             Vector3 topLeft,
             Vector3 bottomLeft,
             Vector3 topRight,
-            int x = 0,
-            int y = 63000,
-            int w = 99840,
-            int h = 99840)
+            //int x = 0,
+            //int y = 63000,
+            //int w = 99840,
+            //int h = 99840            
+            int x = -512,
+            int y = 1280,
+            int w = 125440,
+            int h = 107520 )
             : base(deviceResources, loader, depth, thickness)
         {
             this.topLeft = topLeft;

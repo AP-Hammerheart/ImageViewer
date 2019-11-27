@@ -16,7 +16,7 @@ namespace ImageViewer.Content.Views
     {
         private Label[] labels;
         private readonly ImageRenderer image;
-        private readonly MacroRenderer macro;
+        private readonly MacroRenderer macroR;
         readonly TextureLoader loader;
         private int Type = 0;
 
@@ -38,7 +38,7 @@ namespace ImageViewer.Content.Views
                 //TextureFile = "Content\\Textures\\macro.jpg",
             };
 
-            macro = new MacroRenderer( deviceResources: deviceResources,
+            macroR = new MacroRenderer( deviceResources: deviceResources,
                            loader: loader,
                            bottomLeft: new Vector3( Constants.X00, Constants.Y1, Constants.Z2 ),
                            topLeft: new Vector3(Constants.X00, Constants.Y2, Constants.Z2),
@@ -107,7 +107,7 @@ namespace ImageViewer.Content.Views
             var ims = Image();
             var textures = new List<string>();
             textures.Add( ims );
-            macro.TextureID = ims;
+            macroR.TextureID = ims;
             var task = new Task( async () => {
                 await loader.LoadTexturesAsync( textures );
             } );
@@ -126,13 +126,14 @@ namespace ImageViewer.Content.Views
                 renderer?.Update(timer);
             }
 
-            macro?.Update(timer);
+            macroR?.Update(timer);
+            image?.Update( timer );
         }
 
         internal void Render()
         {
-            macro?.Render();
-
+            macroR?.Render();
+            image?.Render();
             foreach (var renderer in labels)
             {
                 renderer?.Render();
@@ -150,8 +151,8 @@ namespace ImageViewer.Content.Views
 
         internal void SetPosition(Vector3 dp)
         {
-            macro.Position += dp;
-
+            macroR.Position += dp;
+            image.Position += dp;
             foreach (var label in labels)
             {
                 label?.SetPosition(dp);
@@ -160,8 +161,8 @@ namespace ImageViewer.Content.Views
 
         internal  void SetRotator(Matrix4x4 rotator)
         {
-            macro.GlobalRotator = rotator;
-
+            macroR.GlobalRotator = rotator;
+            image.GlobalRotator = rotator;
             foreach (var label in labels)
             {
                 label?.SetRotator(rotator);
@@ -175,7 +176,8 @@ namespace ImageViewer.Content.Views
                 await renderer?.CreateDeviceDependentResourcesAsync();
             }
 
-            await macro?.CreateDeviceDependentResourcesAsync();
+            await macroR?.CreateDeviceDependentResourcesAsync();
+            await image?.CreateDeviceDependentResourcesAsync();
         }
 
         internal void ReleaseDeviceDependentResources()
@@ -185,7 +187,8 @@ namespace ImageViewer.Content.Views
                 renderer?.ReleaseDeviceDependentResources();
             }
 
-            macro?.ReleaseDeviceDependentResources();
+            macroR?.ReleaseDeviceDependentResources();
+            image?.ReleaseDeviceDependentResources();
         }
 
         internal void Dispose()
@@ -199,7 +202,8 @@ namespace ImageViewer.Content.Views
                 labels = null;
             }
 
-            macro?.Dispose();
+            macroR?.Dispose();
+            image?.Dispose();
         }
 
         void IDisposable.Dispose()
@@ -209,7 +213,8 @@ namespace ImageViewer.Content.Views
                 renderer?.Dispose();
             }
 
-            macro?.Dispose();
+            macroR?.Dispose();
+            image?.Dispose();
         }
     }
 }

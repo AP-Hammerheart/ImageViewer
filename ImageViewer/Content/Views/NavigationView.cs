@@ -10,14 +10,13 @@ using static ImageViewer.ImageViewerMain;
 
 namespace ImageViewer.Content.Views
 {
-    abstract class NavigationView : DisposeView
-    {
+    abstract class NavigationView : DisposeView {
         private readonly double A45 = Math.PI / 4;
 
-        protected int TileOffset(int level)
-            => Constants.TileResolution * PixelSize(level);
+        protected int TileOffset( int level )
+            => Constants.TileResolution * PixelSize( level );
 
-        internal int Level { get; set; } = 3;
+        internal int Level { get; set; } = 7;
 
         internal int TopLeftY { get; set; } = 0;
         internal int TopLeftX { get; set; } = 0;
@@ -31,8 +30,11 @@ namespace ImageViewer.Content.Views
         internal int BottomRightY { get; set; } = 0;
         internal int BottomRightX { get; set; } = 0;
 
-        internal int CenterY { get; set; } = 110000;
-        internal int CenterX { get; set; } = 50000;
+        //internal int CenterY { get; set; } = 110000;
+        //internal int CenterX { get; set; } = 50000;
+
+        internal int CenterY { get; set; } = 125440 /2;
+        internal int CenterX { get; set; } = 107520 / 2;
 
         internal double Angle { get; set; } = 0;
 
@@ -83,6 +85,7 @@ namespace ImageViewer.Content.Views
             navigationFrame.SetPosition(dp);
             macro.SetPosition(dp);
             radiology.SetPosition( dp );
+            histo.SetPosition( dp );
             model.Position = model.Position + dp;
 
             UpdateImages();
@@ -123,6 +126,7 @@ namespace ImageViewer.Content.Views
             navigationFrame.SetRotator(rotator);
             macro.SetRotator(rotator);
             radiology.SetRotator( rotator );
+            histo.SetRotator( rotator );
             model.GlobalRotator = rotator;
         }
 

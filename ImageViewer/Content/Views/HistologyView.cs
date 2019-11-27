@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ImageViewer.Content.Views {
     internal class HistologyView : IDisposable {
-        private readonly ImageRenderer image;
+        //private readonly ImageRenderer image;
         private readonly HistologyRenderer histo;
         readonly TextureLoader loader;
         private int Type = 0;
@@ -21,18 +21,18 @@ namespace ImageViewer.Content.Views {
             DeviceResources deviceResources,
             TextureLoader loader ) {
             this.loader = loader;
-            image = new ImageRenderer(
-                deviceResources: deviceResources,
-                loader: loader,
-                bottomLeft: new Vector3( Constants.X00, Constants.Y1, Constants.Z1 ),
-                topLeft: new Vector3( Constants.X00, Constants.Y2, Constants.Z1 ),
-                bottomRight: new Vector3( Constants.X01, Constants.Y1, Constants.Z0 ),
-                topRight: new Vector3( Constants.X01, Constants.Y2, Constants.Z0 ),
-                width: 3456,
-                height: 2304 ) {
-                Position = new Vector3( 0.0f, 0.0f, Constants.DistanceFromUser ),
-                TextureFile = "Content\\Textures\\base.jpg",
-            };
+            //image = new ImageRenderer(
+            //    deviceResources: deviceResources,
+            //    loader: loader,
+            //    bottomLeft: new Vector3( Constants.X00, Constants.Y1, Constants.Z1 ),
+            //    topLeft: new Vector3( Constants.X00, Constants.Y2, Constants.Z1 ),
+            //    bottomRight: new Vector3( Constants.X01, Constants.Y1, Constants.Z0 ),
+            //    topRight: new Vector3( Constants.X01, Constants.Y2, Constants.Z0 ),
+            //    width: 3456,
+            //    height: 2304 ) {
+            //    Position = new Vector3( 0.0f, 0.0f, Constants.DistanceFromUser ),
+            //    //TextureFile = "Content\\Textures\\base.jpg",
+            //};
 
             histo = new HistologyRenderer( deviceResources: deviceResources,
                            loader: loader,
