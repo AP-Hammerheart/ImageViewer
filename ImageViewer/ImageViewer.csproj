@@ -159,6 +159,7 @@
     <Content Include="Content\Textures\red.png" />
     <Content Include="Content\Textures\solid.png" />
     <Content Include="Content\Textures\test.png" />
+    <Content Include="ControlScheme.txt" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -180,7 +181,7 @@
       <Version>6.1.5</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>11.0.2</Version>
+      <Version>12.0.3</Version>
     </PackageReference>
     <PackageReference Include="SharpDX">
       <Version>3.0.2</Version>

@@ -62,7 +62,7 @@ namespace ImageViewer.Content.Views {
         }
 
         private string Image() {
-            return @";histology;T2747-19-Z18.ndpi&x=0&y=0&w=950&h=850&level=7";
+            return @";histology;T2747-19-Z19.ndpi&x=0&y=0&w=950&h=850&level=7";
         }
 
         internal void Update( StepTimer timer ) {

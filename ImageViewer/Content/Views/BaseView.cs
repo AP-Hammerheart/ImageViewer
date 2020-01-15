@@ -185,7 +185,7 @@ namespace ImageViewer.Content.Views
                 topRight: new Vector3(Constants.X01, Constants.Y4, Constants.Z0))
             {
                 TextPosition = new Vector2(20, 10),
-                Text = "Z4",
+                Text = "Z7",
                 FontSize = 40.0f,
                 ImageWidth = 960,
                 ImageHeight = 80,

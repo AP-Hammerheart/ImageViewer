@@ -17,6 +17,8 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
+
+
 namespace ImageViewer.Content.Utils
 {
     internal class TextureLoader : IDisposable
@@ -248,7 +250,7 @@ namespace ImageViewer.Content.Utils
         {
             IStorageItem file = null;
             var baseUrl = URL + url;
-
+            System.Diagnostics.Debug.WriteLine( baseUrl.ToString() );
             if (Settings.SaveTexture)
             {
                 file = await localCacheFolder.TryGetItemAsync(url.Substring(1));
@@ -316,7 +318,6 @@ namespace ImageViewer.Content.Utils
 
 
                 string urlID = Url( id.Replace( ";", "/" ));
-
                 var request = (HttpWebRequest)WebRequest.Create( urlID  );
 
                 try

@@ -5,13 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace ImageViewer.Content.Views {
     internal class RadiologyView : IDisposable {
 
         //private ImageRenderer image;
         private int Type = 0;
-        private int Level = 265;
+        private int Level = 270;
         private int maxLevel = 515;
         private int minLevel = 1;
         readonly TextureLoader loader;
@@ -47,6 +48,22 @@ namespace ImageViewer.Content.Views {
                 Position = new Vector3( 0.0f, 0.0f, Constants.DistanceFromUser ),
             };
             UpdateImage( Level );
+
+            string url = Settings.jsonURL + Settings.CaseID + "/dicom/";
+
+            using( var client = new System.Net.Http.HttpClient() ) {
+                var j = client.GetStringAsync( url );
+                //System.Diagnostics.Debug.WriteLine( j.Result );
+                j.Result into json object then get number of stuff
+            }
+
+            /*
+             * read caseID/DICOM to get maxlevels
+             * make method to change caseID that updates maxlevels
+             * 
+             * repeat for macro and histology
+             */
+
         }
 
         internal void NextImage() {

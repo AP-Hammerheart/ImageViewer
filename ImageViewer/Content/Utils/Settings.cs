@@ -13,7 +13,9 @@ namespace ImageViewer.Content.Utils
     {
         //private readonly static string LocalServerUrl = "http://10.10.10.4:8081/";
         //private readonly static string NetworkServerUrl = "http://137.135.167.62:8080/";
-        private readonly static string NetworkServerUrl = "https://ks-hololens-api.azurewebsites.net/imageapi/";
+        //private readonly static string NetworkServerUrl = "https://ks-hololens-api.azurewebsites.net/imageapi/";
+        private readonly static string NetworkServerUrl = "https://ks-hololens.westeurope.cloudapp.azure.com/imageapi/";
+        private readonly static string NetworkServerUrlJSON = "https://ks-hololens.westeurope.cloudapp.azure.com/hololensapi/case/";
 
         private static int ip1 = 10;
         private static int ip2 = 10;
@@ -32,21 +34,17 @@ namespace ImageViewer.Content.Utils
 
         internal async Task InitializeAsync()
         {
-            cases = await loader.GetJsonAsync(URL, "?command=cases");
+            cases = await loader.GetJsonAsync( URL, "?command=cases" );
 
-            if (cases != null && cases.TryGetValue("Cases", out JToken ids))
-            {
-                foreach (var id in (ids as JArray))
-                {
-                    var images = await loader.GetJsonAsync(URL, "?command=list&caseID=" + id.Value<string>());
-                    imageList.Add(id.Value<string>(), images);
-                    if (images.TryGetValue("Images", out JToken names))
-                    {
-                        foreach (var name in (names as JArray))
-                        {
-                            var details = await loader.GetJsonAsync(URL, "?command=details&caseID=" + id.Value<string>() + "&name="
-                                + name.Value<string>());
-                            imageDetails.Add(name.Value<string>(), details);
+            if( cases != null && cases.TryGetValue( "Cases", out JToken ids ) ) {
+                foreach( var id in (ids as JArray) ) {
+                    var images = await loader.GetJsonAsync( URL, "?command=list&caseID=" + id.Value<string>() );
+                    imageList.Add( id.Value<string>(), images );
+                    if( images.TryGetValue( "Images", out JToken names ) ) {
+                        foreach( var name in (names as JArray) ) {
+                            var details = await loader.GetJsonAsync( URL, "?command=details&caseID=" + id.Value<string>() + "&name="
+                                + name.Value<string>() );
+                            imageDetails.Add( name.Value<string>(), details );
                         }
                     }
                 }
@@ -57,16 +55,18 @@ namespace ImageViewer.Content.Utils
 
         internal static string URL { get; set; } = NetworkServerUrl;
 
+        internal static string jsonURL { get; set; } = NetworkServerUrlJSON;
+
         //internal static string CaseID { get; set; } = "T3461-18";
         internal static string CaseID { get; set; } = "T2747-19";
 
         //internal static string Image1 { get; set; } = "aligned_41.14x_01_aligned__41.14x_01_1_T3502-18_Z4.svs";
 
-        internal static string Image1 { get; set; } = ";histology;T2747-19-Z18.ndpi";
+        internal static string Image1 { get; set; } = ";histology;T2747-19-Z19.ndpi";
 
         //internal static string Image2 { get; set; } = "aligned_41.14x_01_aligned__41.14x_01_1_T3502-18_Z4.svs";
 
-        internal static string Image2 { get; set; } = ";histology;T2747-19-Z18.ndpi";
+        internal static string Image2 { get; set; } = ";histology;T2747-19-Z19.ndpi";
 
         internal static int Image2offsetX { get; set; } = 0;
 

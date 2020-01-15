@@ -1,0 +1,126 @@
+﻿Right Joystick
+Left Joystick
+Right Joystick Press
+Left Joystick Press
+D-Pad Up
+D-Pad Down
+D-Pad Left
+D-Pad Right
+Start
+Select
+A
+B
+X
+Y
+Right Trigger
+Left Trigger
+Right Shoulder
+Left Shoulder
+
+Controller Modes:
+Place and rotate views.
+Radiology mode : combine with macro mode?
+Macro mode
+Histology mode
+3D mode
+
+
+PLACE AND ROTATE VIEW CONTROLS:
+Right Joystick				: move scene up, down, left, right
+Left Joystick				: rotate scene up, down, left, right
+Right Joystick Press		: move view closer
+Left Joystick Press			: move view away
+D-Pad Up					: move scene up
+D-Pad Down					: move scene down
+D-Pad Left					: move scene left
+D-Pad Right					: move scene right
+Start						: open some sort of menu?
+Select						: switch to radiology mode
+A							: move scene closer
+B							: rotate scene left
+X							: rotate scene right
+Y							: move scene awat
+Right Trigger				: move view closer
+Left Trigger				: move view away
+Right Shoulder				: rotate view right
+Left Shoulder				: rotate view left
+
+RADIOLOGY MODE CONTROLS:
+Right Joystick				: next previous image
+Left Joystick				: 
+Right Joystick Press		: zoom in/out
+Left Joystick Press			: 
+D-Pad Up					: 
+D-Pad Down					: 
+D-Pad Left					: 
+D-Pad Right					: 
+Start						: open some sort of menu?
+Select						: switch to macro mode
+A							: 
+B							: 
+X							: 
+Y							: 
+Right Trigger				: 
+Left Trigger				: 
+Right Shoulder				: skip 10 next images
+Left Shoulder				: skip 10 previous images
+
+MACRO MODE CONTROLS:
+Right Joystick				: 
+Left Joystick				: next previous labeled slice
+Right Joystick Press		: 
+Left Joystick Press			: zoom in/out
+D-Pad Up					: 
+D-Pad Down					: 
+D-Pad Left					: 
+D-Pad Right					: 
+Start						: open some sort of menu?
+Select						: switch to macro mode
+A							: zoom out
+B							: 
+X							: 
+Y							: zoom in
+Right Trigger				: 
+Left Trigger				: 
+Right Shoulder				: 
+Left Shoulder				: 
+
+HISTOLOGY MODE CONTROLS:
+Right Joystick				: navigate
+Left Joystick				: rotate
+Right Joystick Press		: 
+Left Joystick Press			: zoom in/out
+D-Pad Up					: 
+D-Pad Down					: 
+D-Pad Left					: 
+D-Pad Right					: 
+Start						: open some sort of menu?
+Select						: switch to macro mode
+A							: zoom out
+B							: 
+X							: 
+Y							: zoom in
+Right Trigger				: zoom in
+Left Trigger				: zoom out
+Right Shoulder				: 
+Left Shoulder				: 
+
+3D MODE CONTROLS:
+Right Joystick				: move
+Left Joystick				: rotate
+Right Joystick Press		: 
+Left Joystick Press			: 
+D-Pad Up					: 
+D-Pad Down					: 
+D-Pad Left					: 
+D-Pad Right					: 
+Start						: open some sort of menu?
+Select						: switch to macro mode
+A							: zoom out
+B							: 
+X							: 
+Y							: zoom in
+Right Trigger				: move closer
+Left Trigger				: move away
+Right Shoulder				: increase scale
+Left Shoulder				: decreaze scale

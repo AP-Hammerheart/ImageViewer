@@ -244,7 +244,7 @@ namespace ImageViewer.Content.Views
 
         internal async Task CreateDeviceDependentResourcesAsync()
         {
-            await settings?.InitializeAsync();
+            //await settings?.InitializeAsync();
 
             if (Settings.Online)
             {
