@@ -70,6 +70,11 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Content\JsonClasses\CasesJson.cs" />
+    <Compile Include="Content\JsonClasses\HistologyJson.cs" />
+    <Compile Include="Content\JsonClasses\ImageConnections.cs" />
+    <Compile Include="Content\JsonClasses\MacroJson.cs" />
+    <Compile Include="Content\JsonClasses\RadiologyJson.cs" />
     <Compile Include="Content\Renderers\Base\ObjRenderer.cs" />
     <Compile Include="Content\Renderers\Image\Label.cs" />
     <Compile Include="Content\Renderers\ThreeD\BasePointerRenderer.cs" />
@@ -105,6 +110,7 @@
     <Compile Include="Content\Utils\Tag.cs" />
     <Compile Include="Content\Renderers\Dev\TileCounterRenderer.cs" />
     <Compile Include="Content\Utils\TextureLoader.cs" />
+    <Compile Include="Content\Views\CaseSelectionView.cs" />
     <Compile Include="Content\Views\DisposeView.cs" />
     <Compile Include="Content\Views\HistologyView.cs" />
     <Compile Include="Content\Views\KeyEventView.cs" />

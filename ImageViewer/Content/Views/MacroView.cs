@@ -51,7 +51,7 @@ namespace ImageViewer.Content.Views
 
             var labelTexts = new string[] 
             {
-                "Z7"
+                "Z18"
                 //"M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
                 //"W", "X", "Y", "Z", "Z1", "Z2", "Z3",
                 //"Z4", "Z5", "Z6", "Z7", "Z8", "Z9", "Z10", "Z11", "Z12",

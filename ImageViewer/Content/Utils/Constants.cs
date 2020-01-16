@@ -49,5 +49,8 @@ namespace ImageViewer.Content.Utils
         internal static float MX { get; } = 0.8f * scale;
         internal static float MY { get; } = 0.0f * scale;
         internal static float MZ { get; } = -0.5f * scale;
+
+
+        //Case Selection Constants:
     }
 }

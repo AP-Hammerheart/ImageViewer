@@ -62,11 +62,11 @@ namespace ImageViewer.Content.Utils
 
         //internal static string Image1 { get; set; } = "aligned_41.14x_01_aligned__41.14x_01_1_T3502-18_Z4.svs";
 
-        internal static string Image1 { get; set; } = ";histology;T2747-19-Z19.ndpi";
+        internal static string Image1 { get; set; } = ";histology;T2747-19-Z18.ndpi";
 
         //internal static string Image2 { get; set; } = "aligned_41.14x_01_aligned__41.14x_01_1_T3502-18_Z4.svs";
 
-        internal static string Image2 { get; set; } = ";histology;T2747-19-Z19.ndpi";
+        internal static string Image2 { get; set; } = ";histology;T2747-19-Z18.ndpi";
 
         internal static int Image2offsetX { get; set; } = 0;
 

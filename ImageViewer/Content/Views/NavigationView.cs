@@ -7,6 +7,8 @@ using ImageViewer.Content.Utils;
 using System;
 using System.Numerics;
 using static ImageViewer.ImageViewerMain;
+using ImageViewer.Content.JsonClasses;
+using Newtonsoft.Json;
 
 namespace ImageViewer.Content.Views
 {
@@ -46,7 +48,16 @@ namespace ImageViewer.Content.Views
         internal Vector3 Origo { get; set; } = Vector3.Zero;
         internal float RotationAngle { get; set; } = 0;
 
-        protected NavigationView() {}
+        //read connections json
+        ImageConnections imageConnections = new ImageConnections();
+
+        protected NavigationView() {
+            string url = Settings.jsonURL + Settings.CaseID + "/connections/";
+            using( var client = new System.Net.Http.HttpClient() ) {
+                var j = client.GetStringAsync( url );
+                imageConnections = JsonConvert.DeserializeObject<ImageConnections>( j.Result );
+            }
+        }
 
         protected abstract void UpdateImages();
 
@@ -313,14 +324,18 @@ namespace ImageViewer.Content.Views
             TopRightY = CenterY - yy2;
         }
 
-        protected void NextRadiologyImage() {
-            radiology.NextImage();
+        protected void NextRadiologyImage( int step ) {
+            radiology.NextImage( step );
             Refresh();
         }
 
-        protected void PrevRadiologyImage() {
-            radiology.PrevImage();
+        protected void PrevRadiologyImage( int step ) {
+            radiology.PrevImage( step );
             Refresh();
+        }
+
+        protected void ToggleCaseSelectionMenu(bool isShow) {
+            caseView.showCaseSelection = isShow;
         }
 
     }

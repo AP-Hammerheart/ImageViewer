@@ -26,6 +26,7 @@ namespace ImageViewer.Content.Views
         protected HistologyView histo;
         protected RadiologyView radiology;
         protected ObjRenderer model;
+        protected CaseSelectionView caseView;
 
         internal RotateRenderer[] Tiles { get; set; }
         internal BasePointerRenderer[] Pointers { get; set; }
@@ -57,6 +58,7 @@ namespace ImageViewer.Content.Views
             radiology?.Update( timer );
             histo?.Update( timer );
             model?.Update(timer);
+            caseView?.Update( timer );
         }
 
         internal void Update(SpatialPointerPose pose)
@@ -73,6 +75,7 @@ namespace ImageViewer.Content.Views
             macro?.Render();
             histo?.Render();
             radiology?.Render();
+            caseView?.Render();
 
             foreach (var renderer in statusItems)
             {
@@ -110,6 +113,7 @@ namespace ImageViewer.Content.Views
             await radiology?.CreateDeviceDependentResourcesAsync();
             await histo?.CreateDeviceDependentResourcesAsync();
             await navigationFrame?.CreateDeviceDependentResourcesAsync();
+            await caseView?.CreateDeviceDependentResourcesAsync();
 
             foreach (var renderer in Tiles)
             {
@@ -150,6 +154,7 @@ namespace ImageViewer.Content.Views
             radiology?.ReleaseDeviceDependentResources();
             histo?.ReleaseDeviceDependentResources();
             model?.ReleaseDeviceDependentResources();
+            caseView?.ReleaseDeviceDependentResources();
         }
 
         internal void Dispose()
@@ -184,6 +189,7 @@ namespace ImageViewer.Content.Views
             model?.Dispose();
             histo?.Dispose();
             radiology?.Dispose();
+            caseView?.Dispose();
         }
 
         void IDisposable.Dispose()
@@ -209,6 +215,7 @@ namespace ImageViewer.Content.Views
             macro?.Dispose();
             histo?.Dispose();
             radiology?.Dispose();
+            caseView?.Dispose();
         }
     }
 }

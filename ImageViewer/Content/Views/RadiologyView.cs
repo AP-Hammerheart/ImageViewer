@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using ImageViewer.Content.JsonClasses;
 
 namespace ImageViewer.Content.Views {
     internal class RadiologyView : IDisposable {
@@ -49,33 +51,26 @@ namespace ImageViewer.Content.Views {
             };
             UpdateImage( Level );
 
+            //get number of images in dicom directory.
             string url = Settings.jsonURL + Settings.CaseID + "/dicom/";
-
             using( var client = new System.Net.Http.HttpClient() ) {
                 var j = client.GetStringAsync( url );
-                //System.Diagnostics.Debug.WriteLine( j.Result );
-                j.Result into json object then get number of stuff
+                List< RadiologyJson> rj = new List< RadiologyJson>();
+                rj = JsonConvert.DeserializeObject<List<RadiologyJson>>(j.Result);
+                maxLevel = rj[0].studyRecords[0].seriesRecords[0].imageRecords.Count;
             }
-
-            /*
-             * read caseID/DICOM to get maxlevels
-             * make method to change caseID that updates maxlevels
-             * 
-             * repeat for macro and histology
-             */
-
         }
 
-        internal void NextImage() {
-            Level++;
+        internal void NextImage(int step) {
+            Level += step;
             if( Level > maxLevel ) {
                 Level = maxLevel;
             }
             UpdateImage( Level );
         }
 
-        internal void PrevImage() {
-            Level--;
+        internal void PrevImage(int step) {
+            Level -= step;
             if( Level < minLevel ) {
                 Level = minLevel;
             }

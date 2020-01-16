@@ -11,6 +11,8 @@ using ImageViewer.Content.Renderers.ThreeD;
 using ImageViewer.Content.Utils;
 using System.Numerics;
 using Windows.UI;
+using ImageViewer.Content.JsonClasses;
+using Newtonsoft.Json;
 
 namespace ImageViewer.Content.Views
 {
@@ -416,6 +418,8 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 RotationY = 45.0f,
                 Position = new Vector3(0, 0, Constants.DistanceFromUser)
             };
+
+            caseView = new CaseSelectionView( deviceResources, loader );
 
             model = new ObjRenderer(deviceResources, loader)
             {

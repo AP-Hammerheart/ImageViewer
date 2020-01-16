@@ -17,9 +17,10 @@ namespace ImageViewer.Content.Views
 
         protected KeyEventView() {}
 
-        private readonly int modes = 3;
+        //private readonly int modes = 3;
 
         private enum inputModes {
+            caseSelection,
             window,
             radiology,
             macro,
@@ -33,6 +34,9 @@ namespace ImageViewer.Content.Views
             VirtualKey = key;
 
             switch( mode ) {
+                case inputModes.caseSelection:
+                    CaseSelectionInputs( key );
+                    break;
                 case inputModes.window:
                     WindowInputs( key );
                     break;
@@ -324,6 +328,79 @@ namespace ImageViewer.Content.Views
                 + Pointers[0].Position.ToString("0.00");
         }
 
+        internal void CaseSelectionInputs( Windows.System.VirtualKey key ) {
+            switch( key ) {
+
+                case VirtualKey.GamepadLeftThumbstickUp:
+                case VirtualKey.W:
+                    break;
+                case VirtualKey.GamepadLeftThumbstickDown:
+                case VirtualKey.S:
+                    break;
+                case VirtualKey.GamepadLeftThumbstickLeft:
+                case VirtualKey.A:
+                    break;
+                case VirtualKey.GamepadLeftThumbstickRight:
+                case VirtualKey.D:
+                    break;
+                case VirtualKey.GamepadLeftThumbstickButton:
+                    break;
+
+                case VirtualKey.GamepadRightThumbstickUp:
+
+                    break;
+                case VirtualKey.GamepadRightThumbstickDown:
+
+                    break;
+                case VirtualKey.GamepadRightThumbstickLeft:
+                case VirtualKey.Left:
+                    break;
+                case VirtualKey.GamepadRightThumbstickRight:
+                case VirtualKey.Right:
+                    break;
+                case VirtualKey.GamepadRightThumbstickButton:
+                    break;
+
+                case VirtualKey.GamepadLeftShoulder:
+                    break;
+                case VirtualKey.GamepadLeftTrigger:
+                case VirtualKey.Number1:
+                    break;
+                case VirtualKey.GamepadRightShoulder:
+                    break;
+                case VirtualKey.GamepadRightTrigger:
+                case VirtualKey.Number3:
+                    break;
+
+                case VirtualKey.GamepadDPadUp:
+                    break;
+                case VirtualKey.GamepadDPadDown:
+                    break;
+                case VirtualKey.GamepadDPadLeft:
+                    break;
+                case VirtualKey.GamepadDPadRight:
+                    break;
+
+                case VirtualKey.GamepadA:
+                    break;
+                case VirtualKey.GamepadB:
+                    break;
+                case VirtualKey.GamepadX:
+                    break;
+                case VirtualKey.GamepadY:
+                    break;
+
+                case VirtualKey.GamepadMenu:
+                case VirtualKey.Escape:
+                    ToggleCaseSelectionMenu(false);
+                    mode = inputModes.window;                
+                    break;
+                case VirtualKey.GamepadView:
+                case VirtualKey.M:
+                    break;
+            }
+        }
+
         internal void WindowInputs( Windows.System.VirtualKey key ) {
             switch( key ) {
 
@@ -395,6 +472,9 @@ namespace ImageViewer.Content.Views
                     break;
 
                 case VirtualKey.GamepadMenu:
+                case VirtualKey.Escape:
+                    ToggleCaseSelectionMenu(true);
+                    mode = inputModes.caseSelection;
                     break;
                 case VirtualKey.GamepadView:
                 case VirtualKey.M:
@@ -434,19 +514,19 @@ namespace ImageViewer.Content.Views
 
                 case VirtualKey.GamepadLeftShoulder:
                 case VirtualKey.Q:
-                    PrevRadiologyImage(); //advance 1
+                    PrevRadiologyImage(1); //advance 1
                     break;
                 case VirtualKey.GamepadLeftTrigger:
                 case VirtualKey.Number1:
-                    PrevRadiologyImage(); //advance 10
+                    PrevRadiologyImage(10); //advance 10
                     break;
                 case VirtualKey.GamepadRightShoulder:
                 case VirtualKey.E:
-                    NextRadiologyImage(); //advance 1
+                    NextRadiologyImage(1); //advance 1
                     break;
                 case VirtualKey.GamepadRightTrigger:
                 case VirtualKey.Number3:
-                    NextRadiologyImage(); //advance 10
+                    NextRadiologyImage(10); //advance 10
                     break;
 
                 case VirtualKey.GamepadDPadUp:
@@ -470,6 +550,9 @@ namespace ImageViewer.Content.Views
                     break;
 
                 case VirtualKey.GamepadMenu:
+                case VirtualKey.Escape:
+                    ToggleCaseSelectionMenu(true);
+                    mode = inputModes.caseSelection;
                     break;
                 case VirtualKey.GamepadView:
                 case VirtualKey.M:
@@ -536,10 +619,13 @@ namespace ImageViewer.Content.Views
                     break;
                 case VirtualKey.GamepadY:
                 case VirtualKey.I:
-                    //Toggle Filled Labels
+                    macro.ChangeType();
                     break;
 
                 case VirtualKey.GamepadMenu:
+                case VirtualKey.Escape:
+                    ToggleCaseSelectionMenu(true);
+                    mode = inputModes.caseSelection;
                     break;
                 case VirtualKey.GamepadView:
                 case VirtualKey.M:
@@ -641,6 +727,9 @@ namespace ImageViewer.Content.Views
                     break;
 
                 case VirtualKey.GamepadMenu:
+                case VirtualKey.Escape:
+                    ToggleCaseSelectionMenu(true);
+                    mode = inputModes.caseSelection;
                     break;
                 case VirtualKey.GamepadView:
                 case VirtualKey.M:
@@ -655,7 +744,7 @@ namespace ImageViewer.Content.Views
 
                 case VirtualKey.GamepadLeftThumbstickUp:
                 case VirtualKey.W:
-                    model.RotationY = 0.1f;
+                    model.RotationY += 0.1f;
                     break;
                 case VirtualKey.GamepadLeftThumbstickDown:
                 case VirtualKey.S:
@@ -667,7 +756,7 @@ namespace ImageViewer.Content.Views
                     break;
                 case VirtualKey.GamepadLeftThumbstickRight:
                 case VirtualKey.D:
-                    model.RotationX = 0.1f;
+                    model.RotationX += 0.1f;
                     break;
                 case VirtualKey.GamepadLeftThumbstickButton:
                     break;
@@ -693,7 +782,7 @@ namespace ImageViewer.Content.Views
 
                 case VirtualKey.GamepadLeftShoulder:
                 case VirtualKey.Q:
-                    model.RotationZ = 0.1f;
+                    model.RotationZ -= 0.1f;
                     break;
                 case VirtualKey.GamepadLeftTrigger:
                 case VirtualKey.Number1:
@@ -737,6 +826,9 @@ namespace ImageViewer.Content.Views
                     break;
 
                 case VirtualKey.GamepadMenu:
+                case VirtualKey.Escape:
+                    ToggleCaseSelectionMenu(true);
+                    mode = inputModes.caseSelection;
                     break;
                 case VirtualKey.GamepadView:
                 case VirtualKey.M:
