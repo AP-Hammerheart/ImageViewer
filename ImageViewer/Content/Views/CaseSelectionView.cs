@@ -17,20 +17,21 @@ namespace ImageViewer.Content.Views {
         readonly TextureLoader loader;
 
         //RadiologyRenderer dicom;
-        StatusBarRenderer[] view = new StatusBarRenderer[3];
+        StatusBarRenderer[] view = new StatusBarRenderer[4];
         public bool showCaseSelection = true;
+        List<CasesJson> cj = new List<CasesJson>();
+        int selectedID = 0;
 
         internal CaseSelectionView( DeviceResources deviceResources, TextureLoader loader ) {
             this.loader = loader;
-            gör så att view är centrerad och lite framför!
             //Top
             view[0] = new StatusBarRenderer(
                     deviceResources: deviceResources,
                     loader: loader,
-                    bottomLeft: new Vector3( Constants.X00, Constants.Y3, Constants.Z3 ),
-                    topLeft: new Vector3( Constants.X00, Constants.Y4, Constants.Z3 ),
-                    bottomRight: new Vector3( Constants.X00, Constants.Y3, Constants.Z2 ),
-                    topRight: new Vector3( Constants.X00, Constants.Y4, Constants.Z2 ) )
+                    bottomLeft: new Vector3( Constants.X00, Constants.Y3, Constants.Z1 ),
+                    topLeft: new Vector3( Constants.X00, Constants.Y4, Constants.Z1 ),
+                    bottomRight: new Vector3( Constants.X01, Constants.Y3, Constants.Z0 ),
+                    topRight: new Vector3( Constants.X01, Constants.Y4, Constants.Z0 ) )
             {
                 TextPosition = new Vector2( 20, 10 ),
                 Text = "Select Case",
@@ -39,39 +40,91 @@ namespace ImageViewer.Content.Views {
                 ImageHeight = 80,
             };
 
-            //Content
+            //Header
             view[1] = new StatusBarRenderer(
+                    deviceResources: deviceResources,
+                    loader: loader,
+                    bottomLeft: new Vector3( Constants.X00, Constants.Y2, Constants.Z2 ),
+                    topLeft: new Vector3( Constants.X00, Constants.Y3, Constants.Z2 ),
+                    bottomRight: new Vector3( Constants.X00, Constants.Y2, Constants.Z1 ),
+                    topRight: new Vector3( Constants.X00, Constants.Y3, Constants.Z1 ) ) {
+                TextPosition = new Vector2( 20, 10 ),
+                FontSize = 40.0f,
+                ImageWidth = 960,
+                ImageHeight = 80,
+                BackgroundColor = Windows.UI.Colors.LightGray,
+            };
+
+            //Content
+            view[2] = new StatusBarRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3( Constants.X09, Constants.Y1, Constants.Z0 ),
-                topLeft: new Vector3( Constants.X09, Constants.Y3, Constants.Z0 ),
-                bottomRight: new Vector3( Constants.X10, Constants.Y1, Constants.Z1 ),
-                topRight: new Vector3( Constants.X10, Constants.Y3, Constants.Z1 ) ) 
+                bottomLeft: new Vector3( Constants.X00 + 0.005f, Constants.Y1, Constants.Z2 ),
+                topLeft: new Vector3( Constants.X00 + 0.005f, Constants.Y2, Constants.Z2 ),
+                bottomRight: new Vector3( Constants.X00 + 0.005f, Constants.Y1, Constants.Z1 ),
+                topRight: new Vector3( Constants.X00 + 0.005f, Constants.Y2, Constants.Z1 ) ) 
             {
                 TextPosition = new Vector2( 20, 10 ),
-                Text = "sadfasdfsadfasdf",
+                Text = "",
+                FontSize = 34.0f,
+                ImageWidth = 1280,
+                ImageHeight = 1344,
+                BackgroundColor = Windows.UI.Colors.White,
+            };
+
+            //Bottom
+            view[3] = new StatusBarRenderer(
+                deviceResources: deviceResources,
+                loader: loader,
+                bottomLeft: new Vector3( Constants.X00, Constants.Y0, Constants.Z2 ),
+                topLeft: new Vector3( Constants.X00, Constants.Y1, Constants.Z2 ),
+                bottomRight: new Vector3( Constants.X00, Constants.Y0, Constants.Z1 ),
+                topRight: new Vector3( Constants.X00, Constants.Y1, Constants.Z1 ) ) 
+            {
+                TextPosition = new Vector2( 20, 10 ),
+                Text = "",
                 FontSize = 34.0f,
                 ImageWidth = 1280,
                 ImageHeight = 1344,
                 BackgroundColor = Windows.UI.Colors.LightGray,
             };
+            SetSelectionText();
+        }
 
-            //Bottom
-            view[2] = new StatusBarRenderer(
-                    deviceResources: deviceResources,
-                    loader: loader,
-                    bottomLeft: new Vector3( Constants.X00, Constants.Y3, Constants.Z3 ),
-                    topLeft: new Vector3( Constants.X00, Constants.Y4, Constants.Z3 ),
-                    bottomRight: new Vector3( Constants.X00, Constants.Y3, Constants.Z2 ),
-                    topRight: new Vector3( Constants.X00, Constants.Y4, Constants.Z2 ) )
-            {
-                TextPosition = new Vector2( 20, 10 ),
-                Text = "BOTTOM",
-                FontSize = 40.0f,
-                ImageWidth = 960,
-                ImageHeight = 80,
-            };
+        internal void SetSelectionText () {
+            string url = Settings.jsonURL;
+            using( var client = new System.Net.Http.HttpClient() ) {
+                var j = client.GetStringAsync( url );
+                cj = JsonConvert.DeserializeObject<List<CasesJson>>( j.Result );
+            }
+            view[2].Text = string.Empty;
+            for( int i = 0; i < cj.Count; i++ ) {
+                view[2].Text += cj[i].caseId + "\n";
+            }
+        }
 
+        internal void ConfirmSelectedID() {
+            Settings.CaseID = cj[selectedID].caseId;
+        }
+
+        internal void ChangeSelectedIDUp() {
+            selectedID--;
+            if( selectedID < 0 ) {
+                selectedID = 0;
+            }
+            view[3].Text = cj[selectedID].caseId;
+        }
+
+        internal void ChangeSelectedIDDown() {
+            selectedID++;
+            if( selectedID >= cj.Count ) {
+                selectedID = cj.Count-1;
+            }
+            view[3].Text = cj[selectedID].caseId;
+        }
+
+        internal void ShowMenu() {
+            view[3].Text = Settings.CaseID;
         }
 
         internal void Update( StepTimer timer ) {

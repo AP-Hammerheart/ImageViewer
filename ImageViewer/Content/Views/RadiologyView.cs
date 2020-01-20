@@ -93,7 +93,7 @@ namespace ImageViewer.Content.Views {
             => (int)Math.Pow( 2, Settings.Multiplier * level );
 
         private string Image( int index ) {
-            return @";dicom;" + index;
+            return @";dicom;1;" + index;
         }
 
         internal void Update( StepTimer timer ) {

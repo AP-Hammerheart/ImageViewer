@@ -336,7 +336,19 @@ namespace ImageViewer.Content.Views
 
         protected void ToggleCaseSelectionMenu(bool isShow) {
             caseView.showCaseSelection = isShow;
+            caseView.ShowMenu();
         }
 
+        internal void ConfirmSelectedID() {
+            caseView.ConfirmSelectedID();
+        }
+
+        internal void ChangeSelectedIDUp() {
+            caseView.ChangeSelectedIDUp();
+        }
+
+        internal void ChangeSelectedIDDown() {
+            caseView.ChangeSelectedIDDown();
+        }
     }
 }

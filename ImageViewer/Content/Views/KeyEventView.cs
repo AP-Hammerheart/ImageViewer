@@ -333,9 +333,11 @@ namespace ImageViewer.Content.Views
 
                 case VirtualKey.GamepadLeftThumbstickUp:
                 case VirtualKey.W:
+                    ChangeSelectedIDUp();
                     break;
                 case VirtualKey.GamepadLeftThumbstickDown:
                 case VirtualKey.S:
+                    ChangeSelectedIDDown();
                     break;
                 case VirtualKey.GamepadLeftThumbstickLeft:
                 case VirtualKey.A:
@@ -373,8 +375,10 @@ namespace ImageViewer.Content.Views
                     break;
 
                 case VirtualKey.GamepadDPadUp:
+                    ChangeSelectedIDUp();
                     break;
                 case VirtualKey.GamepadDPadDown:
+                    ChangeSelectedIDDown();
                     break;
                 case VirtualKey.GamepadDPadLeft:
                     break;
@@ -382,6 +386,10 @@ namespace ImageViewer.Content.Views
                     break;
 
                 case VirtualKey.GamepadA:
+                case VirtualKey.K:
+                    ConfirmSelectedID();
+                    ToggleCaseSelectionMenu( false );
+                    mode = inputModes.window;
                     break;
                 case VirtualKey.GamepadB:
                     break;
