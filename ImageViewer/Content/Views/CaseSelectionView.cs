@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using ImageViewer.Content.JsonClasses;
 using ImageViewer.Content.Renderers.Base;
+using ImageViewer.Content.Renderers.ThreeD;
 
 namespace ImageViewer.Content.Views {
     class CaseSelectionView {
@@ -28,10 +29,10 @@ namespace ImageViewer.Content.Views {
             view[0] = new StatusBarRenderer(
                     deviceResources: deviceResources,
                     loader: loader,
-                    bottomLeft: new Vector3( Constants.X00, Constants.Y3, Constants.Z1 ),
-                    topLeft: new Vector3( Constants.X00, Constants.Y4, Constants.Z1 ),
-                    bottomRight: new Vector3( Constants.X01, Constants.Y3, Constants.Z0 ),
-                    topRight: new Vector3( Constants.X01, Constants.Y4, Constants.Z0 ) )
+                    bottomLeft: new Vector3( Constants.X00 + 0.005f, Constants.Y3, Constants.Z2 ),
+                    topLeft: new Vector3( Constants.X00 + 0.005f, Constants.Y4, Constants.Z2 ),
+                    bottomRight: new Vector3( Constants.X00 + 0.005f, Constants.Y3, Constants.Z1 ),
+                    topRight: new Vector3( Constants.X00 + 0.005f, Constants.Y4, Constants.Z1 ) )
             {
                 TextPosition = new Vector2( 20, 10 ),
                 Text = "Select Case",
@@ -44,10 +45,10 @@ namespace ImageViewer.Content.Views {
             view[1] = new StatusBarRenderer(
                     deviceResources: deviceResources,
                     loader: loader,
-                    bottomLeft: new Vector3( Constants.X00, Constants.Y2, Constants.Z2 ),
-                    topLeft: new Vector3( Constants.X00, Constants.Y3, Constants.Z2 ),
-                    bottomRight: new Vector3( Constants.X00, Constants.Y2, Constants.Z1 ),
-                    topRight: new Vector3( Constants.X00, Constants.Y3, Constants.Z1 ) ) {
+                    bottomLeft: new Vector3( Constants.X00 + 0.005f, Constants.Y2, Constants.Z2 ),
+                    topLeft: new Vector3( Constants.X00 + 0.005f, Constants.Y3, Constants.Z2 ),
+                    bottomRight: new Vector3( Constants.X00 + 0.005f, Constants.Y2, Constants.Z1 ),
+                    topRight: new Vector3( Constants.X00 + 0.005f, Constants.Y3, Constants.Z1 ) ) {
                 TextPosition = new Vector2( 20, 10 ),
                 FontSize = 40.0f,
                 ImageWidth = 960,
@@ -65,30 +66,31 @@ namespace ImageViewer.Content.Views {
                 topRight: new Vector3( Constants.X00 + 0.005f, Constants.Y2, Constants.Z1 ) ) 
             {
                 TextPosition = new Vector2( 20, 10 ),
-                Text = "",
-                FontSize = 34.0f,
-                ImageWidth = 1280,
+                Text = "asd",
+                FontSize = 40.0f,
+                ImageWidth = 960,
                 ImageHeight = 1344,
                 BackgroundColor = Windows.UI.Colors.White,
             };
 
             //Bottom
-            view[3] = new StatusBarRenderer(
+            view[3] = new CaseIDSelectionRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3( Constants.X00, Constants.Y0, Constants.Z2 ),
-                topLeft: new Vector3( Constants.X00, Constants.Y1, Constants.Z2 ),
-                bottomRight: new Vector3( Constants.X00, Constants.Y0, Constants.Z1 ),
-                topRight: new Vector3( Constants.X00, Constants.Y1, Constants.Z1 ) ) 
+                bottomLeft: new Vector3( Constants.X00 + 0.005f, Constants.Y0, Constants.Z2 ),
+                topLeft: new Vector3( Constants.X00 + 0.005f, Constants.Y1, Constants.Z2 ),
+                bottomRight: new Vector3( Constants.X00 + 0.005f, Constants.Y0, Constants.Z1 ),
+                topRight: new Vector3( Constants.X00 + 0.005f, Constants.Y1, Constants.Z1 ) ) 
             {
                 TextPosition = new Vector2( 20, 10 ),
-                Text = "",
-                FontSize = 34.0f,
-                ImageWidth = 1280,
-                ImageHeight = 1344,
+                Text = "qwe",
+                FontSize = 40.0f,
+                ImageWidth = 960,
+                ImageHeight = 80,
                 BackgroundColor = Windows.UI.Colors.LightGray,
             };
             SetSelectionText();
+            ShowMenu();
         }
 
         internal void SetSelectionText () {

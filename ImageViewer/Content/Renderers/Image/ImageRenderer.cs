@@ -44,7 +44,7 @@ namespace ImageViewer.Content.Renderers.Image
         }
 
         internal override bool TextureReady => textureReady;
-        internal string TextureFile { get; set; } = "Content\\Textures\\macro.jpg";
+        internal string TextureFile { get; set; } = "Content\\Textures\\test.png";
 
         public Vector3 BottomLeft { get; }
 

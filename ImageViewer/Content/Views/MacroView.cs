@@ -3,8 +3,10 @@
 // See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.JsonClasses;
 using ImageViewer.Content.Renderers.Image;
 using ImageViewer.Content.Utils;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -19,6 +21,9 @@ namespace ImageViewer.Content.Views
         private readonly MacroRenderer macroR;
         readonly TextureLoader loader;
         private int Type = 0;
+        List<MacroJson> mj = new List<MacroJson>();
+        string currentImage;
+        int currentImageIndex = 0;
 
         internal MacroView(
             DeviceResources deviceResources,
@@ -35,7 +40,6 @@ namespace ImageViewer.Content.Views
                 width: 3456,
                 height: 2304 ) {
                 Position = new Vector3( 0.0f, 0.0f, Constants.DistanceFromUser ),
-                //TextureFile = "Content\\Textures\\macro.jpg",
             };
 
             macroR = new MacroRenderer( deviceResources: deviceResources,
@@ -111,12 +115,14 @@ namespace ImageViewer.Content.Views
                     coordinates: coords[i],
                     labelText: labelTexts[i]);
             }
-
+            GetMacroFromServer();
+            currentImage = ";MACRO;" + mj[0].name;
             UpdateImage();
+            ChangeType();
         }
 
         protected void UpdateImage() {
-            var ims = Image();
+            var ims = currentImage;
             var textures = new List<string>();
             textures.Add( ims );
             macroR.TextureID = ims;
@@ -127,8 +133,65 @@ namespace ImageViewer.Content.Views
             task.Wait();
         }
 
-        private string Image() {
-            return @";MACRO;T2747-19_macro_1.jpg";
+        internal void GetMacroFromServer() {
+            //get number of images in dicom directory.
+            string url = Settings.jsonURL + Settings.CaseID + "/macro/";
+            using( var client = new System.Net.Http.HttpClient() ) {
+                var j = client.GetStringAsync( url );
+                List<RadiologyJson> rj = new List<RadiologyJson>();
+                mj = JsonConvert.DeserializeObject<List<MacroJson>>( j.Result );
+            }
+        }
+
+        internal void ChangeImageUp() {
+            currentImageIndex--;
+            if( currentImageIndex < 0 ) {
+                currentImageIndex = 0;
+            }
+            currentImage = ";MACRO;" + mj[currentImageIndex].name;
+            UpdateImage();
+        }
+
+        internal void ChangeImageDown() {
+            currentImageIndex++;
+            if( currentImageIndex >= mj.Count ) {
+                currentImageIndex = mj.Count-1;
+            }
+            currentImage = ";MACRO;" + mj[currentImageIndex].name;
+            UpdateImage();
+        }
+
+        internal void ChangeCase() {
+            GetMacroFromServer();
+            currentImageIndex = 0;
+            currentImage = ";MACRO;" + mj[currentImageIndex].name;
+            UpdateImage();
+        }
+
+        internal void ChangeToImage( string path ) {
+            int index = path.LastIndexOf( "/" );
+            string s = path.Substring( index + 1 );
+            currentImage = s;
+            for( int i = 0; i < mj.Count; i++ ) {
+                if( mj[i].name.ToLower() == s.ToLower() ) {
+                    currentImageIndex = i;
+                    break;
+                }
+            }
+            //System.Diagnostics.Debug.WriteLine( s );
+            //System.Diagnostics.Debug.WriteLine( currentImageIndex + ", " + currentImage );
+            UpdateImage();
+        }
+
+        internal void SetLabel(bool isHighlight) {
+            for( int i = 0; i < labels.Length; i++ ) {
+                labels[i].SetColorToDefault();
+            }
+            if( isHighlight ) {
+                labels[0].HighLightLabel();
+            } else {
+                labels[0].SetColorToDefault();
+            }           
         }
 
         internal void Update(StepTimer timer)

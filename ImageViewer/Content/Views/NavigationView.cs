@@ -98,6 +98,7 @@ namespace ImageViewer.Content.Views
             radiology.SetPosition( dp );
             histo.SetPosition( dp );
             model.Position = model.Position + dp;
+            caseView.SetPosition( dp );
 
             UpdateImages();
         }
@@ -138,6 +139,7 @@ namespace ImageViewer.Content.Views
             macro.SetRotator(rotator);
             radiology.SetRotator( rotator );
             histo.SetRotator( rotator );
+            caseView.SetRotator( rotator );
             model.GlobalRotator = rotator;
         }
 
@@ -326,11 +328,13 @@ namespace ImageViewer.Content.Views
 
         protected void NextRadiologyImage( int step ) {
             radiology.NextImage( step );
+            CheckMatchFromRadio();
             Refresh();
         }
 
         protected void PrevRadiologyImage( int step ) {
             radiology.PrevImage( step );
+            CheckMatchFromRadio();
             Refresh();
         }
 
@@ -341,14 +345,57 @@ namespace ImageViewer.Content.Views
 
         internal void ConfirmSelectedID() {
             caseView.ConfirmSelectedID();
+            radiology.ChangeCase();
+            macro.ChangeCase();
+            histo.ChangeCase();
+            Refresh();
         }
 
         internal void ChangeSelectedIDUp() {
             caseView.ChangeSelectedIDUp();
+            Refresh();
         }
 
         internal void ChangeSelectedIDDown() {
             caseView.ChangeSelectedIDDown();
+            Refresh();
         }
+
+        internal void ChangeMacroImageUp() {
+            macro.ChangeImageUp();
+            Refresh();
+        }
+
+        internal void ChangeMacroImageDown() {
+            macro.ChangeImageDown();
+            Refresh();
+        }
+
+        internal void ChangeHistologyMapUp() {
+            histo.ChangeImageUp();
+            Refresh();
+        }
+        internal void ChangeHistologyMapDown() {
+            histo.ChangeImageDown();
+            Refresh();
+        }
+
+        internal void ChangeOverviewLevelUp() {
+            //histo.ChangeLevelUp();
+        }
+
+        internal void ChangeOverviewLevelDown() {
+            //histo.ChangeLevelDown();
+        }
+
+        internal void CheckMatchFromRadio() {
+            if( radiology.Level >= imageConnections.Items[0].Images[0].dicom[0].imageIndexStart &&
+                radiology.Level <= imageConnections.Items[0].Images[0].dicom[0].imageIndexEnd ) {
+                histo.ChangeToImage( imageConnections.Items[0].Images[0].histology[0].imageSource );
+                macro.SetLabel( true );
+            }
+            Refresh();
+        }
+
     }
 }

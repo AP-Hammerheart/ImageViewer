@@ -27,7 +27,7 @@ namespace ImageViewer.Content.Views
             histology,
             model,
         }
-        private inputModes mode = inputModes.window;
+        private inputModes mode = inputModes.caseSelection;
 
         internal void OnKeyPressed(Windows.System.VirtualKey key)
         {
@@ -596,12 +596,18 @@ namespace ImageViewer.Content.Views
                     break;
 
                 case VirtualKey.GamepadLeftShoulder:
+                case VirtualKey.Q:
+                    ChangeMacroImageUp();
                     break;
                 case VirtualKey.GamepadLeftTrigger:
+                case VirtualKey.Number1:
                     break;
                 case VirtualKey.GamepadRightShoulder:
+                case VirtualKey.E:
+                    ChangeMacroImageDown();
                     break;
                 case VirtualKey.GamepadRightTrigger:
+                case VirtualKey.Number3:
                     break;
 
                 case VirtualKey.GamepadDPadUp:
@@ -694,7 +700,7 @@ namespace ImageViewer.Content.Views
 
                 case VirtualKey.GamepadLeftShoulder:
                 case VirtualKey.Q:
-                    Rotate( Direction.LEFT );
+                    Rotate( Direction.RIGHT );
                     break;
                 case VirtualKey.GamepadLeftTrigger:
                 case VirtualKey.Number1:
@@ -702,7 +708,7 @@ namespace ImageViewer.Content.Views
                     break;
                 case VirtualKey.GamepadRightShoulder:
                 case VirtualKey.E:
-                    Rotate( Direction.RIGHT );
+                    Rotate( Direction.LEFT );
                     break;
                 case VirtualKey.GamepadRightTrigger:
                 case VirtualKey.Number3:
@@ -710,12 +716,20 @@ namespace ImageViewer.Content.Views
                     break;
 
                 case VirtualKey.GamepadDPadUp:
+                case VirtualKey.X:
+                    ChangeHistologyMapUp();
                     break;
                 case VirtualKey.GamepadDPadDown:
+                case VirtualKey.C:
+                    ChangeHistologyMapDown();
                     break;
                 case VirtualKey.GamepadDPadLeft:
+                case VirtualKey.Z:
+                    ChangeOverviewLevelUp();
                     break;
                 case VirtualKey.GamepadDPadRight:
+                case VirtualKey.V:
+                    ChangeOverviewLevelDown();
                     break;
 
                 case VirtualKey.GamepadA:
@@ -794,7 +808,7 @@ namespace ImageViewer.Content.Views
                     break;
                 case VirtualKey.GamepadLeftTrigger:
                 case VirtualKey.Number1:
-                    model.RotationZ -= 0.1f;
+                    model.RotationZ += 0.1f;
                     break;
                 case VirtualKey.GamepadRightShoulder:
                 case VirtualKey.E:

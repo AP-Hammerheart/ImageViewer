@@ -14,15 +14,15 @@ namespace ImageViewer.Content.Views {
 
         //private ImageRenderer image;
         private int Type = 0;
-        private int Level = 270;
+        private int level = 1;
         private int maxLevel = 515;
         private int minLevel = 1;
         readonly TextureLoader loader;
 
         RadiologyRenderer dicom;
 
-        public int level {
-            get => Level;
+        public int Level {
+            get => level;
         }
 
         internal RadiologyView( DeviceResources deviceResources, TextureLoader loader ) {
@@ -49,32 +49,24 @@ namespace ImageViewer.Content.Views {
                                        height: 2304 ) {
                 Position = new Vector3( 0.0f, 0.0f, Constants.DistanceFromUser ),
             };
-            UpdateImage( Level );
-
-            //get number of images in dicom directory.
-            string url = Settings.jsonURL + Settings.CaseID + "/dicom/";
-            using( var client = new System.Net.Http.HttpClient() ) {
-                var j = client.GetStringAsync( url );
-                List< RadiologyJson> rj = new List< RadiologyJson>();
-                rj = JsonConvert.DeserializeObject<List<RadiologyJson>>(j.Result);
-                maxLevel = rj[0].studyRecords[0].seriesRecords[0].imageRecords.Count;
-            }
+            GetDICOMFromServer();
+            UpdateImage( level );
         }
 
         internal void NextImage(int step) {
-            Level += step;
-            if( Level > maxLevel ) {
-                Level = maxLevel;
+            level += step;
+            if( level > maxLevel ) {
+                level = maxLevel;
             }
-            UpdateImage( Level );
+            UpdateImage( level );
         }
 
         internal void PrevImage(int step) {
-            Level -= step;
-            if( Level < minLevel ) {
-                Level = minLevel;
+            level -= step;
+            if( level < minLevel ) {
+                level = minLevel;
             }
-            UpdateImage( Level );
+            UpdateImage( level );
         }
 
         protected void UpdateImage( int level) {
@@ -93,7 +85,32 @@ namespace ImageViewer.Content.Views {
             => (int)Math.Pow( 2, Settings.Multiplier * level );
 
         private string Image( int index ) {
-            return @";dicom;1;" + index;
+            return @";dicom;1;" + Settings.CaseID + "-" + index;
+        }
+
+        internal void GetDICOMFromServer() {
+            //get number of images in dicom directory.
+            string url = Settings.jsonURL + Settings.CaseID + "/dicom/";
+            using( var client = new System.Net.Http.HttpClient() ) {
+                var j = client.GetStringAsync( url );
+                List<RadiologyJson> rj = new List<RadiologyJson>();
+                rj = JsonConvert.DeserializeObject<List<RadiologyJson>>( j.Result );
+                maxLevel = rj[0].studyRecords[0].seriesRecords[0].imageRecords.Count;
+            }
+        }
+
+        internal void ChangeCase() {
+            GetDICOMFromServer();
+            level = 1;
+            UpdateImage( level );
+        }
+
+        internal void ChangeToImage( string path ) {
+            int index = path.LastIndexOf( "/" );
+            string s = path.Substring( index + 1 );
+            level = int.Parse( "s" );
+            //System.Diagnostics.Debug.WriteLine( level );
+            UpdateImage(level);
         }
 
         internal void Update( StepTimer timer ) {

@@ -3,8 +3,10 @@
 // See LICENSE file in the project root for full license information.
 
 using ImageViewer.Common;
+using ImageViewer.Content.JsonClasses;
 using ImageViewer.Content.Renderers.Image;
 using ImageViewer.Content.Utils;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -16,6 +18,14 @@ namespace ImageViewer.Content.Views {
         private readonly HistologyRenderer histo;
         readonly TextureLoader loader;
         private int Type = 0;
+
+        string currentImage;
+        int currentImageIndex = 0;
+        List<HistologyJson> hj = new List<HistologyJson>();
+        int level = 7;
+        int w = 950;//3456;
+        int h = 850;//2304;
+
 
         internal HistologyView(
             DeviceResources deviceResources,
@@ -44,13 +54,15 @@ namespace ImageViewer.Content.Views {
                            height: 2304 ) {
                 Position = new Vector3( 0.0f, 0.0f, Constants.DistanceFromUser ),
             };
-
-
+            GetHistoFromServer();
+            currentImage = ";histology;" + hj[currentImageIndex].Name + "&x=0&y=0" + "&w=" + w.ToString() + "&h=" + h.ToString() + "&level=" + level.ToString();
+            Settings.Image1 = ";histology;" + hj[currentImageIndex].Name;
+            Settings.Image2 = ";histology;" + hj[currentImageIndex].Name;
             UpdateImage();
         }
 
         protected void UpdateImage() {
-            var ims = Image();
+            var ims = currentImage;
             var textures = new List<string>();
             textures.Add( ims );
             histo.TextureID = ims;
@@ -61,8 +73,81 @@ namespace ImageViewer.Content.Views {
             task.Wait();
         }
 
-        private string Image() {
-            return Settings.Image1 + "&x=0&y=0&w=950&h=850&level=7";
+        internal void GetHistoFromServer() {
+            //get number of images in dicom directory.
+            string url = Settings.jsonURL + Settings.CaseID + "/histology/";
+            using( var client = new System.Net.Http.HttpClient() ) {
+                var j = client.GetStringAsync( url );
+                List<HistologyJson> rj = new List<HistologyJson>();
+                hj = JsonConvert.DeserializeObject<List<HistologyJson>>( j.Result );
+            }
+        }
+
+        internal void ChangeImageUp() {
+            currentImageIndex--;
+            if( currentImageIndex < 0 ) {
+                currentImageIndex = 0;
+            }
+            currentImage = ";histology;" + hj[currentImageIndex].Name + "&x=0&y=0" + "&w=" + w.ToString() + "&h=" + h.ToString() + "&level=" + level.ToString();
+            Settings.Image1 = ";histology;" + hj[currentImageIndex].Name;
+            Settings.Image2 = ";histology;" + hj[currentImageIndex].Name;
+            UpdateImage();
+        }
+
+        internal void ChangeImageDown() {
+            currentImageIndex++;
+            if( currentImageIndex >= hj.Count ) {
+                currentImageIndex = hj.Count - 1;
+            }
+            currentImage = ";histology;" + hj[currentImageIndex].Name + "&x=0&y=0" + "&w=" + w.ToString() + "&h=" + h.ToString() + "&level=" + level.ToString();
+            Settings.Image1 = ";histology;" + hj[currentImageIndex].Name;
+            Settings.Image2 = ";histology;" + hj[currentImageIndex].Name;
+            UpdateImage();
+        }
+
+        internal void ChangeCase() {
+            GetHistoFromServer();
+            currentImageIndex = 0;
+            currentImage = ";histology;" + hj[currentImageIndex].Name + "&x=0&y=0" + "&w=" + w.ToString() + "&h=" + h.ToString() + "&level=" + level.ToString();
+            Settings.Image1 = ";histology;" + hj[currentImageIndex].Name;
+            Settings.Image2 = ";histology;" + hj[currentImageIndex].Name;
+            UpdateImage();
+        }
+
+        internal void ChangeToImage( string path ) {
+            int index = path.LastIndexOf( "/" );
+            string s = path.Substring( index + 1 );
+            //currentImage = s;
+            for( int i = 0; i < hj.Count; i++ ) {
+                if( hj[i].Name.ToLower() == s.ToLower() ) {
+                    currentImageIndex = i;
+                    break;
+                }
+            }
+            currentImage = ";histology;" + hj[currentImageIndex].Name + "&x=0&y=0" + "&w=" + w.ToString() + "&h=" + h.ToString() + "&level=" + level.ToString();
+            Settings.Image1 = ";histology;" + hj[currentImageIndex].Name;
+            Settings.Image2 = ";histology;" + hj[currentImageIndex].Name;
+            //System.Diagnostics.Debug.WriteLine( s );
+            //System.Diagnostics.Debug.WriteLine( currentImageIndex + ", " + currentImage );
+            UpdateImage();
+        }
+
+        internal void ChangeLevelUp() {
+            level++;
+            if( level >= 9 ) {
+                level = 9;
+            }
+            currentImage = ";histology;" + hj[currentImageIndex].Name + "&x=0&y=0" + "&w=" + w.ToString() + "&h=" + h.ToString() + "&level=" + level.ToString();
+            UpdateImage();
+        }
+
+        internal void ChangeLevelDown() {
+            level--;
+            if( level <= 5 ) {
+                level = 5;
+            }
+            currentImage = ";histology;" + hj[currentImageIndex].Name + "&x=0&y=0" + "&w=" + w.ToString() + "&h=" + h.ToString() + "&level=" + level.ToString();
+            UpdateImage();
         }
 
         internal void Update( StepTimer timer ) {

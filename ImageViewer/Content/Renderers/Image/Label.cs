@@ -20,6 +20,20 @@ namespace ImageViewer.Content.Renderers.Image
 
         public int Type { get; set; } = 0;
 
+        internal static Color highlighted = Colors.Green;
+        internal static Color defaultColor = Colors.Yellow;
+
+        public void HighLightLabel() {
+            label.BackgroundColor = highlighted;
+            frame.Color = highlighted;
+        }
+
+        public void SetColorToDefault() {
+            label.BackgroundColor = defaultColor;
+            frame.Color = defaultColor;
+            System.Diagnostics.Debug.WriteLine( "change color" );
+        }
+
         internal Label(
             DeviceResources deviceResources,
             TextureLoader loader,
@@ -58,7 +72,7 @@ namespace ImageViewer.Content.Renderers.Image
                 ImageWidth = 256,
                 ImageHeight = 256,
                 TextPosition = new Vector2(labelText.Length > 2 ? 107 : labelText.Length > 1 ? 112 : 117, 113),
-                BackgroundColor = labelText == "Z4" ? Colors.Red : Colors.Yellow,
+                BackgroundColor = /*labelText == "Z4" ?*/ highlighted /*: defaultColor*/,
 
                 UBL = uvbl.X,
                 VBL = uvbl.Y,
@@ -75,7 +89,7 @@ namespace ImageViewer.Content.Renderers.Image
                 thickness: 0.001f)
             {
                 Position = new Vector3(0.0f, 0.0f, Constants.DistanceFromUser),
-                Color = labelText == "Z4" ? Colors.Red : Colors.Yellow,
+                Color = /*labelText == "Z4" ?*/ highlighted /*: defaultColor*/,
             };
         }
 

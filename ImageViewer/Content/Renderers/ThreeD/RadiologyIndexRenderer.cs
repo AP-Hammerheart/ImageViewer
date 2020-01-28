@@ -29,7 +29,7 @@ namespace ImageViewer.Content.Renderers.Dev {
                   topRight ) => this.dicom = rv;
 
         internal override void Update( StepTimer timer ) {
-            var index = dicom.level;
+            var index = dicom.Level;
 
             if( !index.Equals( Text ) ) {
                 Updating = true;

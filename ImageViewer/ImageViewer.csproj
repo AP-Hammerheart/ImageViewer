@@ -78,6 +78,7 @@
     <Compile Include="Content\Renderers\Base\ObjRenderer.cs" />
     <Compile Include="Content\Renderers\Image\Label.cs" />
     <Compile Include="Content\Renderers\ThreeD\BasePointerRenderer.cs" />
+    <Compile Include="Content\Renderers\ThreeD\CaseIDSelectionRenderer.cs" />
     <Compile Include="Content\Renderers\ThreeD\HistologyRenderer.cs" />
     <Compile Include="Content\Renderers\ThreeD\MacroRenderer.cs" />
     <Compile Include="Content\Renderers\ThreeD\NavigationRenderer.cs" />
