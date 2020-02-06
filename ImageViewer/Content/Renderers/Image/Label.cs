@@ -72,7 +72,7 @@ namespace ImageViewer.Content.Renderers.Image
                 ImageWidth = 256,
                 ImageHeight = 256,
                 TextPosition = new Vector2(labelText.Length > 2 ? 107 : labelText.Length > 1 ? 112 : 117, 113),
-                BackgroundColor = /*labelText == "Z4" ?*/ highlighted /*: defaultColor*/,
+                BackgroundColor = /*labelText == "Z4" ? highlighted :*/ defaultColor /**/,
 
                 UBL = uvbl.X,
                 VBL = uvbl.Y,
@@ -89,7 +89,7 @@ namespace ImageViewer.Content.Renderers.Image
                 thickness: 0.001f)
             {
                 Position = new Vector3(0.0f, 0.0f, Constants.DistanceFromUser),
-                Color = /*labelText == "Z4" ?*/ highlighted /*: defaultColor*/,
+                Color = /*labelText == "Z4" ? highlighted :*/ defaultColor /**/,
             };
         }
 
