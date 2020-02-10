@@ -36,6 +36,21 @@ namespace ImageViewer.Content.Views
                 RotationY = 45,
             };
 
+            navMacroFrame = new NavigationRenderer(
+            deviceResources: deviceResources,
+            loader: loader,
+            view: this,
+            depth: 0.005f,
+            thickness: 0.002f,
+            topLeft: new Vector3(Constants.X00, Constants.Y2, Constants.Z2 + Constants.DistanceFromUser),
+            bottomLeft: new Vector3(Constants.X00, Constants.Y1, Constants.Z2 + Constants.DistanceFromUser),
+            topRight: new Vector3(Constants.X01, Constants.Y2, Constants.Z2 + Constants.DistanceFromUser),
+            -512, 1280, 1254400, 1075200)
+            {
+                RotationY = 90,
+            };
+            //initi 2 more nav frames
+
             settingViewer = new SettingViewer(main, deviceResources, loader);
 
             statusItems = new BasePlaneRenderer[24];

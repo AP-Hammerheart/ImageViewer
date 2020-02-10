@@ -121,14 +121,16 @@ namespace ImageViewer.Content.Renderers.Base
                 ref modelConstantBufferData));
         }
 
-        internal override void Update( StepTimer timer ) {
-            Updating = true;
+        //internal override void Update(StepTimer timer)
+        //{
+        //    Updating = true;
 
-            Task task = new Task( async () => {
-                await UpdateTextureAsync();
-            } );
-            task.Start();
-        }
+        //    Task task = new Task(async () =>
+        //    {
+        //        await UpdateTextureAsync();
+        //    });
+        //    task.Start();
+        //}
 
 
         internal override async Task LoadTextureAsync()

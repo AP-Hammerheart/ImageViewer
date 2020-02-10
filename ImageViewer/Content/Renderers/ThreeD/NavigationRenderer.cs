@@ -6,9 +6,11 @@ using ImageViewer.Common;
 using ImageViewer.Content.Utils;
 using ImageViewer.Content.Views;
 using SharpDX.Direct3D11;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
+using static ImageViewer.ImageViewerMain;
 
 namespace ImageViewer.Content.Renderers.ThreeD
 {
@@ -29,6 +31,10 @@ namespace ImageViewer.Content.Renderers.ThreeD
 
         private readonly float multiplierX;
         private readonly float multiplierY;
+
+        internal int CenterY { get; set; } = 125440 / 2;
+        internal int CenterX { get; set; } = 107520 / 2;
+        internal double Angle { get; set; } = 0;
 
         internal NavigationRenderer(
             DeviceResources deviceResources,
@@ -60,7 +66,10 @@ namespace ImageViewer.Content.Renderers.ThreeD
             this.w = w;
             this.h = h;
 
-            multiplierX = (float)(Constants.TileCountX * Constants.TileResolution)
+            CenterY = w / 2;
+            CenterX  = h / 2;
+
+        multiplierX = (float)(Constants.TileCountX * Constants.TileResolution)
                 / (float)w * Constants.HalfViewSize;
             multiplierY = (float)(Constants.TileCountY * Constants.TileResolution)
                 / (float)h * Constants.HalfViewSize;
@@ -103,6 +112,32 @@ namespace ImageViewer.Content.Renderers.ThreeD
         internal void UpdatePosition()
         {
             Position = GetPosition(view.CenterX, view.CenterY);
+        }
+
+        internal void UpdatePosition( Direction direction, int number)
+        {
+            var moveStep = view.PixelSize(view.Level) * number;
+
+            switch (direction)
+            {
+                case Direction.RIGHT:
+                    CenterX += (int)(Math.Cos(-1 * Angle) * moveStep);
+                    CenterY += (int)(Math.Sin(-1 * Angle) * moveStep);
+                    break;
+                case Direction.LEFT:
+                    CenterX -= (int)(Math.Cos(-1 * Angle) * moveStep);
+                    CenterY -= (int)(Math.Sin(-1 * Angle) * moveStep);
+                    break;
+                case Direction.UP:
+                    CenterY -= (int)(Math.Cos(-1 * Angle) * moveStep);
+                    CenterX += (int)(Math.Sin(-1 * Angle) * moveStep);
+                    break;
+                case Direction.DOWN:
+                    CenterY += (int)(Math.Cos(-1 * Angle) * moveStep);
+                    CenterX -= (int)(Math.Sin(-1 * Angle) * moveStep);
+                    break;
+            }
+            Position = GetPosition(CenterX, CenterY);
         }
 
         internal override void UpdateGeometry()

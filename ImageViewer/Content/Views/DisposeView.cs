@@ -21,6 +21,8 @@ namespace ImageViewer.Content.Views
 
         protected BasePlaneRenderer[] statusItems;
         protected NavigationRenderer navigationFrame;
+        protected NavigationRenderer navMacroFrame;
+        //protected NavigationRenderer navigationFrame;
         protected SettingViewer settingViewer;
         protected MacroView macro;
         protected HistologyView histo;
@@ -54,6 +56,7 @@ namespace ImageViewer.Content.Views
             }
 
             navigationFrame?.Update(timer);
+            navMacroFrame?.Update(timer);
             macro?.Update(timer);
             radiology?.Update( timer );
             histo?.Update( timer );
@@ -72,6 +75,7 @@ namespace ImageViewer.Content.Views
         internal void Render()
         {
             navigationFrame?.Render();
+            navMacroFrame?.Render();
             macro?.Render();
             histo?.Render();
             radiology?.Render();
@@ -113,6 +117,7 @@ namespace ImageViewer.Content.Views
             await radiology?.CreateDeviceDependentResourcesAsync();
             await histo?.CreateDeviceDependentResourcesAsync();
             await navigationFrame?.CreateDeviceDependentResourcesAsync();
+            await navMacroFrame?.CreateDeviceDependentResourcesAsync();
             await caseView?.CreateDeviceDependentResourcesAsync();
 
             foreach (var renderer in Tiles)
@@ -150,6 +155,7 @@ namespace ImageViewer.Content.Views
             }
 
             navigationFrame?.ReleaseDeviceDependentResources();
+            navMacroFrame?.ReleaseDeviceDependentResources();
             macro?.ReleaseDeviceDependentResources();
             radiology?.ReleaseDeviceDependentResources();
             histo?.ReleaseDeviceDependentResources();
@@ -185,6 +191,7 @@ namespace ImageViewer.Content.Views
             }
           
             navigationFrame?.Dispose();
+            navMacroFrame?.Dispose();
             macro?.Dispose();
             model?.Dispose();
             histo?.Dispose();
@@ -212,6 +219,7 @@ namespace ImageViewer.Content.Views
             }
          
             navigationFrame?.Dispose();
+            navMacroFrame?.Dispose();
             macro?.Dispose();
             histo?.Dispose();
             radiology?.Dispose();

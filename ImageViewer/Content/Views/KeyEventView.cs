@@ -547,14 +547,19 @@ namespace ImageViewer.Content.Views
                     break;
 
                 case VirtualKey.GamepadA:
+                case VirtualKey.K:
                     //Zoom In
+                    ZoomRadiologyImage();
                     break;
                 case VirtualKey.GamepadB:
+                case VirtualKey.L:
                     //Zoom Out
                     break;
                 case VirtualKey.GamepadX:
+                case VirtualKey.J:
                     break;
                 case VirtualKey.GamepadY:
+                case VirtualKey.I:
                     break;
 
                 case VirtualKey.GamepadMenu:

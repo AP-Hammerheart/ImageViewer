@@ -21,6 +21,9 @@ namespace ImageViewer.Content.Views {
 
         RadiologyRenderer dicom;
 
+        string ZoomString = "&w=100&h=100&x=200&y=150";//read from connections on a connection, by connection basis.
+        bool isZoom = false;
+
         public int Level {
             get => level;
         }
@@ -69,8 +72,14 @@ namespace ImageViewer.Content.Views {
             UpdateImage( level );
         }
 
+        internal void Zoom()
+        {
+            isZoom = !isZoom;
+            UpdateImage(level);
+        }
+
         protected void UpdateImage( int level) {
-            var ims = Image( level );
+            var ims = Image(level) + (isZoom ? ZoomString : "");
             var textures = new List<string>();
             textures.Add( ims );
             dicom.TextureID = ims;

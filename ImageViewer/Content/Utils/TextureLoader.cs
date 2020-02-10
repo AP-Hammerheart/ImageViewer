@@ -318,6 +318,7 @@ namespace ImageViewer.Content.Utils
 
 
                 string urlID = Url( id.Replace( ";", "/" ));
+                //System.Diagnostics.Debug.WriteLine(urlID);
                 var request = (HttpWebRequest)WebRequest.Create( urlID  );
 
                 try

@@ -94,6 +94,7 @@ namespace ImageViewer.Content.Views
             Pointers[1].SetPosition(dp);
 
             navigationFrame.SetPosition(dp);
+            navMacroFrame.SetPosition(dp);
             macro.SetPosition(dp);
             radiology.SetPosition( dp );
             histo.SetPosition( dp );
@@ -136,6 +137,7 @@ namespace ImageViewer.Content.Views
             Pointers[1].SetRotator(rotator);
 
             navigationFrame.SetRotator(rotator);
+            navMacroFrame.SetRotator(rotator);
             macro.SetRotator(rotator);
             radiology.SetRotator( rotator );
             histo.SetRotator( rotator );
@@ -165,34 +167,38 @@ namespace ImageViewer.Content.Views
 
             Refresh();
             navigationFrame.UpdateGeometry();
+            navMacroFrame.UpdateGeometry();
         }
 
         protected void Move(Direction direction, int number)
         {
-            var moveStep = PixelSize(Level) * number;
+            //var moveStep = PixelSize(Level) * number;
 
-            switch (direction)
-            {
-                case Direction.RIGHT:
-                    CenterX += (int)(Math.Cos(-1 * Angle) * moveStep);
-                    CenterY += (int)(Math.Sin(-1 * Angle) * moveStep);
-                    break;
-                case Direction.LEFT:
-                    CenterX -= (int)(Math.Cos(-1 * Angle) * moveStep);
-                    CenterY -= (int)(Math.Sin(-1 * Angle) * moveStep);
-                    break;
-                case Direction.UP:
-                    CenterY -= (int)(Math.Cos(-1 * Angle) * moveStep);
-                    CenterX += (int)(Math.Sin(-1 * Angle) * moveStep);
-                    break;
-                case Direction.DOWN:
-                    CenterY += (int)(Math.Cos(-1 * Angle) * moveStep);
-                    CenterX -= (int)(Math.Sin(-1 * Angle) * moveStep);
-                    break;
-            }
+            //switch (direction)
+            //{
+            //    case Direction.RIGHT:
+            //        CenterX += (int)(Math.Cos(-1 * Angle) * moveStep);
+            //        CenterY += (int)(Math.Sin(-1 * Angle) * moveStep);
+            //        break;
+            //    case Direction.LEFT:
+            //        CenterX -= (int)(Math.Cos(-1 * Angle) * moveStep);
+            //        CenterY -= (int)(Math.Sin(-1 * Angle) * moveStep);
+            //        break;
+            //    case Direction.UP:
+            //        CenterY -= (int)(Math.Cos(-1 * Angle) * moveStep);
+            //        CenterX += (int)(Math.Sin(-1 * Angle) * moveStep);
+            //        break;
+            //    case Direction.DOWN:
+            //        CenterY += (int)(Math.Cos(-1 * Angle) * moveStep);
+            //        CenterX -= (int)(Math.Sin(-1 * Angle) * moveStep);
+            //        break;
+            //}
 
+            navigationFrame.UpdatePosition(direction, number);
+            navMacroFrame.UpdatePosition(direction, number);
             Refresh();
-            navigationFrame.UpdatePosition();
+            //navigationFrame.UpdatePosition();
+            //navMacroFrame.UpdatePosition();
         }
 
         protected void Zoom(Direction direction, int number)
@@ -235,6 +241,7 @@ namespace ImageViewer.Content.Views
 
             Refresh();
             navigationFrame.UpdateGeometry();
+            navMacroFrame.UpdateGeometry();
         }
 
         protected void Rotate(Direction direction)
@@ -259,6 +266,7 @@ namespace ImageViewer.Content.Views
 
             Refresh();
             navigationFrame.UpdateGeometry();
+            navMacroFrame.UpdateGeometry();
         }
 
         protected void SetPointer(Direction direction, int number)
@@ -292,6 +300,7 @@ namespace ImageViewer.Content.Views
 
             Refresh();
             navigationFrame.UpdateGeometry();
+            navMacroFrame.UpdateGeometry();
         }
 
         private void SetCorners()
@@ -329,13 +338,15 @@ namespace ImageViewer.Content.Views
         protected void NextRadiologyImage( int step ) {
             radiology.NextImage( step );
             CheckMatchFromRadio();
-            Refresh();
         }
 
         protected void PrevRadiologyImage( int step ) {
             radiology.PrevImage( step );
             CheckMatchFromRadio();
-            Refresh();
+        }
+        protected void ZoomRadiologyImage()
+        {
+            radiology.Zoom();
         }
 
         protected void ToggleCaseSelectionMenu(bool isShow) {
@@ -348,36 +359,29 @@ namespace ImageViewer.Content.Views
             radiology.ChangeCase();
             macro.ChangeCase();
             histo.ChangeCase();
-            Refresh();
         }
 
         internal void ChangeSelectedIDUp() {
             caseView.ChangeSelectedIDUp();
-            Refresh();
         }
 
         internal void ChangeSelectedIDDown() {
             caseView.ChangeSelectedIDDown();
-            Refresh();
         }
 
         internal void ChangeMacroImageUp() {
             macro.ChangeImageUp();
-            Refresh();
         }
 
         internal void ChangeMacroImageDown() {
             macro.ChangeImageDown();
-            Refresh();
         }
 
         internal void ChangeHistologyMapUp() {
             histo.ChangeImageUp();
-            Refresh();
         }
         internal void ChangeHistologyMapDown() {
             histo.ChangeImageDown();
-            Refresh();
         }
 
         internal void ChangeOverviewLevelUp() {
@@ -389,12 +393,11 @@ namespace ImageViewer.Content.Views
         }
 
         internal void CheckMatchFromRadio() {
-            if( radiology.Level >= imageConnections.Items[0].Images[0].dicom[0].imageIndexStart &&
-                radiology.Level <= imageConnections.Items[0].Images[0].dicom[0].imageIndexEnd ) {
-                histo.ChangeToImage( imageConnections.Items[0].Images[0].histology[0].imageSource );
-                macro.SetLabel( true );
-            }
-            Refresh();
+            //if( radiology.Level >= imageConnections.Items[0].Images[0].dicom[0].imageIndexStart &&
+            //    radiology.Level <= imageConnections.Items[0].Images[0].dicom[0].imageIndexEnd ) {
+            //    histo.ChangeToImage( imageConnections.Items[0].Images[0].histology[0].imageSource );
+            //    macro.SetLabel( true );
+            //}
         }
 
     }

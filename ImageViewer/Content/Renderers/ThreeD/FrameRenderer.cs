@@ -42,7 +42,7 @@ namespace ImageViewer.Content.Renderers.ThreeD
 
         internal string TextureFile { get; set; } = null;
 
-        internal Color Color { get; set; } = Colors.Yellow;
+        internal Color Color { get; set; } = Colors.LightCoral;
 
         internal int ImageHeight { get; set; } = 256;
         internal int ImageWidth { get; set; } = 256;
