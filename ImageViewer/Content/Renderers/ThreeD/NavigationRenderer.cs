@@ -52,7 +52,8 @@ namespace ImageViewer.Content.Renderers.ThreeD
             int x = -512,
             int y = 1280,
             int w = 125440,
-            int h = 107520 )
+            int h = 107520,
+            int angle = 0)
             : base(deviceResources, loader, depth, thickness)
         {
             this.topLeft = topLeft;
@@ -66,8 +67,10 @@ namespace ImageViewer.Content.Renderers.ThreeD
             this.w = w;
             this.h = h;
 
+
             CenterY = w / 2;
             CenterX  = h / 2;
+            this.Angle = angle;
 
         multiplierX = (float)(Constants.TileCountX * Constants.TileResolution)
                 / (float)w * Constants.HalfViewSize;
@@ -145,7 +148,8 @@ namespace ImageViewer.Content.Renderers.ThreeD
             var width = (float)(view.PixelSize(view.Level)) * multiplierX + Thickness;
             var height = (float)(view.PixelSize(view.Level)) * multiplierY + Thickness;
 
-            UpdatePosition();
+            //UpdatePosition();
+            Position = GetPosition(CenterX, CenterY);
 
             if (vertexBuffer != null)
             {

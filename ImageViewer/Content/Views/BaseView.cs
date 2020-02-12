@@ -44,12 +44,14 @@ namespace ImageViewer.Content.Views
             thickness: 0.002f,
             topLeft: new Vector3(Constants.X00, Constants.Y2, Constants.Z2 + Constants.DistanceFromUser),
             bottomLeft: new Vector3(Constants.X00, Constants.Y1, Constants.Z2 + Constants.DistanceFromUser),
-            topRight: new Vector3(Constants.X01, Constants.Y2, Constants.Z2 + Constants.DistanceFromUser),
-            -512, 1280, 1254400, 1075200)
+            topRight: new Vector3(Constants.X00, Constants.Y2, Constants.Z1 + Constants.DistanceFromUser),
+            0, 0, 125440, 107520, 0)
             {
                 RotationY = 90,
             };
-            //initi 2 more nav frames
+
+
+            //initi 1 more nav frames for radiology
 
             settingViewer = new SettingViewer(main, deviceResources, loader);
 

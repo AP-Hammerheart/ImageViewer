@@ -44,6 +44,9 @@ namespace ImageViewer.Content.Views
         {
             var step = PixelSize(Level) * Constants.TileResolution;
 
+            int CenterX = navigationFrame.CenterX;
+            int CenterY = navigationFrame.CenterY;
+
             tileX = CenterX / step;
             tileY = CenterY / step;
 
