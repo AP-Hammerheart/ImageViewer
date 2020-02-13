@@ -21,7 +21,7 @@ namespace ImageViewer.Content.Views
 
         protected BasePlaneRenderer[] statusItems;
         protected NavigationRenderer navigationFrame;
-        protected NavigationRenderer navMacroFrame;
+        protected NavigationFrameRenderer navMacroFrame;
         //protected NavigationRenderer navigationFrame;
         protected SettingViewer settingViewer;
         protected MacroView macro;

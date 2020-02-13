@@ -36,22 +36,6 @@ namespace ImageViewer.Content.Views
                 RotationY = 45,
             };
 
-            navMacroFrame = new NavigationRenderer(
-            deviceResources: deviceResources,
-            loader: loader,
-            view: this,
-            depth: 0.005f,
-            thickness: 0.002f,
-            topLeft: new Vector3(Constants.X00, Constants.Y2, Constants.Z2 + Constants.DistanceFromUser),
-            bottomLeft: new Vector3(Constants.X00, Constants.Y1, Constants.Z2 + Constants.DistanceFromUser),
-            topRight: new Vector3(Constants.X00, Constants.Y2, Constants.Z1 + Constants.DistanceFromUser),
-            0, 0, 125440, 107520, 0)
-            {
-                RotationY = 90,
-            };
-
-
-            //initi 1 more nav frames for radiology
 
             settingViewer = new SettingViewer(main, deviceResources, loader);
 
@@ -349,8 +333,8 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
             statusItems[20] = new ImageRenderer(
                 deviceResources: deviceResources,
                 loader: loader,
-                bottomLeft: new Vector3(Constants.X00, Constants.Y0, Constants.Z3+Constants.Z1),
-                topLeft: new Vector3(Constants.X00, Constants.Y4, Constants.Z3 + Constants.Z1 ),
+                bottomLeft: new Vector3(Constants.X00, Constants.Y0, Constants.Z3 + Constants.Z1),
+                topLeft: new Vector3(Constants.X00, Constants.Y4, Constants.Z3 + Constants.Z1),
                 bottomRight: new Vector3(Constants.X00, Constants.Y0, Constants.Z3),
                 topRight: new Vector3(Constants.X00, Constants.Y4, Constants.Z3))
             {
@@ -359,6 +343,17 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
             };
 
             macro = new MacroView(deviceResources: deviceResources, loader: loader);
+
+            navMacroFrame = new NavigationFrameRenderer(deviceResources: deviceResources,
+                loader: loader,
+                depth: 0.005f,
+                thickness: 0.002f,
+                topLeft: new Vector3(Constants.X00, Constants.Y2, Constants.Z2 + Constants.DistanceFromUser),
+                bottomLeft: new Vector3(Constants.X00, Constants.Y1, Constants.Z2 + Constants.DistanceFromUser),
+                topRight: new Vector3(Constants.X00, Constants.Y2, Constants.Z1 + Constants.DistanceFromUser))
+            { 
+                RotationY = 90, 
+            };
 
             ///Radiology Top bar
             statusItems[21] = new StatusBarRenderer(
