@@ -25,6 +25,8 @@ namespace ImageViewer.Content.Views
         string currentImage;
         int currentImageIndex = 0;
 
+        internal Label[] Labels { get => labels; set => labels = value; }
+
         internal MacroView(
             DeviceResources deviceResources,
             TextureLoader loader)
@@ -41,7 +43,7 @@ namespace ImageViewer.Content.Views
                 height: 2304 ) {
                 Position = new Vector3( 0.0f, 0.0f, Constants.DistanceFromUser ),
             };
-
+            
             macroR = new MacroRenderer( deviceResources: deviceResources,
                            loader: loader,
                            bottomLeft: new Vector3( Constants.X00, Constants.Y1, Constants.Z2 ),

@@ -348,12 +348,18 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 loader: loader,
                 depth: 0.005f,
                 thickness: 0.002f,
+                macro.Labels,
                 topLeft: new Vector3(Constants.X00, Constants.Y2, Constants.Z2 + Constants.DistanceFromUser),
                 bottomLeft: new Vector3(Constants.X00, Constants.Y1, Constants.Z2 + Constants.DistanceFromUser),
                 topRight: new Vector3(Constants.X00, Constants.Y2, Constants.Z1 + Constants.DistanceFromUser))
+               //bottomRight: new Vector3(Constants.X00, Constants.Y1, Constants.Z1 + Constants.DistanceFromUser))
             { 
-                RotationY = 90, 
+                RotationY = 0, 
             };
+            navMacroFrame.SetNavigationArea(690, 897, 3456, 2304, 0);
+
+
+            //690, 897, 1399, 897, 690, 1416, 1399, 1416
 
             ///Radiology Top bar
             statusItems[21] = new StatusBarRenderer(

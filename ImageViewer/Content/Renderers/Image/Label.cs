@@ -19,6 +19,8 @@ namespace ImageViewer.Content.Renderers.Image
         private SlideFrameRenderer frame;
 
         public int Type { get; set; } = 0;
+        internal StatusBarRenderer Filled { get => label; set => label = value; }
+        internal SlideFrameRenderer Frame { get => frame; set => frame = value; }
 
         internal static Color highlighted = Colors.Green;
         internal static Color defaultColor = Colors.Yellow;

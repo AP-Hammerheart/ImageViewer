@@ -16,6 +16,11 @@ namespace ImageViewer.Content.Renderers.ThreeD
         private readonly Vector3 bottomRight;
         private readonly Vector3 topRight;
 
+        public Vector3 BottomLeft => bottomLeft;
+        public Vector3 TopLeft => topLeft;
+        public Vector3 BottomRight => bottomRight;
+        public Vector3 TopRight => topRight;
+
         internal SlideFrameRenderer(
             DeviceResources deviceResources,
             TextureLoader loader,
@@ -32,6 +37,8 @@ namespace ImageViewer.Content.Renderers.ThreeD
             this.bottomRight = bottomRight;
             this.topRight = topRight;
         }
+
+
 
         internal override void UpdateGeometry()
         {
