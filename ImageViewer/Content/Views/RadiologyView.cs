@@ -21,6 +21,8 @@ namespace ImageViewer.Content.Views {
 
         RadiologyRenderer dicom;
 
+        Label labels; //copy stuff from macro
+
         string ZoomString = "&w=100&h=100&x=200&y=150";//read from connections on a connection, by connection basis.
         bool isZoom = false;
 

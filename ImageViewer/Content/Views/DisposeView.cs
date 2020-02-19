@@ -22,6 +22,7 @@ namespace ImageViewer.Content.Views
         protected BasePlaneRenderer[] statusItems;
         protected NavigationRenderer navigationFrame;
         protected NavigationFrameRenderer navMacroFrame;
+        protected NavigationFrameRenderer navRadioFrame;
         //protected NavigationRenderer navigationFrame;
         protected SettingViewer settingViewer;
         protected MacroView macro;
@@ -57,6 +58,7 @@ namespace ImageViewer.Content.Views
 
             navigationFrame?.Update(timer);
             navMacroFrame?.Update(timer);
+            navRadioFrame?.Update(timer);
             macro?.Update(timer);
             radiology?.Update( timer );
             histo?.Update( timer );
@@ -76,6 +78,7 @@ namespace ImageViewer.Content.Views
         {
             navigationFrame?.Render();
             navMacroFrame?.Render();
+            navRadioFrame?.Render();
             macro?.Render();
             histo?.Render();
             radiology?.Render();
@@ -118,6 +121,7 @@ namespace ImageViewer.Content.Views
             await histo?.CreateDeviceDependentResourcesAsync();
             await navigationFrame?.CreateDeviceDependentResourcesAsync();
             await navMacroFrame?.CreateDeviceDependentResourcesAsync();
+            await navRadioFrame?.CreateDeviceDependentResourcesAsync();
             await caseView?.CreateDeviceDependentResourcesAsync();
 
             foreach (var renderer in Tiles)
@@ -156,6 +160,7 @@ namespace ImageViewer.Content.Views
 
             navigationFrame?.ReleaseDeviceDependentResources();
             navMacroFrame?.ReleaseDeviceDependentResources();
+            navRadioFrame?.ReleaseDeviceDependentResources();
             macro?.ReleaseDeviceDependentResources();
             radiology?.ReleaseDeviceDependentResources();
             histo?.ReleaseDeviceDependentResources();
@@ -192,6 +197,7 @@ namespace ImageViewer.Content.Views
           
             navigationFrame?.Dispose();
             navMacroFrame?.Dispose();
+            navRadioFrame?.Dispose();
             macro?.Dispose();
             model?.Dispose();
             histo?.Dispose();
@@ -220,6 +226,7 @@ namespace ImageViewer.Content.Views
          
             navigationFrame?.Dispose();
             navMacroFrame?.Dispose();
+            navRadioFrame?.Dispose();
             macro?.Dispose();
             histo?.Dispose();
             radiology?.Dispose();

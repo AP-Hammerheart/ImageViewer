@@ -349,6 +349,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 depth: 0.005f,
                 thickness: 0.002f,
                 macro.Labels,
+                view: this,
                 topLeft: new Vector3(Constants.X00, Constants.Y2, Constants.Z2 + Constants.DistanceFromUser),
                 bottomLeft: new Vector3(Constants.X00, Constants.Y1, Constants.Z2 + Constants.DistanceFromUser),
                 topRight: new Vector3(Constants.X00, Constants.Y2, Constants.Z1 + Constants.DistanceFromUser))
@@ -356,10 +357,11 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
             { 
                 RotationY = 0, 
             };
-            navMacroFrame.SetNavigationArea(690, 897, 3456, 2304, 0);
+            //navMacroFrame.SetNavigationArea(690, 897, 3456, 2304, 0);
+            navMacroFrame.SetNavigationArea( 690, 897, 1399-690, 1460-897, 0 );
 
+                 //tl 690, 897,     tr 1399, 897,     br 690, 1416,    bl 1399, 1416
 
-            //690, 897, 1399, 897, 690, 1416, 1399, 1416
 
             ///Radiology Top bar
             statusItems[21] = new StatusBarRenderer(
@@ -382,6 +384,20 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
             };
 
             radiology = new RadiologyView( deviceResources: deviceResources, loader: loader );
+
+            navRadioFrame = new NavigationFrameRenderer(deviceResources: deviceResources,
+                loader: loader,
+                depth: 0.005f,
+                thickness: 0.002f,
+                macro.Labels,
+                view: this,
+                topLeft: new Vector3(Constants.X00, Constants.Y2, Constants.Z3 + Constants.DistanceFromUser),
+                bottomLeft: new Vector3(Constants.X00, Constants.Y1, Constants.Z3 + Constants.DistanceFromUser),
+                topRight: new Vector3(Constants.X00, Constants.Y2, Constants.Z2 + Constants.DistanceFromUser))
+                //bottomRight: new Vector3(Constants.X00, Constants.Y1, Constants.Z1 + Constants.DistanceFromUser))
+            {
+                RotationY = 0,
+            };
 
             //Radiology Top LightGray bar
             statusItems[22] = new StatusBarRenderer(

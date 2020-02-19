@@ -167,6 +167,7 @@ namespace ImageViewer.Content.Views
 
             Refresh();
             navigationFrame.UpdateGeometry();
+            navMacroFrame.Scale(direction);
             navMacroFrame.UpdateGeometry();
         }
 
@@ -241,6 +242,7 @@ namespace ImageViewer.Content.Views
 
             Refresh();
             navigationFrame.UpdateGeometry();
+            navMacroFrame.Scale(direction);
             navMacroFrame.UpdateGeometry();
         }
 
