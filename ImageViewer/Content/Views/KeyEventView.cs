@@ -496,15 +496,20 @@ namespace ImageViewer.Content.Views
             switch( key ) {
 
                 case VirtualKey.GamepadLeftThumbstickUp:
-                    
+                case VirtualKey.W:
+                    PanRadiology(Direction.UP);
                     break;
                 case VirtualKey.GamepadLeftThumbstickDown:
+                case VirtualKey.S:
+                    PanRadiology(Direction.DOWN);
                     break;
                 case VirtualKey.GamepadLeftThumbstickLeft:
-
+                case VirtualKey.A:
+                    PanRadiology(Direction.LEFT);
                     break;
                 case VirtualKey.GamepadLeftThumbstickRight:
-                    
+                case VirtualKey.D:
+                    PanRadiology(Direction.RIGHT);
                     break;
                 case VirtualKey.GamepadLeftThumbstickButton:
                     break;
@@ -548,18 +553,18 @@ namespace ImageViewer.Content.Views
 
                 case VirtualKey.GamepadA:
                 case VirtualKey.K:
-                    //Zoom In
-                    ZoomRadiologyImage();
+                    ZoomRadiology(Direction.DOWN);                    
                     break;
                 case VirtualKey.GamepadB:
                 case VirtualKey.L:
-                    //Zoom Out
+                    ZoomRadiology(Direction.UP);
                     break;
                 case VirtualKey.GamepadX:
                 case VirtualKey.J:
                     break;
                 case VirtualKey.GamepadY:
                 case VirtualKey.I:
+                    ZoomRadiologyImage();
                     break;
 
                 case VirtualKey.GamepadMenu:

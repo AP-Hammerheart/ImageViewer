@@ -49,7 +49,7 @@ namespace ImageViewer.Content.Views
         internal float RotationAngle { get; set; } = 0;
 
         //read connections json
-        ImageConnections imageConnections = new ImageConnections();
+        internal ImageConnections imageConnections = new ImageConnections();
 
         protected NavigationView() {
             string url = Settings.jsonURL + Settings.CaseID + "/connections/";
@@ -337,6 +337,9 @@ namespace ImageViewer.Content.Views
             TopRightY = CenterY - yy2;
         }
 
+
+        //RADIOLOGY INPUT MEHTODS
+
         protected void NextRadiologyImage( int step ) {
             radiology.NextImage( step );
             CheckMatchFromRadio();
@@ -348,8 +351,19 @@ namespace ImageViewer.Content.Views
         }
         protected void ZoomRadiologyImage()
         {
-            radiology.Zoom();
+            radiology.ZoomLabel();
         }
+
+        protected void PanRadiology(Direction direction) {
+            radiology.Move(direction);
+        }
+
+        protected void ZoomRadiology(Direction direction) {
+            radiology.Zoom(direction);
+        }
+
+
+        //CASE SELECT METHODS
 
         protected void ToggleCaseSelectionMenu(bool isShow) {
             caseView.showCaseSelection = isShow;
@@ -371,6 +385,8 @@ namespace ImageViewer.Content.Views
             caseView.ChangeSelectedIDDown();
         }
 
+        //MACRO INPUT METHODS
+
         internal void ChangeMacroImageUp() {
             macro.ChangeImageUp();
         }
@@ -378,6 +394,8 @@ namespace ImageViewer.Content.Views
         internal void ChangeMacroImageDown() {
             macro.ChangeImageDown();
         }
+
+        //HISTOLOGY INPUT METHODS
 
         internal void ChangeHistologyMapUp() {
             histo.ChangeImageUp();

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using ImageViewer.Content.JsonClasses;
+using static ImageViewer.ImageViewerMain;
 
 namespace ImageViewer.Content.Views {
     internal class RadiologyView : IDisposable {
@@ -21,16 +22,21 @@ namespace ImageViewer.Content.Views {
 
         RadiologyRenderer dicom;
 
-        Label labels; //copy stuff from macro
+        Label labels;
 
-        string ZoomString = "&w=100&h=100&x=200&y=150";//read from connections on a connection, by connection basis.
+        string navString = string.Empty; //"&w=100&h=100&x=200&y=150";//read from connections on a connection, by connection basis.
         bool isZoom = false;
+
+        int x = 0, y = 0;
+        int w, h;
+        int zoomFactor = 8; //need to be a multiple of 2
+        int moveFactor = 4;
 
         public int Level {
             get => level;
         }
 
-        internal RadiologyView( DeviceResources deviceResources, TextureLoader loader ) {
+        internal RadiologyView( DeviceResources deviceResources, TextureLoader loader, ImageConnections  connections ) {
             this.loader = loader;
             //image = new ImageRenderer( deviceResources: deviceResources,
             //                           loader: loader,
@@ -54,6 +60,18 @@ namespace ImageViewer.Content.Views {
                                        height: 2304 ) {
                 Position = new Vector3( 0.0f, 0.0f, Constants.DistanceFromUser ),
             };
+
+
+
+            for(int i = 0; i < connections.Items.Count; i++) {
+                for(int j = 0; j < connections.Items[i].Images.Count; j++) {
+                    //create labels from connections
+                }
+            }
+
+            w = 512;
+            h = 512;
+
             GetDICOMFromServer();
             UpdateImage( level );
         }
@@ -74,14 +92,22 @@ namespace ImageViewer.Content.Views {
             UpdateImage( level );
         }
 
-        internal void Zoom()
+        internal void ZoomLabel()
         {
-            isZoom = !isZoom;
+            //TODO: get label dimension for current label in series
             UpdateImage(level);
         }
 
+        internal void UpdateZoomString() {
+            navString = "&w=" + w + "&h=" + h + "&x=" + x + "&y=" + y;
+        }
+
+        internal void EmptyZoomString() {
+            navString = string.Empty;
+        }
+
         protected void UpdateImage( int level) {
-            var ims = Image(level) + (isZoom ? ZoomString : "");
+            var ims = Image(level) +  navString;
             var textures = new List<string>();
             textures.Add( ims );
             dicom.TextureID = ims;
@@ -121,6 +147,40 @@ namespace ImageViewer.Content.Views {
             string s = path.Substring( index + 1 );
             level = int.Parse( "s" );
             //System.Diagnostics.Debug.WriteLine( level );
+            UpdateImage(level);
+        }
+
+        internal void Move(Direction direction) {
+            switch(direction) {
+                case Direction.UP:
+                    y += moveFactor;
+                    break;
+                case Direction.DOWN:
+                    y -= moveFactor;
+                    break;
+                case Direction.LEFT:
+                    x += moveFactor;
+                    break;
+                case Direction.RIGHT:
+                    x -= moveFactor;
+                    break;
+            }
+            UpdateZoomString();
+            UpdateImage(level);
+        }
+
+        internal void Zoom(Direction direction) {
+            switch(direction) {
+                case Direction.UP:
+                    w += zoomFactor;
+                    h += zoomFactor;
+                    break;
+                case Direction.DOWN:
+                    w -= zoomFactor;
+                    h -= zoomFactor;
+                    break;
+            }
+            UpdateZoomString();
             UpdateImage(level);
         }
 

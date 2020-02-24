@@ -383,7 +383,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 ImageHeight = 80,
             };
 
-            radiology = new RadiologyView( deviceResources: deviceResources, loader: loader );
+            radiology = new RadiologyView( deviceResources: deviceResources, loader: loader, connections: imageConnections );
 
             navRadioFrame = new NavigationFrameRenderer(deviceResources: deviceResources,
                 loader: loader,
