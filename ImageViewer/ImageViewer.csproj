@@ -166,6 +166,7 @@
     <Content Include="Content\Textures\pancreas_head_colored.jpg" />
     <Content Include="Content\Textures\red.png" />
     <Content Include="Content\Textures\solid.png" />
+    <Content Include="Content\Textures\testb.png" />
     <Content Include="Content\Textures\test.png" />
     <Content Include="ControlScheme.txt" />
     <Content Include="Properties\Default.rd.xml" />
@@ -203,6 +204,9 @@
     <PackageReference Include="Win2D.uwp">
       <Version>1.23.0</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\Textures\Help\" />
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

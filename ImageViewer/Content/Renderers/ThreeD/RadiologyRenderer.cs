@@ -53,11 +53,11 @@ namespace ImageViewer.Content.Renderers.Image {
         }
 
         public int Width {
-            get;
+            get; set;
         }
 
         public int Height {
-            get;
+            get; set;
         }
 
         internal override void LoadGeometry() {

@@ -15,8 +15,6 @@ namespace ImageViewer.Content.Renderers.ThreeD
 {
     class NavigationFrameRenderer : FrameRenderer
     {
-
-        NavigationView view;
         private Vector3 topLeft;
         private Vector3 bottomLeft;
         private Vector3 topRight;
@@ -26,7 +24,8 @@ namespace ImageViewer.Content.Renderers.ThreeD
         int centerX, centerY;
         int angle;
 
-        Label[] labels;
+        public Label[] labels;
+        int zoomLevel = 7;
 
         float multiplierX;
         float multiplierY;
@@ -73,25 +72,31 @@ namespace ImageViewer.Content.Renderers.ThreeD
             //this.angle = angle;
             //System.Diagnostics.Debug.WriteLine(Position.ToString());
         }
-        internal void SetNavigationArea(int x, int y, int w, int h, int Angle)
-        {
 
-            this.topLeft = labels[0].Frame.BottomLeft;
-            this.bottomLeft = labels[0].Frame.BottomRight;
-            this.topRight = labels[0].Frame.TopLeft;
-            this.bottomRight = labels[0].Frame.TopRight;
-            
-            
-            this.x = x;
-            this.y = y;
-            this.w = w;
-            this.h = h;
+        //int index = 0;
+        internal void SetNavigationArea(Label label)
+        {
+            //this.topLeft = labels[index].Frame.BottomLeft;
+            //this.bottomLeft = labels[index].Frame.BottomRight;
+            //this.topRight = labels[index].Frame.TopLeft;
+            //this.bottomRight = labels[index].Frame.TopRight;
+
+
+            this.topLeft = label.Frame.BottomLeft + dpPos;
+            this.bottomLeft = label.Frame.BottomRight + dpPos;
+            this.topRight = label.Frame.TopLeft + dpPos;
+            this.bottomRight = label.Frame.TopRight + dpPos;
+            zoomLevel = 7;
+            //this.x = x;
+            //this.y = y;
+            //this.w = w;
+            //this.h = h;
             //System.Diagnostics.Debug.WriteLine(Position.ToString());
 
             centerX = (h / 2) + y;
             centerY = (w / 2) + x;
             System.Diagnostics.Debug.WriteLine("center: " + centerX + ", " + centerY);
-            this.angle = Angle;
+            //this.angle = Angle;
             Position = new Vector3(0.0f, 0.0f, Constants.DistanceFromUser);
 
             //System.Diagnostics.Debug.WriteLine("tl: " + topLeft.ToString() + " bl: " + bottomLeft.ToString() + "tr: " + topRight.ToString());
@@ -104,6 +109,7 @@ namespace ImageViewer.Content.Renderers.ThreeD
             System.Diagnostics.Debug.WriteLine("multiplier: " + multiplierX + ", " + multiplierY);
         }
 
+        Vector3 dpPos = Vector3.Zero;
         internal override void SetPosition(Vector3 dp)
         {
             base.SetPosition(dp);
@@ -111,6 +117,9 @@ namespace ImageViewer.Content.Renderers.ThreeD
             topLeft += dp;
             bottomLeft += dp;
             topRight += dp;
+            bottomRight += dp;
+
+            dpPos += dp;
         }
 
         internal override void SetRotator(Matrix4x4 rotator)
@@ -124,16 +133,16 @@ namespace ImageViewer.Content.Renderers.ThreeD
             switch (direction)
             {
                 case Direction.RIGHT:
-                    move = new Vector3(0f, 0f, -0.1f);
+                    move = new Vector3(0f, 0f, -0.001f);
                     break;
                 case Direction.LEFT:
-                    move = new Vector3(0f, 0f, 0.1f);
+                    move = new Vector3(0f, 0f, 0.001f);
                     break;
                 case Direction.UP:
-                    move = new Vector3(0f, 0.1f, 0);
+                    move = new Vector3(0f, 0.001f, 0);
                     break;
                 case Direction.DOWN:
-                    move = new Vector3(0f, -0.1f, 0);
+                    move = new Vector3(0f, -0.001f, 0);
                     break;
             }
             Position += move;
@@ -141,23 +150,34 @@ namespace ImageViewer.Content.Renderers.ThreeD
 
         internal void Scale(Direction direction)
         {
-
-            float scaler = 0.001f;
+            string s = " 0.00" + zoomLevel.ToString();
+            float scaler = float.Parse(s); //0.01f;
             switch (direction)
             {
                 case Direction.UP:
+                    zoomLevel--;
+                    if(zoomLevel < 0) {
+                        zoomLevel=0;
+                        break;
+                    }
                     this.topLeft = new Vector3(topLeft.X, topLeft.Y - scaler, topLeft.Z - scaler);
                     this.topRight = new Vector3(topRight.X, topRight.Y - scaler, topRight.Z + scaler);
                     this.bottomLeft = new Vector3(bottomLeft.X, bottomLeft.Y + scaler, bottomLeft.Z - scaler);
                     this.bottomRight = new Vector3(bottomRight.X, bottomRight.Y + scaler, bottomRight.Z + scaler);
                     break;
                 case Direction.DOWN:
+                    zoomLevel++;
+                    if(zoomLevel > 10) {
+                        zoomLevel=10;
+                        break;
+                    }
                     this.topLeft = new Vector3(topLeft.X, topLeft.Y + scaler, topLeft.Z + scaler);
                     this.topRight = new Vector3(topRight.X, topRight.Y + scaler, topRight.Z - scaler);
                     this.bottomLeft = new Vector3(bottomLeft.X, bottomLeft.Y - scaler, bottomLeft.Z + scaler);
                     this.bottomRight = new Vector3(bottomRight.X, bottomRight.Y - scaler, bottomRight.Z - scaler);
                     break;
             }
+            System.Diagnostics.Debug.WriteLine("zoomLevel: " + zoomLevel + " " + direction.ToString());
         }
 
         internal override void UpdateGeometry()
@@ -204,7 +224,9 @@ namespace ImageViewer.Content.Renderers.ThreeD
 
         internal override void Render()
         {
-            base.Render();
+            if(KeyEventView.mode != KeyEventView.inputModes.caseSelection) {
+                base.Render();
+            }
         }
 
         internal override void ReleaseDeviceDependentResources()

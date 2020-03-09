@@ -15,8 +15,8 @@ namespace ImageViewer.Content.Views
     abstract class NavigationView : DisposeView {
         private readonly double A45 = Math.PI / 4;
 
-        protected int TileOffset( int level )
-            => Constants.TileResolution * PixelSize( level );
+        protected int TileOffset(int level)
+            => Constants.TileResolution * PixelSize(level);
 
         internal int Level { get; set; } = 7;
 
@@ -35,7 +35,7 @@ namespace ImageViewer.Content.Views
         //internal int CenterY { get; set; } = 110000;
         //internal int CenterX { get; set; } = 50000;
 
-        internal int CenterY { get; set; } = 125440 /2;
+        internal int CenterY { get; set; } = 125440 / 2;
         internal int CenterX { get; set; } = 107520 / 2;
 
         internal double Angle { get; set; } = 0;
@@ -43,7 +43,7 @@ namespace ImageViewer.Content.Views
         internal int PixelSize(int level)
             => (int)Math.Pow(2, Settings.Multiplier * level);
 
-        internal int Step => TileOffset(Level);       
+        internal int Step => TileOffset(Level);
 
         internal Vector3 Origo { get; set; } = Vector3.Zero;
         internal float RotationAngle { get; set; } = 0;
@@ -53,37 +53,32 @@ namespace ImageViewer.Content.Views
 
         protected NavigationView() {
             string url = Settings.jsonURL + Settings.CaseID + "/connections/";
-            using( var client = new System.Net.Http.HttpClient() ) {
-                var j = client.GetStringAsync( url );
-                imageConnections = JsonConvert.DeserializeObject<ImageConnections>( j.Result );
+            using(var client = new System.Net.Http.HttpClient()) {
+                var j = client.GetStringAsync(url);
+                imageConnections = JsonConvert.DeserializeObject<ImageConnections>(j.Result);
             }
         }
 
         protected abstract void UpdateImages();
 
-        protected void MovePointer(float x, float y)
-        {
+        protected void MovePointer(float x, float y) {
             ((PointerRenderer)Pointers[0]).SetDeltaXY(x, y);
         }
 
-        protected void Refresh()
-        {
+        protected void Refresh() {
             SetCorners();
             UpdateImages();
         }
 
-        protected void SetPosition(float dX, float dY, float dZ)
-        {
+        protected void SetPosition(float dX, float dY, float dZ) {
             var dp = new Vector3(dX, dY, dZ);
             Origo = Origo + dp;
 
-            foreach (var renderer in Tiles)
-            {
+            foreach(var renderer in Tiles) {
                 renderer.Position = renderer.Position + dp;
             }
 
-            foreach (var renderer in statusItems)
-            {
+            foreach(var renderer in statusItems) {
                 renderer.Position = renderer.Position + dp;
             }
 
@@ -96,35 +91,30 @@ namespace ImageViewer.Content.Views
             navigationFrame.SetPosition(dp);
             navMacroFrame.SetPosition(dp);
             macro.SetPosition(dp);
-            radiology.SetPosition( dp );
-            histo.SetPosition( dp );
+            radiology.SetPosition(dp);
+            histo.SetPosition(dp);
             model.Position = model.Position + dp;
-            caseView.SetPosition( dp );
+            caseView.SetPosition(dp);
 
             UpdateImages();
         }
 
-        protected void SetAngle(float angle)
-        {
+        protected void SetAngle(float angle) {
             RotationAngle = RotationAngle + angle;
-            if (RotationAngle >= 360.0f)
-            {
+            if(RotationAngle >= 360.0f) {
                 RotationAngle -= 360.0f;
             }
-            if (RotationAngle < 0.0f)
-            {
+            if(RotationAngle < 0.0f) {
                 RotationAngle += 360.0f;
             }
 
             var rotator = Matrix4x4.CreateRotationY((float)(Math.PI * RotationAngle / 180.0f), Pointers[0].Origo());
 
-            foreach (var renderer in Tiles)
-            {
+            foreach(var renderer in Tiles) {
                 renderer.GlobalRotator = rotator;
             }
 
-            foreach (var renderer in statusItems)
-            {
+            foreach(var renderer in statusItems) {
                 renderer.GlobalRotator = rotator;
             }
 
@@ -139,27 +129,23 @@ namespace ImageViewer.Content.Views
             navigationFrame.SetRotator(rotator);
             navMacroFrame.SetRotator(rotator);
             macro.SetRotator(rotator);
-            radiology.SetRotator( rotator );
-            histo.SetRotator( rotator );
-            caseView.SetRotator( rotator );
+            radiology.SetRotator(rotator);
+            histo.SetRotator(rotator);
+            caseView.SetRotator(rotator);
             model.GlobalRotator = rotator;
         }
 
-        protected void Scale(Direction direction, int number)
-        {
-            switch (direction)
-            {
+        protected void Scale(Direction direction, int number) {
+            switch(direction) {
                 case Direction.UP:
                     Level -= number;
-                    if (Level < 0)
-                    {
+                    if(Level < 0) {
                         Level = 0;
                     }
                     break;
                 case Direction.DOWN:
                     Level += number;
-                    if (Level > Settings.MinScale)
-                    {
+                    if(Level > Settings.MinScale) {
                         Level = Settings.MinScale;
                     }
                     break;
@@ -171,8 +157,7 @@ namespace ImageViewer.Content.Views
             navMacroFrame.UpdateGeometry();
         }
 
-        protected void Move(Direction direction, int number)
-        {
+        protected void Move(Direction direction, int number) {
             //var moveStep = PixelSize(Level) * number;
 
             //switch (direction)
@@ -202,36 +187,27 @@ namespace ImageViewer.Content.Views
             //navMacroFrame.UpdatePosition();
         }
 
-        protected void Zoom(Direction direction, int number)
-        {
+        protected void Zoom(Direction direction, int number) {
             BasePointerRenderer.Coordinate c;
 
-            if (Pointers[0].Inside)
-            {
+            if(Pointers[0].Inside) {
                 c = ((PointerRenderer)Pointers[0]).Coordinates();
-            }
-            else if (Pointers[1].Inside)
-            {
+            } else if(Pointers[1].Inside) {
                 c = Pointers[1].XY();
-            }
-            else
-            {
+            } else {
                 return;
             }
-            
-            switch (direction)
-            {
+
+            switch(direction) {
                 case Direction.UP:
                     Level -= number;
-                    if (Level < 0)
-                    {
+                    if(Level < 0) {
                         Level = 0;
                     }
                     break;
                 case Direction.DOWN:
                     Level += number;
-                    if (Level > Settings.MinScale)
-                    {
+                    if(Level > Settings.MinScale) {
                         Level = Settings.MinScale;
                     }
                     break;
@@ -246,21 +222,17 @@ namespace ImageViewer.Content.Views
             navMacroFrame.UpdateGeometry();
         }
 
-        protected void Rotate(Direction direction)
-        {
-            switch (direction)
-            {
+        protected void Rotate(Direction direction) {
+            switch(direction) {
                 case Direction.LEFT:
                     Angle -= Math.PI / 36;
-                    if (Angle < 0)
-                    {
+                    if(Angle < 0) {
                         Angle += 2.0 * Math.PI;
                     }
                     break;
                 case Direction.RIGHT:
                     Angle += Math.PI / 36;
-                    if (Angle >= 2.0 * Math.PI)
-                    {
+                    if(Angle >= 2.0 * Math.PI) {
                         Angle -= 2.0 * Math.PI;
                     }
                     break;
@@ -271,32 +243,38 @@ namespace ImageViewer.Content.Views
             navMacroFrame.UpdateGeometry();
         }
 
-        protected void SetPointer(Direction direction, int number)
-        {
-            if (direction == Direction.BACK)
-            {
-                switch (number)
-                {
-                    case 0: Pointers[0].Visible = false; break;
-                    case 1: Pointers[0].Visible = true; break;
+        protected void SetPointer(Direction direction, int number) {
+            if(direction == Direction.BACK) {
+                switch(number) {
+                    case 0:
+                        Pointers[0].Visible = false;
+                        break;
+                    case 1:
+                        Pointers[0].Visible = true;
+                        break;
                     case 2:
                         Pointers[0].Locked = false;
                         Pointers[0].GlobalRotator = Matrix4x4.Identity;
                         break;
-                    case 3: Pointers[0].Locked = true; break;
-                    case 4: ((PointerRenderer)Pointers[0]).AddTag(); break;
-                    case 5: ((PointerRenderer)Pointers[0]).RemoveTag(); break;
+                    case 3:
+                        Pointers[0].Locked = true;
+                        break;
+                    case 4:
+                        ((PointerRenderer)Pointers[0]).AddTag();
+                        break;
+                    case 5:
+                        ((PointerRenderer)Pointers[0]).RemoveTag();
+                        break;
                 }
             }
         }
 
-        protected void Reset()
-        {
+        protected void Reset() {
             Level = 3;
 
             CenterY = 110000;
             CenterX = 50000;
-            
+
             SetPosition(-1 * Origo.X, -1 * Origo.Y, -1 * Origo.Z);
             SetAngle(-1 * RotationAngle);
 
@@ -305,13 +283,16 @@ namespace ImageViewer.Content.Views
             navMacroFrame.UpdateGeometry();
         }
 
-        private void SetCorners()
-        {
-            if (CenterX < -1 * Settings.MaxResolutionX) CenterX = -1 * Settings.MaxResolutionX;
-            if (CenterY < -1 * Settings.MaxResolutionY) CenterY = -1 * Settings.MaxResolutionY;
+        private void SetCorners() {
+            if(CenterX < -1 * Settings.MaxResolutionX)
+                CenterX = -1 * Settings.MaxResolutionX;
+            if(CenterY < -1 * Settings.MaxResolutionY)
+                CenterY = -1 * Settings.MaxResolutionY;
 
-            if (CenterX > Settings.MaxResolutionX) CenterX = Settings.MaxResolutionX;
-            if (CenterY > Settings.MaxResolutionY) CenterY = Settings.MaxResolutionY;
+            if(CenterX > Settings.MaxResolutionX)
+                CenterX = Settings.MaxResolutionX;
+            if(CenterY > Settings.MaxResolutionY)
+                CenterY = Settings.MaxResolutionY;
 
             var d = Constants.Diagonal * (double)(PixelSize(Level));
 
@@ -340,17 +321,16 @@ namespace ImageViewer.Content.Views
 
         //RADIOLOGY INPUT MEHTODS
 
-        protected void NextRadiologyImage( int step ) {
-            radiology.NextImage( step );
+        protected void NextRadiologyImage(int step) {
+            radiology.NextImage(step);
             CheckMatchFromRadio();
         }
 
-        protected void PrevRadiologyImage( int step ) {
-            radiology.PrevImage( step );
+        protected void PrevRadiologyImage(int step) {
+            radiology.PrevImage(step);
             CheckMatchFromRadio();
         }
-        protected void ZoomRadiologyImage()
-        {
+        protected void ZoomRadiologyImage() {
             radiology.ZoomLabel();
         }
 
@@ -413,12 +393,38 @@ namespace ImageViewer.Content.Views
         }
 
         internal void CheckMatchFromRadio() {
-            //if( radiology.Level >= imageConnections.Items[0].Images[0].dicom[0].imageIndexStart &&
-            //    radiology.Level <= imageConnections.Items[0].Images[0].dicom[0].imageIndexEnd ) {
-            //    histo.ChangeToImage( imageConnections.Items[0].Images[0].histology[0].imageSource );
-            //    macro.SetLabel( true );
-            //}
-        }
+            //if(radiology.Level >= imageConnections.Items[0].Images[0].dicom[0].imageIndexStart &&
+            //   radiology.Level <= imageConnections.Items[0].Images[0].dicom[0].imageIndexEnd) {
 
+            //    histo.ChangeToImage(imageConnections.Items[0].Images[0].histology[0].imageSource);
+            //    macro.SetLabel(true);
+            //    //navMacroFrame.SetNavigationArea();
+            //}
+
+            for(int i = 0; i < imageConnections.Items.Count; i++) {
+                for(int j = 0; j < imageConnections.Items[i].Images.Count; j++) {
+                    for(int k = 0; k < imageConnections.Items[i].Images[j].dicom.Count; k++) {
+                        if(radiology.Level >= imageConnections.Items[i].Images[j].dicom[k].imageIndexStart &&
+                           radiology.Level <= imageConnections.Items[i].Images[j].dicom[k].imageIndexEnd) {
+                            if(imageConnections.Items[i].Images[j].histology[0] != null) {
+                                histo.ChangeToImage(imageConnections.Items[i].Images[j].histology[0].imageSource);
+                            }
+                            macro.SetLabel(true);
+                            navMacroFrame.labels = macro.labels;
+                            navMacroFrame.SetNavigationArea(macro.labels[i]);
+                            navMacroFrame.UpdateGeometry();
+                            Level = 7;
+                        }
+                    }
+                    //for(int k = 0; k < imageConnections.Items[i].Images[j].macro.Count; k++) {
+
+                    //}
+                    //for(int k = 0; k < imageConnections.Items[i].Images[j].histology.Count; k++) {
+
+                    //}
+
+                }
+            }
+        }
     }
 }

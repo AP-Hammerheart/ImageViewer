@@ -19,13 +19,15 @@ namespace ImageViewer.Content.Views {
         private int maxLevel = 515;
         private int minLevel = 1;
         readonly TextureLoader loader;
-
+        private readonly ImageRenderer image;
         RadiologyRenderer dicom;
 
-        Label labels;
+        Label[] labels;
+        Dictionary<int, Label> labelLookUp = new Dictionary<int, Label>();
 
         string navString = string.Empty; //"&w=100&h=100&x=200&y=150";//read from connections on a connection, by connection basis.
-        bool isZoom = false;
+
+        Label testlabel;
 
         int x = 0, y = 0;
         int w, h;
@@ -38,17 +40,16 @@ namespace ImageViewer.Content.Views {
 
         internal RadiologyView( DeviceResources deviceResources, TextureLoader loader, ImageConnections  connections ) {
             this.loader = loader;
-            //image = new ImageRenderer( deviceResources: deviceResources,
-            //                           loader: loader,
-            //                           bottomLeft: new Vector3( Constants.X00, Constants.Y1, Constants.Z3 ),
-            //                           topLeft: new Vector3( Constants.X00, Constants.Y2, Constants.Z3 ),
-            //                           bottomRight: new Vector3( Constants.X00, Constants.Y1, Constants.Z2 ),
-            //                           topRight: new Vector3( Constants.X00, Constants.Y2, Constants.Z2 ),
-            //                           width: 3456,
-            //                           height: 2304 ) {
-            //    Position = new Vector3( 0.0f, 0.0f, Constants.DistanceFromUser ),
-            //    TextureFile = "Content\\Textures\\test.png"
-            //};
+            image = new ImageRenderer(deviceResources: deviceResources,
+                                       loader: loader,
+                                       bottomLeft: new Vector3(Constants.X00, Constants.Y1, Constants.Z3),
+                                       topLeft: new Vector3(Constants.X00, Constants.Y2, Constants.Z3),
+                                       bottomRight: new Vector3(Constants.X00, Constants.Y1, Constants.Z2),
+                                       topRight: new Vector3(Constants.X00, Constants.Y2, Constants.Z2),
+                                       width: 512,
+                                       height: 512) {
+                Position = new Vector3(0.0f, 0.0f, Constants.DistanceFromUser),
+            };
 
             dicom = new RadiologyRenderer( deviceResources: deviceResources,
                                        loader: loader,
@@ -56,25 +57,79 @@ namespace ImageViewer.Content.Views {
                                        topLeft: new Vector3( Constants.X00, Constants.Y2, Constants.Z3 ),
                                        bottomRight: new Vector3( Constants.X00, Constants.Y1, Constants.Z2 ),
                                        topRight: new Vector3( Constants.X00, Constants.Y2, Constants.Z2 ),
-                                       width: 3456,
-                                       height: 2304 ) {
+                                       width: 512,
+                                       height: 512) {
                 Position = new Vector3( 0.0f, 0.0f, Constants.DistanceFromUser ),
             };
 
 
-
+            labels = new Label[connections.Items[0].Images.Count];
+            System.Diagnostics.Debug.WriteLine("label count: " + connections.Items.Count);
             for(int i = 0; i < connections.Items.Count; i++) {
                 for(int j = 0; j < connections.Items[i].Images.Count; j++) {
-                    //create labels from connections
+                    for(int k = 0; k < connections.Items[i].Images[j].dicom.Count; k++) {
+
+                        //var labelTexts = new string[] {
+                        //    connections.Items[0].Images[j].label
+                        //};
+
+                        var coords = new int[] {
+                                (int)connections.Items[i].Images[j].dicom[k].P1x,
+                                (int)connections.Items[i].Images[j].dicom[k].P1y,
+                                (int)connections.Items[i].Images[j].dicom[k].P2x,
+                                (int)connections.Items[i].Images[j].dicom[k].P2y,
+                                (int)connections.Items[i].Images[j].dicom[k].P4x,
+                                (int)connections.Items[i].Images[j].dicom[k].P4y,
+                                (int)connections.Items[i].Images[j].dicom[k].P3x,
+                                (int)connections.Items[i].Images[j].dicom[k].P3y,
+                            };
+
+                        //var coords = new int[][] {
+     
+                        //};
+
+                        labels[j] = new Label(
+                        deviceResources: deviceResources,
+                        loader: loader,
+                        image: image,
+                        coordinates: coords,
+                        labelText: connections.Items[i].Images[j].label);
+
+                        for(int l = connections.Items[i].Images[j].dicom[k].imageIndexStart; l <= connections.Items[i].Images[j].dicom[k].imageIndexEnd; l++) {
+                            labelLookUp.Add(l, labels[j]);
+                        }
+                    }
                 }
+                
             }
+
+
+            var kord = new int[] {
+                0,0,
+                5120, 0,
+                0,5120,
+                5120,5120
+                            };
+
+            testlabel = new Label(
+                       deviceResources: deviceResources,
+                       loader: loader,
+                       image: image,
+                       coordinates: kord,
+                       labelText: "tt");
 
             w = 512;
             h = 512;
 
+            image.Width = w;
+            image.Height = h;
+            dicom.Width = w;
+            dicom.Height = h;
+
             GetDICOMFromServer();
             UpdateImage( level );
         }
+
 
         internal void NextImage(int step) {
             level += step;
@@ -100,6 +155,10 @@ namespace ImageViewer.Content.Views {
 
         internal void UpdateZoomString() {
             navString = "&w=" + w + "&h=" + h + "&x=" + x + "&y=" + y;
+            image.Width = w;
+            image.Height = h;
+            dicom.Width = w;
+            dicom.Height = h;
         }
 
         internal void EmptyZoomString() {
@@ -185,52 +244,87 @@ namespace ImageViewer.Content.Views {
         }
 
         internal void Update( StepTimer timer ) {
-
-
+            if(labelLookUp.ContainsKey(level)) {
+                labelLookUp[level]?.Update(timer);
+            }            
+            image?.Update(timer);
             dicom?.Update( timer );
+            testlabel?.Update(timer);
         }
 
         internal void Render() {
             dicom?.Render();
-
-
+            image?.Render();
+            if(labelLookUp.ContainsKey(level)) {
+                labelLookUp[level]?.Render();
+            }
+            testlabel?.Render();
         }
 
         internal void ChangeType() {
             Type = (Type + 1) % 3;
-
+            foreach(var renderer in labels) {
+                renderer.Type = Type;
+            }
         }
 
         internal void SetPosition( Vector3 dp ) {
             dicom.Position += dp;
-
+            image.Position += dp;
+            foreach(var label in labels) {
+                label?.SetPosition(dp);
+            }
+            testlabel?.SetPosition(dp);
         }
 
         internal void SetRotator( Matrix4x4 rotator ) {
             dicom.GlobalRotator = rotator;
-
+            image.GlobalRotator = rotator;
+            foreach(var label in labels) {
+                label?.SetRotator(rotator);
+            }
+            testlabel?.SetRotator(rotator);
         }
 
         internal async Task CreateDeviceDependentResourcesAsync() {
-
-
+            if(labelLookUp.ContainsKey(level)) {
+                System.Diagnostics.Debug.WriteLine("CreateDeviceDependentResourcesAsync");
+                labelLookUp[level]?.CreateDeviceDependentResourcesAsync();
+            }
+            await image?.CreateDeviceDependentResourcesAsync();
             await dicom?.CreateDeviceDependentResourcesAsync();
+            await testlabel?.CreateDeviceDependentResourcesAsync();
         }
 
         internal void ReleaseDeviceDependentResources() {
-
-
+            if(labelLookUp.ContainsKey(level)) {
+                System.Diagnostics.Debug.WriteLine("ReleaseDeviceDependentResources");
+                labelLookUp[level]?.ReleaseDeviceDependentResources();
+            }
+            image?.ReleaseDeviceDependentResources();
             dicom?.ReleaseDeviceDependentResources();
+            testlabel?.ReleaseDeviceDependentResources();
         }
 
         internal void Dispose() {
-
+            if(labels != null) {
+                foreach(var renderer in labels) {
+                    renderer?.Dispose();
+                }
+                labels = null;
+            }
+            image?.Dispose();
             dicom?.Dispose();
+            testlabel?.Dispose();
         }
 
         void IDisposable.Dispose() {
-
+            foreach(var renderer in labels) {
+                renderer?.Dispose();
+            }
+            image?.Dispose();
             dicom?.Dispose();
+            testlabel?.Dispose();
         }
 
     }

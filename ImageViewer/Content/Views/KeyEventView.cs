@@ -19,7 +19,7 @@ namespace ImageViewer.Content.Views
 
         //private readonly int modes = 3;
 
-        private enum inputModes {
+        public  enum inputModes {
             caseSelection,
             window,
             radiology,
@@ -27,7 +27,7 @@ namespace ImageViewer.Content.Views
             histology,
             model,
         }
-        private inputModes mode = inputModes.caseSelection;
+        public static inputModes mode = inputModes.caseSelection;
 
         internal void OnKeyPressed(Windows.System.VirtualKey key)
         {
@@ -401,7 +401,8 @@ namespace ImageViewer.Content.Views
                 case VirtualKey.GamepadMenu:
                 case VirtualKey.Escape:
                     ToggleCaseSelectionMenu(false);
-                    mode = inputModes.window;                
+                    mode = inputModes.window;
+                    //statusItems[20].
                     break;
                 case VirtualKey.GamepadView:
                 case VirtualKey.M:

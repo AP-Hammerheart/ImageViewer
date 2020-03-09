@@ -44,7 +44,7 @@ namespace ImageViewer.Content.Renderers.Image
         }
 
         internal override bool TextureReady => textureReady;
-        internal string TextureFile { get; set; } = "Content\\Textures\\test.png";
+        internal string TextureFile { get; set; } = "Content\\Textures\\testb.png";
 
         public Vector3 BottomLeft { get; }
 
@@ -54,9 +54,13 @@ namespace ImageViewer.Content.Renderers.Image
 
         public Vector3 TopRight { get; }
 
-        public int Width { get; }
+        public int Width {
+            get; set;
+        }
 
-        public int Height { get; }
+        public int Height {
+            get; set;
+        }
 
         internal override void LoadGeometry()
         {

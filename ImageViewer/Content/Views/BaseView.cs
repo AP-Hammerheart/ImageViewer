@@ -342,7 +342,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 TextureFile = "Content\\Textures\\help.jpg",
             };
 
-            macro = new MacroView(deviceResources: deviceResources, loader: loader);
+            macro = new MacroView(deviceResources: deviceResources, loader: loader, connections: imageConnections);
 
             navMacroFrame = new NavigationFrameRenderer(deviceResources: deviceResources,
                 loader: loader,
@@ -358,7 +358,7 @@ Patienten ingår i standardiserade vårdförlopp:             nej",
                 RotationY = 0, 
             };
             //navMacroFrame.SetNavigationArea(690, 897, 3456, 2304, 0);
-            navMacroFrame.SetNavigationArea( 690, 897, 1399-690, 1460-897, 0 );
+            navMacroFrame.SetNavigationArea( macro.labels[0] );
 
                  //tl 690, 897,     tr 1399, 897,     br 690, 1416,    bl 1399, 1416
 
